@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0-alpha] - 2026-01-10
+
 ### Added
 - Initial project structure from existing tasks skill
 - `@mentions` for people and project assignments
@@ -14,8 +16,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 3-level task nesting with 4-space indentation
 - Completion semantics: parent requires all children complete
 - docs/SPEC.md as canonical format specification (v1.2.0)
-- docs/REFERENCES.md documenting tasks.md inspiration
+- docs/INSPIRATION.md with credits and references
+- docs/IDEAS.md for feature proposals
 - docs/internal/ for private notes (gitignored)
+- README.md with project overview
 
 ## [0.1.0-alpha] - 2026-01-10
 
