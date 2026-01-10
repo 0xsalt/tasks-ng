@@ -94,6 +94,25 @@ Organize by **project/category**, not priority:
 ### Priority Within Sections
 Use `+urgent` tag or position (top = higher priority) rather than separate priority sections.
 
+### Nesting (Optional)
+
+Break down larger tasks using 4-space indentation (up to 3 levels):
+
+```markdown
+- [ ] Implement auth system #backend
+    - [ ] Design auth flow
+    - [ ] Create login endpoint
+        - [ ] Add route handler
+        - [ ] Add validation
+    - [ ] Create logout endpoint
+```
+
+**Key rules:**
+- Most tasks are single-level — nest only when breakdown helps
+- Parent can only be `[x]` when all children are `[x]`
+- Each task has its own metadata (no inheritance)
+- Maximum 3 levels deep
+
 ---
 
 ## Best Practices
@@ -123,6 +142,8 @@ Use `+urgent` tag or position (top = higher priority) rather than separate prior
 
 ## Development
 - [ ] Implement user auth #backend +inprogress
+    - [x] Design auth flow _done:2026-01-09
+    - [ ] Create endpoints
 - [ ] Add API rate limiting #backend #security
 
 ## Documentation

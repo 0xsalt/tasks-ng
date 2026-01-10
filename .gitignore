@@ -1,3 +1,10 @@
+# Private documentation (never push)
+docs/internal/*
+!docs/internal/.gitkeep
+
+# Journal data (PAI infrastructure)
+.private-journal/
+
 # Dependencies
 node_modules/
 

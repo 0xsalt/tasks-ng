@@ -115,6 +115,7 @@ Tasks are organized by **project/category**, not priority:
 
 ## [Category Name]
 - [ ] Task #tags +status
+    - [ ] Subtask (optional nesting, up to 3 levels)
 
 ## Completed
 ### Recent (Last 30 Days)
@@ -125,6 +126,8 @@ Tasks are organized by **project/category**, not priority:
 ```
 
 Priority within sections: use `+urgent` or position (top = higher).
+
+Nesting: 4-space indent, max 3 levels. Parent completes only when all children complete.
 
 ---
 
