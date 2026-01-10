@@ -7,22 +7,32 @@ Plain-text task management with grep-friendly metadata.
 A task format specification and tooling for managing tasks in Markdown files. Designed for both human editing and machine parsing.
 
 ```markdown
-- [ ] Review API docs #backend @alice +urgent _due:2026-01-15
-- [x] Ship auth feature #work _done:2026-01-09 _spent:180
+## Work
+
+- [ ] Launch user dashboard #frontend @sarah +inprogress
+    - [x] Design mockups _done:2026-01-08 _spent:120
+    - [ ] Build components #frontend _due:2026-01-20
+    - [ ] Write tests #frontend
+- [ ] Fix payment timeout bug #backend @ops +urgent _due:2026-01-12
+- [x] Deploy monitoring stack #ops @infra _done:2026-01-09 _spent:90
+
+## Personal
+
+- [ ] Research home automation #research
+- [x] Renew passport #errands _done:2026-01-05
 ```
 
-**Features:**
-- `#tags` for categorization
-- `@mentions` for assignment
-- `+status` markers (urgent, inprogress, blocked)
-- `_metadata` for dates and time tracking
-- 3-level nesting with completion semantics
+**Format:**
+- `#tags` — categorization
+- `@mentions` — assignment
+- `+status` — state markers (urgent, inprogress, blocked)
+- `_due:` / `_done:` — dates
+- `_spent:` — time tracking (minutes)
+- Nesting — subtasks with 4-space indent
 
 ## Status
 
-**Version:** 0.1.0-alpha
-
-Format specification is stable (v1.2.0). Tooling is in early development.
+Format specification is stable. Tooling is in early development.
 
 ## Documentation
 
