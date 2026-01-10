@@ -1,6 +1,6 @@
 # Task Format Specification
 
-**Version:** 1.1.0
+**Version:** 1.2.0
 **Last Updated:** 2026-01-10
 
 The canonical specification for the PAI task management format. All tools and parsers must conform to this spec.
@@ -163,15 +163,35 @@ Minutes spent on a task.
 <!-- Older completed tasks -->
 ```
 
-### Subtasks
+### Nesting (Optional)
 
-Nested tasks via indentation:
+Tasks can be nested up to **3 levels** using 4-space indentation:
 
 ```markdown
-- [ ] Main task #project
-  - [ ] Subtask one
-  - [ ] Subtask two
-  - [x] Subtask done _done:2026-01-09
+- [ ] Larger piece of work #backend
+    - [ ] Breakdown item #backend
+        - [ ] Fine-grained detail #backend
+```
+
+**Rules:**
+- Use 4 spaces per level (not tabs)
+- Maximum depth: 3 levels
+- Most tasks are single-level — use nesting only when breakdown aids clarity
+- Each task carries its own metadata (no inheritance from parent)
+
+**Completion semantics:**
+- A parent task can only be marked `[x]` when ALL children are `[x]`
+- Children can be completed independently
+- Tooling should enforce this constraint
+
+**Example:**
+```markdown
+- [ ] Implement user authentication #backend +inprogress
+    - [x] Design auth flow _done:2026-01-08
+    - [ ] Create login endpoint
+        - [x] Add route handler _done:2026-01-09 _spent:30
+        - [ ] Add validation
+    - [ ] Create logout endpoint
 ```
 
 ---
@@ -221,9 +241,19 @@ For tool implementers:
 
 2. **Token extraction:** Split on whitespace, match prefixes
 
-3. **Checkbox detection:** Line starts with `- [ ]` or `- [x]`
+3. **Checkbox detection:** Line starts with `- [ ]` or `- [x]` (after optional indentation)
 
 4. **Description extraction:** Text between checkbox and first metadata token
+
+5. **Nesting detection:**
+   - Count leading spaces: `level = spaces / 4`
+   - Level 0: no indent, Level 1: 4 spaces, Level 2: 8 spaces, Level 3: 12 spaces
+   - Reject tasks with indent > 12 spaces (max 3 levels)
+   - Build parent-child relationships based on level changes
+
+6. **Completion validation:**
+   - Before marking parent `[x]`, verify all children are `[x]`
+   - Reject completion if any child is `[ ]`
 
 ---
 
@@ -231,5 +261,6 @@ For tool implementers:
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.2.0 | 2026-01-10 | Added 3-level nesting with completion semantics |
 | 1.1.0 | 2026-01-10 | Added `@mentions` and `_spent:` time tracking |
 | 1.0.0 | 2026-01-09 | Initial specification |
