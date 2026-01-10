@@ -238,6 +238,47 @@ Recommended Next:
 
 ---
 
+## IDEA-011: Remote CRUD API for tasks.md
+
+**Status:** Evaluating
+
+**Problem:** Can only manage tasks from devices with direct file access. Need to create/read/update/delete tasks from mobile phone or other locations.
+
+**Concept:** Expose CRUD operations for tasks.md via API, enabling task management from anywhere.
+
+**Implementation Options:**
+1. **Cloudflare Worker** — Dedicated worker for tasks.md CRUD (similar to existing infrastructure)
+2. **Daemon Integration** — Extend existing daemon infrastructure to handle task sync
+3. **Git-based Sync** — Git commit/push on changes, pull on read (version controlled)
+
+**Possible Architecture:**
+```
+Phone App / Web UI
+       ↓
+Cloudflare Worker (API)
+       ↓
+Git repo sync / Direct file access
+       ↓
+tasks.md
+```
+
+**Features Needed:**
+- Create new task
+- Read/list tasks (with filters)
+- Update task (toggle status, edit content)
+- Delete task
+- Sync conflict resolution
+
+**Open Questions:**
+- Cloudflare Worker vs daemon vs both?
+- Git sync for version history and conflict resolution?
+- Authentication/authorization model?
+- Real-time sync vs polling?
+- Mobile app vs PWA vs existing notes app integration?
+- Obsidian mobile app as client? (Obsidian Sync or git plugin)
+
+---
+
 ## Open Questions (General)
 
 1. How many metadata types before format is too complex?
