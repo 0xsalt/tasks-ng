@@ -23,15 +23,19 @@ import { join } from 'path';
 const TASK_FILES = [
   join(process.env.HOME!, 'tasks.md'),
   // Add more task files here as needed
-  // Example: join(process.env.HOME!, 'projects/myproject/tasks.md'),
 ];
+
+type CheckboxState = ' ' | '/' | 'x' | '-' | '>' | '?';
 
 interface Task {
   description: string;
   tags: string[];
-  status: string | null;
+  modifiers: string[];
+  checkboxState: CheckboxState;
   section: string;
   file: string;
+  isUrgent: boolean;
+  isImportant: boolean;
 }
 
 function extractTags(line: string): string[] {
@@ -39,9 +43,14 @@ function extractTags(line: string): string[] {
   return matches || [];
 }
 
-function extractStatus(line: string): string | null {
-  const match = line.match(/\+(\w+)/);
-  return match ? match[1] : null;
+function extractModifiers(line: string): string[] {
+  const matches = line.match(/\+[\w-]+(?::[\w-]+)?/g);
+  return matches?.map(m => m.slice(1)) || []; // Remove + prefix
+}
+
+function extractCheckboxState(line: string): CheckboxState | null {
+  const match = line.match(/^(\s*)- \[([ /x\->?])\]/);
+  return match ? (match[2] as CheckboxState) : null;
 }
 
 function parseTasks(content: string, file: string): Task[] {
@@ -66,26 +75,50 @@ function parseTasks(content: string, file: string): Task[] {
       continue;
     }
 
-    // Parse pending tasks only
-    if (line.match(/^- \[ \]/)) {
+    // Parse tasks with any checkbox state except completed [x] and cancelled [-]
+    const checkboxState = extractCheckboxState(line);
+    if (checkboxState && checkboxState !== 'x' && checkboxState !== '-') {
       const description = line
-        .replace(/^- \[ \]/, '')
+        .replace(/^(\s*)- \[.\]/, '')
         .replace(/#[\w-]+/g, '')
-        .replace(/\+\w+/g, '')
+        .replace(/\+[\w-]+(?::[\w-]+)?/g, '')
         .replace(/_\w+:\S+/g, '')
+        .replace(/\*\*/g, '') // Remove bold markers
         .trim();
+
+      const modifiers = extractModifiers(line);
 
       tasks.push({
         description,
         tags: extractTags(line),
-        status: extractStatus(line),
+        modifiers,
+        checkboxState,
         section: currentSection,
-        file: file.split('/').pop() || file
+        file: file.split('/').pop() || file,
+        isUrgent: modifiers.includes('urgent'),
+        isImportant: modifiers.includes('important')
       });
     }
   }
 
   return tasks;
+}
+
+function getStateIcon(state: CheckboxState): string {
+  switch (state) {
+    case ' ': return '  ';  // pending
+    case '/': return '⚡';  // in progress
+    case '?': return '🚫';  // blocked
+    case '>': return '⏸️ ';  // deferred
+    default: return '  ';
+  }
+}
+
+function getEisenhowerIcon(task: Task): string {
+  if (task.isUrgent && task.isImportant) return '🔴'; // Q1: Do first
+  if (task.isImportant) return '🟡'; // Q2: Schedule
+  if (task.isUrgent) return '🟠'; // Q3: Delegate
+  return '';  // Q4: Consider dropping
 }
 
 function main() {
@@ -108,8 +141,12 @@ function main() {
   if (filter) {
     filteredTasks = allTasks.filter(t =>
       t.tags.some(tag => tag.toLowerCase().includes(filter)) ||
-      t.status?.toLowerCase() === filter ||
-      t.section.toLowerCase().includes(filter)
+      t.modifiers.some(m => m.toLowerCase().includes(filter)) ||
+      t.section.toLowerCase().includes(filter) ||
+      (filter === 'urgent' && t.isUrgent) ||
+      (filter === 'important' && t.isImportant) ||
+      (filter === 'inprogress' && t.checkboxState === '/') ||
+      (filter === 'blocked' && t.checkboxState === '?')
     );
   }
 
@@ -122,29 +159,30 @@ function main() {
   }
 
   // Display
-  console.log('\n📋 Pending Tasks\n');
+  console.log('\n📋 Active Tasks\n');
 
   if (filteredTasks.length === 0) {
-    console.log('✨ No pending tasks found');
+    console.log('✨ No active tasks found');
     if (filter) console.log(`   Filter: "${filter}"`);
     return;
   }
 
   for (const [section, tasks] of sections) {
-    const urgentCount = tasks.filter(t => t.status === 'urgent').length;
-    const inProgressCount = tasks.filter(t => t.status === 'inprogress').length;
+    const q1Count = tasks.filter(t => t.isUrgent && t.isImportant).length;
+    const inProgressCount = tasks.filter(t => t.checkboxState === '/').length;
+    const blockedCount = tasks.filter(t => t.checkboxState === '?').length;
 
     let sectionLabel = `## ${section}`;
-    if (urgentCount > 0) sectionLabel += ` 🔥`;
+    if (q1Count > 0) sectionLabel += ` 🔴`;
     if (inProgressCount > 0) sectionLabel += ` ⚡`;
+    if (blockedCount > 0) sectionLabel += ` 🚫`;
 
     console.log(sectionLabel);
 
     for (const task of tasks) {
-      let prefix = '  ';
-      if (task.status === 'urgent') prefix = '🔥';
-      else if (task.status === 'inprogress') prefix = '⚡';
-      else if (task.status === 'blocked') prefix = '🚫';
+      const stateIcon = getStateIcon(task.checkboxState);
+      const eisenhowerIcon = getEisenhowerIcon(task);
+      const prefix = eisenhowerIcon || stateIcon;
 
       const tags = task.tags.length > 0 ? ` ${task.tags.join(' ')}` : '';
       console.log(`${prefix} ${task.description}${tags}`);
@@ -152,13 +190,17 @@ function main() {
     console.log();
   }
 
-  console.log(`📊 Total: ${filteredTasks.length} pending tasks`);
+  console.log(`📊 Total: ${filteredTasks.length} active tasks`);
 
-  const urgent = filteredTasks.filter(t => t.status === 'urgent').length;
-  const inProgress = filteredTasks.filter(t => t.status === 'inprogress').length;
+  const q1 = filteredTasks.filter(t => t.isUrgent && t.isImportant).length;
+  const q2 = filteredTasks.filter(t => t.isImportant && !t.isUrgent).length;
+  const inProgress = filteredTasks.filter(t => t.checkboxState === '/').length;
+  const blocked = filteredTasks.filter(t => t.checkboxState === '?').length;
 
-  if (urgent > 0) console.log(`🔥 Urgent: ${urgent}`);
+  if (q1 > 0) console.log(`🔴 Q1 (Urgent+Important): ${q1}`);
+  if (q2 > 0) console.log(`🟡 Q2 (Important): ${q2}`);
   if (inProgress > 0) console.log(`⚡ In Progress: ${inProgress}`);
+  if (blocked > 0) console.log(`🚫 Blocked: ${blocked}`);
 }
 
 main();

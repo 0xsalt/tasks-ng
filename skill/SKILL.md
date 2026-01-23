@@ -27,7 +27,7 @@ Daily task tracking system using plain markdown files with grep-friendly metadat
 
 | File | Purpose |
 |------|---------|
-| `~/tasks.md` | Primary task file (global/cross-project) |
+| `~/tasks.md` | Primary task file (global) |
 | `<project>/tasks.md` | Project-specific tasks (when present) |
 
 ---
@@ -53,34 +53,47 @@ bun ~/.claude/commands/migrate-completed-tasks.md
 
 ## Task Format
 
+### Checkbox States
+```
+[ ] pending     [/] in progress     [x] completed
+[-] cancelled   [>] deferred        [?] blocked
+```
+
 ### Basic Structure
 ```markdown
-- [ ] Task description #tag1 #tag2 @person +status _due:2026-01-15
-- [x] Completed task #tag @alice _done:2026-01-09 _spent:45
+- [ ] Task description #tag1 #tag2 +urgent +important _due:2026-01-15
+- [/] Active task #work +continuous
+- [?] Blocked task #ops +waiting:security-review
+- [x] Completed task #tag _done:2026-01-09 _spent:45
 ```
 
 ### Metadata
 
 **Tags** (prefix `#`) — Categories for filtering:
-- `#work` `#personal` `#docs` `#tools` `#research` `#backend` `#frontend`
+- `#work` `#personal` `#pers` `#docs` `#tools` `#research` `#cna` `#pai`
 
 **Mentions** (prefix `@`) — People and projects:
 - `@alice` `@bob` — Assign to person
-- `@projectname` — Link to project (e.g., `@backend`, `@frontend`)
+- `@projectname` — Link to project
 
-**Status** (prefix `+`) — One per task:
-- `+inprogress` — Currently working on
-- `+urgent` — Needs immediate attention
-- `+blocked` — Waiting on external dependency
+**Priority** (prefix `+`) — Eisenhower matrix:
+- `+urgent +important` — Q1: Do first (crisis)
+- `+important` — Q2: Schedule (strategic)
+- `+urgent` — Q3: Delegate (interruption)
+- *(neither)* — Q4: Consider dropping
+
+**Modifiers** (prefix `+`) — Task attributes:
+- `+next` — High priority within section
+- `+continuous` — Ongoing responsibility
+- `+recurring` / `+recurring:friday` — Repeating task
+- `+waiting:X` / `+blocked:X` — Blocked on dependency
 
 **Dates** (prefix `_`) — Machine-parseable:
 - `_done:YYYY-MM-DD` — Completion date (required on complete)
 - `_due:YYYY-MM-DD` — Due date (optional)
-- `_created:YYYY-MM-DD` — Creation date (optional)
 
 **Time tracking** (prefix `_`) — Minutes spent:
 - `_spent:30` — 30 minutes spent on task
-- `_spent:120` — 2 hours (always in minutes for easy summing)
 
 ---
 
@@ -89,20 +102,28 @@ bun ~/.claude/commands/migrate-completed-tasks.md
 ### Adding Tasks
 1. Determine appropriate section in tasks.md
 2. Add task with relevant #tags
-3. No +status needed for new tasks
+3. Add `+urgent` and/or `+important` if applicable
 
 ### Working Tasks
-1. Add `+inprogress` when starting
-2. Only ONE task should be `+inprogress` at a time (focus)
-3. Remove `+inprogress` if pausing
+1. Change `[ ]` to `[/]` when starting
+2. Only ONE task `[/]` at a time (focus)
+3. Change back to `[ ]` if pausing
+
+### Blocked Tasks
+1. Change to `[?]` when blocked
+2. Add `+waiting:dependency` to specify blocker
 
 ### Completing Tasks
-1. Change `[ ]` to `[x]`
+1. Change to `[x]`
 2. Add `_done:YYYY-MM-DD`
 3. Task stays in section until migration
 
+### Cancelling/Deferring
+- `[-]` — Won't do, no longer relevant
+- `[>]` — Postponed to future
+
 ### Archival (Weekly)
-Run `migrate-completed-tasks.md` to move `[x]` tasks to Completed section.
+Run `migrate-completed-tasks.md` to move `[x]` and `[-]` tasks to Completed section.
 
 ---
 
