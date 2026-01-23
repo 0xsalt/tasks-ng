@@ -27,6 +27,7 @@
 
 ## DONE
 
+- [x] Update README for v2.0.0 with checkbox states and features [2026-01-22]
 - [x] Bump to v2.0.0 with checkbox states and Eisenhower support [2026-01-22]
 - [x] Add CLAUDE.md with branch-only development policy [2026-01-22]
 - [x] Update list-tasks.md for new states and Eisenhower display [2026-01-22]
