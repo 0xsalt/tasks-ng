@@ -9,46 +9,65 @@ A task format specification and tooling for managing tasks in Markdown files. De
 ```markdown
 ## Work
 
-- [ ] Launch user dashboard #frontend @sarah +inprogress
+- [ ] Launch user dashboard #frontend +important
     - [x] Design mockups _done:2026-01-08 _spent:120
-    - [ ] Build components #frontend _due:2026-01-20
+    - [/] Build components #frontend
     - [ ] Write tests #frontend
-- [ ] Fix payment timeout bug #backend @ops +urgent _due:2026-01-12
-- [x] Deploy monitoring stack #ops @infra _done:2026-01-09 _spent:90
+- [?] Deploy to production #ops +waiting:security-review
+- [x] Deploy monitoring stack #ops _done:2026-01-09 _spent:90
 
 ## Personal
 
 - [ ] Research home automation #research
-- [x] Renew passport #errands _done:2026-01-05
+- [>] Learn Rust #learning (deferred to Q2)
+- [-] Old project idea #ideas (no longer relevant)
 ```
 
-**Format:**
+**Checkbox States:**
+| Marker | State | Description |
+|--------|-------|-------------|
+| `[ ]` | Pending | Not started |
+| `[/]` | In Progress | Currently working on |
+| `[x]` | Completed | Done |
+| `[-]` | Cancelled | Won't do |
+| `[>]` | Deferred | Postponed |
+| `[?]` | Blocked | Waiting on dependency |
+
+**Metadata:**
 - `#tags` — categorization
 - `@mentions` — assignment
-- `+status` — state markers (urgent, inprogress, blocked)
+- `+urgent` / `+important` — Eisenhower priority (can combine)
+- `+waiting:X` — blocked on specific dependency
+- `+continuous` / `+recurring` — ongoing tasks
 - `_due:` / `_done:` — dates
 - `_spent:` — time tracking (minutes)
-- Nesting — subtasks with 4-space indent
+- Nesting — subtasks with 4-space indent (max 3 levels)
+
+## Features
+
+- **Checkbox state machine** — Six states for visual scanning without parsing
+- **Eisenhower matrix** — `+urgent` and `+important` combine for quadrant priorities
+- **Grep-friendly** — All metadata uses consistent prefixes (`#`, `@`, `+`, `_`)
+- **Nested subtasks** — Up to 3 levels with parent-child completion rules
+- **CLI tooling** — `list-tasks.md` filters by tag, status, or priority
 
 ## Status
 
-Format specification is stable. Tooling is in early development.
+Format specification v2.0.0 is stable. CLI tooling functional, parser in development.
 
 ## Documentation
 
-- [Format Specification](docs/SPEC.md) — Canonical task format reference
-- [Task Management](docs/TASK-MANAGEMENT.md) — Methodology and workflows
-- [Ideas](docs/IDEAS.md) — Feature proposals under evaluation
-- [Inspiration](docs/INSPIRATION.md) — Credits and references
+- [Format Specification](docs/SPEC.md) — Canonical reference
+- [Task Management](docs/TASK-MANAGEMENT.md) — Methodology
+- [Ideas](docs/IDEAS.md) — Feature proposals
+- [Backlog](docs/BACKLOG.md) — Current work
 
 ## Roadmap
 
-1. TypeScript/Bun CLI tools (parser, validator)
-2. Time tracking summaries
-3. Due date reminders
-4. Remote CRUD API for mobile access
-
-See [BACKLOG.md](docs/BACKLOG.md) for current work.
+1. Standalone TypeScript parser module
+2. Validation command
+3. Time tracking summaries
+4. Remote CRUD API for mobile
 
 ## License
 
