@@ -20,7 +20,7 @@ A task format specification and tooling for managing tasks in Markdown files. De
 
 - [ ] Research home automation #research
 - [>] Learn Rust #learning (deferred to Q2)
-- [-] Old project idea #ideas (no longer relevant)
+- [-] Old project idea #ideas (abandoned)
 ```
 
 **Checkbox States:**
@@ -29,7 +29,7 @@ A task format specification and tooling for managing tasks in Markdown files. De
 | `[ ]` | Pending | Not started |
 | `[/]` | In Progress | Currently working on |
 | `[x]` | Completed | Done |
-| `[-]` | Cancelled | Won't do |
+| `[-]` | Abandoned | Won't do |
 | `[>]` | Deferred | Postponed |
 | `[?]` | Blocked | Waiting on dependency |
 
