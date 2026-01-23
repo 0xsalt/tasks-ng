@@ -243,7 +243,7 @@ Tasks can be nested up to **3 levels** using 4-space indentation:
 | `~/tasks.md` | Primary task file (global) |
 | `<project>/tasks.md` | Project-specific tasks |
 
-**Note:** Location is configurable. The global (`~/`) serves as the default hub for cross-project task management.
+**Note:** Location is configurable via `TASKS_FILE` environment variable.
 
 ---
 

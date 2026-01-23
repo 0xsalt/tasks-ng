@@ -12,7 +12,7 @@ bun ~/.claude/commands/migrate-completed-tasks.md [file]
 ```
 
 ## Examples
-- `bun migrate-completed-tasks.md` - Migrate in default tasks.md
+- `bun migrate-completed-tasks.md` - Migrate in default ~/tasks.md
 - `bun migrate-completed-tasks.md ~/project/tasks.md` - Specify file
 
 ## What It Does

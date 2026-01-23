@@ -31,7 +31,7 @@
 - [x] Bump to v2.0.0 with checkbox states and Eisenhower support [2026-01-22]
 - [x] Add CLAUDE.md with branch-only development policy [2026-01-22]
 - [x] Update list-tasks.md for new states and Eisenhower display [2026-01-22]
-- [x] Fix data location to ~/tasks.md [2026-01-22]
+- [x] Fix data location default to ~/tasks.md [2026-01-22]
 - [x] Add 3-level nesting with completion semantics [2026-01-10]
 - [x] Add @mentions to format spec [2026-01-10]
 - [x] Add _spent: time tracking to format spec [2026-01-10]

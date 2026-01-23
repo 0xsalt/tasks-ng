@@ -21,7 +21,7 @@ import { readFileSync, existsSync } from 'fs';
 import { join } from 'path';
 
 const TASK_FILES = [
-  join(process.env.HOME!, 'tasks.md'),
+  process.env.TASKS_FILE || join(process.env.HOME!, 'tasks.md'),
   // Add more task files here as needed
 ];
 
