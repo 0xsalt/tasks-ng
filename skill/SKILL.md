@@ -1,11 +1,11 @@
 ---
 name: tasks
-description: Task management system for Chris and Poe. USE WHEN user mentions tasks, todos, task list, what needs to be done, add a task, show tasks, mark complete, or any task-related work.
+description: Task management skill for your DA. USE WHEN user mentions tasks, todos, task list, what needs to be done, add a task, show tasks, mark complete, or any task-related work.
 ---
 
 # Task Management Skill
 
-Daily task tracking system using plain markdown files with grep-friendly metadata.
+Daily task tracking system using plain markdown files with grep-friendly metadata. Install this skill to give your Digital Assistant (DA) the ability to manage tasks in plain-text files.
 
 ---
 

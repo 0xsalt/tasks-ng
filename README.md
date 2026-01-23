@@ -55,6 +55,10 @@ A task format specification and tooling for managing tasks in Markdown files. De
 
 Format specification v2.0.0 is stable. CLI tooling functional, parser in development.
 
+## For Digital Assistants
+
+See [skill/SKILL.md](skill/SKILL.md) for DA integration. Copy the `skill/` folder to your skills directory.
+
 ## Documentation
 
 - [Format Specification](docs/SPEC.md) — Canonical reference
