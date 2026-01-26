@@ -101,7 +101,7 @@ export default function AddFilePage() {
     <div className="p-8">
       <div className="mb-8">
         <h1 className="text-4xl font-bold text-gray-900 mb-2 flex items-center">
-          <Upload className="h-10 w-10 mr-3 text-[#2e7de9]" />
+          <Upload className="h-10 w-10 mr-3 text-[#4a6fa5]" />
           Add File
         </h1>
         <p className="text-lg text-gray-600">
@@ -111,7 +111,7 @@ export default function AddFilePage() {
 
       <div className="grid gap-6 max-w-4xl">
         {/* Upload Area */}
-        <Card className="border-l-4 border-l-[#2e7de9]">
+        <Card className="border-l-4 border-l-[#4a6fa5]">
           <CardHeader>
             <CardTitle>Upload Files</CardTitle>
           </CardHeader>
@@ -123,8 +123,8 @@ export default function AddFilePage() {
               className={`
                 border-2 border-dashed rounded-lg p-12 text-center transition-all
                 ${isDragging
-                  ? 'border-[#2e7de9] bg-[#2e7de9]/5'
-                  : 'border-gray-300 hover:border-[#2e7de9] hover:bg-gray-50'
+                  ? 'border-[#4a6fa5] bg-[#4a6fa5]/5'
+                  : 'border-gray-300 hover:border-[#4a6fa5] hover:bg-gray-50'
                 }
               `}
             >
@@ -145,7 +145,7 @@ export default function AddFilePage() {
               />
               <label
                 htmlFor="file-upload"
-                className="inline-flex items-center px-6 py-3 bg-[#2e7de9] text-white rounded-lg hover:bg-[#2e7de9]/90 cursor-pointer transition-colors"
+                className="inline-flex items-center px-6 py-3 bg-[#4a6fa5] text-white rounded-lg hover:bg-[#4a6fa5]/90 cursor-pointer transition-colors"
               >
                 <Upload className="h-4 w-4 mr-2" />
                 Choose Files
@@ -159,7 +159,7 @@ export default function AddFilePage() {
 
         {/* Upload History */}
         {uploadedFiles.length > 0 && (
-          <Card className="border-l-4 border-l-[#1e40af]">
+          <Card className="border-l-4 border-l-[#2c4a6e]">
             <CardHeader>
               <CardTitle>Upload History</CardTitle>
             </CardHeader>
@@ -172,9 +172,9 @@ export default function AddFilePage() {
                   >
                     <div className="flex items-center gap-3">
                       {file.type === 'md' ? (
-                        <FileText className="h-8 w-8 text-[#2e7de9]" />
+                        <FileText className="h-8 w-8 text-[#4a6fa5]" />
                       ) : (
-                        <Table className="h-8 w-8 text-[#33b579]" />
+                        <Table className="h-8 w-8 text-[#5a8a72]" />
                       )}
                       <div>
                         <p className="font-medium text-gray-900">{file.name}</p>
@@ -194,7 +194,7 @@ export default function AddFilePage() {
                         }
                         className={
                           file.status === "success"
-                            ? "bg-[#33b579]"
+                            ? "bg-[#5a8a72]"
                             : file.status === "uploading"
                             ? "bg-gray-500"
                             : ""
@@ -203,13 +203,13 @@ export default function AddFilePage() {
                         {file.type.toUpperCase()}
                       </Badge>
                       {file.status === "success" && (
-                        <CheckCircle className="h-6 w-6 text-[#33b579]" />
+                        <CheckCircle className="h-6 w-6 text-[#5a8a72]" />
                       )}
                       {file.status === "error" && (
-                        <XCircle className="h-6 w-6 text-[#dc2626]" />
+                        <XCircle className="h-6 w-6 text-[#8b4049]" />
                       )}
                       {file.status === "uploading" && (
-                        <Loader2 className="h-6 w-6 text-[#2e7de9] animate-spin" />
+                        <Loader2 className="h-6 w-6 text-[#4a6fa5] animate-spin" />
                       )}
                     </div>
                   </div>
@@ -227,7 +227,7 @@ export default function AddFilePage() {
           <CardContent>
             <div className="space-y-4 text-sm text-gray-600">
               <div className="flex gap-3">
-                <div className="flex-shrink-0 w-6 h-6 rounded-full bg-[#2e7de9] text-white flex items-center justify-center text-xs font-bold">
+                <div className="flex-shrink-0 w-6 h-6 rounded-full bg-[#4a6fa5] text-white flex items-center justify-center text-xs font-bold">
                   1
                 </div>
                 <div>
@@ -236,7 +236,7 @@ export default function AddFilePage() {
                 </div>
               </div>
               <div className="flex gap-3">
-                <div className="flex-shrink-0 w-6 h-6 rounded-full bg-[#2e7de9] text-white flex items-center justify-center text-xs font-bold">
+                <div className="flex-shrink-0 w-6 h-6 rounded-full bg-[#4a6fa5] text-white flex items-center justify-center text-xs font-bold">
                   2
                 </div>
                 <div>
@@ -245,7 +245,7 @@ export default function AddFilePage() {
                 </div>
               </div>
               <div className="flex gap-3">
-                <div className="flex-shrink-0 w-6 h-6 rounded-full bg-[#2e7de9] text-white flex items-center justify-center text-xs font-bold">
+                <div className="flex-shrink-0 w-6 h-6 rounded-full bg-[#4a6fa5] text-white flex items-center justify-center text-xs font-bold">
                   3
                 </div>
                 <div>
@@ -254,7 +254,7 @@ export default function AddFilePage() {
                 </div>
               </div>
               <div className="flex gap-3">
-                <div className="flex-shrink-0 w-6 h-6 rounded-full bg-[#2e7de9] text-white flex items-center justify-center text-xs font-bold">
+                <div className="flex-shrink-0 w-6 h-6 rounded-full bg-[#4a6fa5] text-white flex items-center justify-center text-xs font-bold">
                   4
                 </div>
                 <div>

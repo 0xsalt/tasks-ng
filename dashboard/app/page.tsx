@@ -111,9 +111,9 @@ export default function OverviewPage() {
   return (
     <div className="p-4 lg:p-8">
       {/* Hero Section - compact on mobile */}
-      <div className="mb-6 lg:mb-12 rounded-2xl bg-gradient-to-br from-[#2e7de9]/10 via-[#1e40af]/5 to-[#33b579]/10 p-6 lg:p-12 border border-[#2e7de9]/20">
+      <div className="mb-6 lg:mb-12 rounded-2xl bg-gradient-to-br from-[#4a6fa5]/15 via-[#3b82f6]/10 to-[#2c4a6e]/15 p-6 lg:p-12 border border-[#4a6fa5]/20">
         <div className="max-w-4xl">
-          <h2 className="text-xs lg:text-sm font-semibold text-[#2e7de9] uppercase tracking-wide mb-1 lg:mb-2">
+          <h2 className="text-xs lg:text-sm font-semibold text-[#4a6fa5] uppercase tracking-wide mb-1 lg:mb-2">
             Live Task Dashboard
           </h2>
           <h1 className="text-3xl lg:text-5xl font-bold text-gray-900 mb-2 lg:mb-4">
@@ -124,7 +124,7 @@ export default function OverviewPage() {
           </p>
           {isLoading ? (
             <div className="inline-flex items-center gap-2 bg-white rounded-lg px-6 py-4 shadow-lg border">
-              <Loader2 className="h-5 w-5 animate-spin text-[#2e7de9]" />
+              <Loader2 className="h-5 w-5 animate-spin text-[#4a6fa5]" />
               <span className="text-gray-600">Loading tasks...</span>
             </div>
           ) : error ? (
@@ -133,8 +133,8 @@ export default function OverviewPage() {
               <span className="text-red-600">Could not load tasks</span>
             </div>
           ) : (
-            <div className="inline-block bg-white rounded-lg px-6 py-4 shadow-lg border border-[#33b579]/30">
-              <p className="text-3xl font-bold text-[#33b579]">
+            <div className="inline-block bg-white rounded-lg px-6 py-4 shadow-lg border border-[#5a8a72]/30">
+              <p className="text-3xl font-bold text-[#5a8a72]">
                 {stats.active} Active Tasks
               </p>
               <p className="text-sm text-gray-600 mt-1">
@@ -151,10 +151,10 @@ export default function OverviewPage() {
       {inProgressTask && (
         <div className="mb-6 lg:mb-8">
           <h2 className="text-xl lg:text-2xl font-bold text-gray-900 mb-3 lg:mb-4 flex items-center gap-2">
-            <Zap className="h-5 w-5 lg:h-6 lg:w-6 text-[#2e7de9]" />
+            <Zap className="h-5 w-5 lg:h-6 lg:w-6 text-[#4a6fa5]" />
             Current Focus
           </h2>
-          <Card className="border-l-4 border-l-[#2e7de9] bg-gradient-to-r from-[#2e7de9]/5 to-transparent">
+          <Card className="border-l-4 border-l-[#4a6fa5] bg-gradient-to-r from-[#4a6fa5]/5 to-transparent">
             <CardContent className="pt-6">
               <div className="flex items-start justify-between">
                 <div>
@@ -169,7 +169,7 @@ export default function OverviewPage() {
                       {inProgressTask.section}
                     </span>
                     {inProgressTask.tags.map(tag => (
-                      <span key={tag} className="text-[#2e7de9]">#{tag}</span>
+                      <span key={tag} className="text-[#4a6fa5]">#{tag}</span>
                     ))}
                     {inProgressTask.dates.due && (
                       <span className="flex items-center gap-1 text-orange-600">
@@ -201,7 +201,7 @@ export default function OverviewPage() {
           ) : (
             <>
               {/* Total Tasks */}
-              <Card className="border-l-4 border-l-[#2e7de9] hover:shadow-xl transition-shadow">
+              <Card className="border-l-4 border-l-[#4a6fa5] hover:shadow-xl transition-shadow">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-sm font-medium text-gray-600 flex items-center gap-2">
                     <CheckSquare className="h-4 w-4" />
@@ -247,7 +247,7 @@ export default function OverviewPage() {
               </Card>
 
               {/* In Progress */}
-              <Card className="border-l-4 border-l-[#33b579] hover:shadow-xl transition-shadow">
+              <Card className="border-l-4 border-l-[#5a8a72] hover:shadow-xl transition-shadow">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-sm font-medium text-gray-600 flex items-center gap-2">
                     <Clock className="h-4 w-4" />
@@ -257,7 +257,7 @@ export default function OverviewPage() {
                 <CardContent>
                   <div className="space-y-2">
                     <div className="flex items-baseline justify-between">
-                      <span className="text-3xl font-bold text-[#33b579]">
+                      <span className="text-3xl font-bold text-[#5a8a72]">
                         {stats.byStatus.in_progress}
                       </span>
                       <Badge variant="success">Active</Badge>
@@ -270,7 +270,7 @@ export default function OverviewPage() {
               </Card>
 
               {/* Schedule (Q2) */}
-              <Card className="border-l-4 border-l-[#f0a020] hover:shadow-xl transition-shadow">
+              <Card className="border-l-4 border-l-[#b8860b] hover:shadow-xl transition-shadow">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-sm font-medium text-gray-600 flex items-center gap-2">
                     <Layers className="h-4 w-4" />
@@ -280,7 +280,7 @@ export default function OverviewPage() {
                 <CardContent>
                   <div className="space-y-2">
                     <div className="flex items-baseline justify-between">
-                      <span className="text-3xl font-bold text-[#f0a020]">
+                      <span className="text-3xl font-bold text-[#b8860b]">
                         {eisenhowerCounts?.Q2 ?? 0}
                       </span>
                       <Badge variant="warning">Important</Badge>
@@ -373,7 +373,7 @@ export default function OverviewPage() {
                         <div className="flex items-center gap-2 mt-1 text-xs text-gray-500">
                           <span className="bg-gray-100 px-2 py-0.5 rounded">{task.section}</span>
                           {task.tags.slice(0, 3).map(tag => (
-                            <span key={tag} className="text-[#2e7de9]">#{tag}</span>
+                            <span key={tag} className="text-[#4a6fa5]">#{tag}</span>
                           ))}
                           {task.isUrgent && <Badge variant="destructive" className="text-[10px]">urgent</Badge>}
                           {task.isImportant && <Badge variant="warning" className="text-[10px]">important</Badge>}
@@ -406,7 +406,7 @@ export default function OverviewPage() {
           <Card className="hover:shadow-lg transition-shadow">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <CheckSquare className="h-5 w-5 text-[#2e7de9]" />
+                <CheckSquare className="h-5 w-5 text-[#4a6fa5]" />
                 Checkbox States
               </CardTitle>
             </CardHeader>
@@ -444,29 +444,29 @@ export default function OverviewPage() {
           <Card className="hover:shadow-lg transition-shadow">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Hash className="h-5 w-5 text-[#1e40af]" />
+                <Hash className="h-5 w-5 text-[#2c4a6e]" />
                 Metadata Types
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-2 text-sm">
                 <div className="flex items-center gap-2">
-                  <Hash className="h-4 w-4 text-[#2e7de9]" />
+                  <Hash className="h-4 w-4 text-[#4a6fa5]" />
                   <span className="text-gray-600 font-mono">#tags</span>
                   <span className="text-gray-500">- categorization</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <AtSign className="h-4 w-4 text-[#2e7de9]" />
+                  <AtSign className="h-4 w-4 text-[#4a6fa5]" />
                   <span className="text-gray-600 font-mono">@mentions</span>
                   <span className="text-gray-500">- assignment</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Plus className="h-4 w-4 text-[#2e7de9]" />
+                  <Plus className="h-4 w-4 text-[#4a6fa5]" />
                   <span className="text-gray-600 font-mono">+modifiers</span>
                   <span className="text-gray-500">- priority</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Calendar className="h-4 w-4 text-[#2e7de9]" />
+                  <Calendar className="h-4 w-4 text-[#4a6fa5]" />
                   <span className="text-gray-600 font-mono">_dates</span>
                   <span className="text-gray-500">- tracking</span>
                 </div>
@@ -478,12 +478,12 @@ export default function OverviewPage() {
           <Card className="hover:shadow-lg transition-shadow">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Layers className="h-5 w-5 text-[#33b579]" />
+                <Layers className="h-5 w-5 text-[#5a8a72]" />
                 Nesting Support
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-2xl font-bold text-[#33b579] mb-2">3 Levels</p>
+              <p className="text-2xl font-bold text-[#5a8a72] mb-2">3 Levels</p>
               <div className="space-y-2 text-sm text-gray-600">
                 <p>Subtasks use 4-space indentation</p>
                 <p className="font-mono text-xs bg-gray-50 p-2 rounded">

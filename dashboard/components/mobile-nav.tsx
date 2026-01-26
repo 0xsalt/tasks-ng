@@ -30,8 +30,8 @@ export function MobileNav() {
                 className={cn(
                   "flex flex-col items-center justify-center flex-1 h-full min-w-[64px] py-2 transition-colors touch-manipulation",
                   isActive
-                    ? "text-[#2e7de9]"
-                    : "text-gray-500 active:text-[#2e7de9]"
+                    ? "text-[#4a6fa5]"
+                    : "text-gray-500 active:text-[#4a6fa5]"
                 )}
               >
                 <item.icon className={cn("h-6 w-6 mb-1", isActive && "stroke-[2.5px]")} />
@@ -45,7 +45,7 @@ export function MobileNav() {
           {/* Menu button */}
           <button
             onClick={() => setMenuOpen(!menuOpen)}
-            className="flex flex-col items-center justify-center flex-1 h-full min-w-[64px] py-2 text-gray-500 active:text-[#2e7de9] touch-manipulation"
+            className="flex flex-col items-center justify-center flex-1 h-full min-w-[64px] py-2 text-gray-500 active:text-[#4a6fa5] touch-manipulation"
           >
             <Menu className="h-6 w-6 mb-1" />
             <span className="text-xs font-medium">More</span>

@@ -88,9 +88,9 @@ export default function FilePage() {
         <div>
           <h1 className="text-4xl font-bold text-gray-900 mb-2 flex items-center">
             {isCSV ? (
-              <TableIcon className="h-10 w-10 mr-3 text-[#33b579]" />
+              <TableIcon className="h-10 w-10 mr-3 text-[#5a8a72]" />
             ) : (
-              <FileText className="h-10 w-10 mr-3 text-[#2e7de9]" />
+              <FileText className="h-10 w-10 mr-3 text-[#4a6fa5]" />
             )}
             {file.name}
           </h1>
@@ -102,7 +102,7 @@ export default function FilePage() {
           {!isEditing ? (
             <Button
               onClick={() => setIsEditing(true)}
-              className="bg-[#2e7de9] hover:bg-[#2e7de9]/90"
+              className="bg-[#4a6fa5] hover:bg-[#4a6fa5]/90"
             >
               <Edit2 className="h-4 w-4 mr-2" />
               Edit
@@ -123,7 +123,7 @@ export default function FilePage() {
               <Button
                 onClick={handleSave}
                 disabled={isSaving}
-                className="bg-[#33b579] hover:bg-[#33b579]/90"
+                className="bg-[#5a8a72] hover:bg-[#5a8a72]/90"
               >
                 <Save className="h-4 w-4 mr-2" />
                 {isSaving ? "Saving..." : "Save"}
@@ -134,18 +134,18 @@ export default function FilePage() {
       </div>
 
       {saveStatus === "success" && (
-        <div className="mb-4 p-4 bg-[#33b579]/10 text-[#33b579] rounded-lg">
+        <div className="mb-4 p-4 bg-[#5a8a72]/10 text-[#5a8a72] rounded-lg">
           File saved successfully!
         </div>
       )}
 
       {saveStatus === "error" && (
-        <div className="mb-4 p-4 bg-[#dc2626]/10 text-[#dc2626] rounded-lg">
+        <div className="mb-4 p-4 bg-[#8b4049]/10 text-[#8b4049] rounded-lg">
           Error saving file. Please try again.
         </div>
       )}
 
-      <Card className="border-l-4 border-l-[#2e7de9]">
+      <Card className="border-l-4 border-l-[#4a6fa5]">
         <CardHeader>
           <CardTitle>Content</CardTitle>
         </CardHeader>
@@ -154,7 +154,7 @@ export default function FilePage() {
             <textarea
               value={editedContent}
               onChange={(e) => setEditedContent(e.target.value)}
-              className="w-full h-[600px] p-4 border rounded-lg font-mono text-sm resize-y focus:outline-none focus:ring-2 focus:ring-[#2e7de9]"
+              className="w-full h-[600px] p-4 border rounded-lg font-mono text-sm resize-y focus:outline-none focus:ring-2 focus:ring-[#4a6fa5]"
             />
           ) : (
             <>

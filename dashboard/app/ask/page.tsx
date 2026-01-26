@@ -71,7 +71,7 @@ export default function AskPage() {
     <div className="p-8">
       <div className="mb-8">
         <h1 className="text-4xl font-bold text-gray-900 mb-2 flex items-center">
-          <MessageSquare className="h-10 w-10 mr-3 text-[#2e7de9]" />
+          <MessageSquare className="h-10 w-10 mr-3 text-[#4a6fa5]" />
           Ask AI
         </h1>
         <p className="text-lg text-gray-600">
@@ -79,11 +79,11 @@ export default function AskPage() {
         </p>
       </div>
 
-      <Card className="border-l-4 border-l-[#2e7de9] max-w-4xl mx-auto">
+      <Card className="border-l-4 border-l-[#4a6fa5] max-w-4xl mx-auto">
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
             <span>Chat Interface</span>
-            <Badge variant="primary" className="bg-[#2e7de9]">
+            <Badge variant="primary" className="bg-[#4a6fa5]">
               Claude Haiku 4.5
             </Badge>
           </CardTitle>
@@ -94,7 +94,7 @@ export default function AskPage() {
             {messages.length === 0 ? (
               <div className="flex items-center justify-center h-full text-gray-500">
                 <div className="text-center">
-                  <Bot className="h-12 w-12 mx-auto mb-4 text-[#2e7de9] opacity-50" />
+                  <Bot className="h-12 w-12 mx-auto mb-4 text-[#4a6fa5] opacity-50" />
                   <p>Start a conversation by typing a message below</p>
                 </div>
               </div>
@@ -108,7 +108,7 @@ export default function AskPage() {
                 >
                   {message.role === "assistant" && (
                     <div className="flex-shrink-0">
-                      <div className="w-8 h-8 rounded-full bg-[#2e7de9] flex items-center justify-center">
+                      <div className="w-8 h-8 rounded-full bg-[#4a6fa5] flex items-center justify-center">
                         <Bot className="h-5 w-5 text-white" />
                       </div>
                     </div>
@@ -116,7 +116,7 @@ export default function AskPage() {
                   <div
                     className={`rounded-lg px-4 py-3 max-w-[80%] ${
                       message.role === "user"
-                        ? "bg-[#2e7de9] text-white"
+                        ? "bg-[#4a6fa5] text-white"
                         : "bg-white border border-gray-200"
                     }`}
                   >
@@ -135,7 +135,7 @@ export default function AskPage() {
                   </div>
                   {message.role === "user" && (
                     <div className="flex-shrink-0">
-                      <div className="w-8 h-8 rounded-full bg-[#1e40af] flex items-center justify-center">
+                      <div className="w-8 h-8 rounded-full bg-[#2c4a6e] flex items-center justify-center">
                         <User className="h-5 w-5 text-white" />
                       </div>
                     </div>
@@ -146,15 +146,15 @@ export default function AskPage() {
             {isLoading && (
               <div className="flex gap-3 justify-start">
                 <div className="flex-shrink-0">
-                  <div className="w-8 h-8 rounded-full bg-[#2e7de9] flex items-center justify-center">
+                  <div className="w-8 h-8 rounded-full bg-[#4a6fa5] flex items-center justify-center">
                     <Bot className="h-5 w-5 text-white" />
                   </div>
                 </div>
                 <div className="bg-white border border-gray-200 rounded-lg px-4 py-3">
                   <div className="flex gap-1">
-                    <div className="w-2 h-2 bg-[#2e7de9] rounded-full animate-bounce" />
-                    <div className="w-2 h-2 bg-[#2e7de9] rounded-full animate-bounce delay-100" />
-                    <div className="w-2 h-2 bg-[#2e7de9] rounded-full animate-bounce delay-200" />
+                    <div className="w-2 h-2 bg-[#4a6fa5] rounded-full animate-bounce" />
+                    <div className="w-2 h-2 bg-[#4a6fa5] rounded-full animate-bounce delay-100" />
+                    <div className="w-2 h-2 bg-[#4a6fa5] rounded-full animate-bounce delay-200" />
                   </div>
                 </div>
               </div>
@@ -169,12 +169,12 @@ export default function AskPage() {
               onChange={(e) => setInput(e.target.value)}
               placeholder="Type your message..."
               disabled={isLoading}
-              className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2e7de9] focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
+              className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4a6fa5] focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
             />
             <button
               type="submit"
               disabled={!input.trim() || isLoading}
-              className="px-6 py-3 bg-[#2e7de9] text-white rounded-lg hover:bg-[#2e7de9]/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+              className="px-6 py-3 bg-[#4a6fa5] text-white rounded-lg hover:bg-[#4a6fa5]/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
             >
               <Send className="h-4 w-4" />
               Send
