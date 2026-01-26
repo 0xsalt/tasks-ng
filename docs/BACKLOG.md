@@ -8,7 +8,7 @@
 
 ## NOW
 
-- [ ] Make current dashboard dynamic - connect to actual task data
+- [ ] Go mobile-first PWA - quick capture focus
 
 ## BACKLOG
 
@@ -55,6 +55,7 @@
 
 ## DONE
 
+- [x] Make dashboard dynamic - live data from ~/tasks.md via API [2026-01-26]
 - [x] Build CRUD API with parser module, file locking, backup system [2026-01-26]
 - [x] Update README for v2.0.0 with checkbox states and features [2026-01-22]
 - [x] Bump to v2.0.0 with checkbox states and Eisenhower support [2026-01-22]
