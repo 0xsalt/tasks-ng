@@ -17,6 +17,7 @@ import {
   Loader2
 } from "lucide-react"
 import { useTasks, useEisenhower, computeTaskStats, type Task } from "@/lib/hooks/use-tasks"
+import { useEffect, useCallback } from "react"
 
 function TaskStatusBadge({ status }: { status: Task['status'] }) {
   const variants: Record<Task['status'], { variant: "default" | "secondary" | "destructive" | "success" | "primary" | "warning", label: string }> = {
@@ -75,8 +76,19 @@ function ErrorDisplay({ message }: { message: string }) {
 }
 
 export default function OverviewPage() {
-  const { tasks, isLoading: tasksLoading, error: tasksError } = useTasks({ flat: true })
-  const { counts: eisenhowerCounts, isLoading: eisenhowerLoading, error: eisenhowerError } = useEisenhower()
+  const { tasks, isLoading: tasksLoading, error: tasksError, refetch: refetchTasks } = useTasks({ flat: true })
+  const { counts: eisenhowerCounts, isLoading: eisenhowerLoading, error: eisenhowerError, refetch: refetchMatrix } = useEisenhower()
+
+  // Listen for quick capture task creation
+  const handleTaskCreated = useCallback(() => {
+    refetchTasks()
+    refetchMatrix()
+  }, [refetchTasks, refetchMatrix])
+
+  useEffect(() => {
+    window.addEventListener('taskCreated', handleTaskCreated)
+    return () => window.removeEventListener('taskCreated', handleTaskCreated)
+  }, [handleTaskCreated])
 
   const stats = computeTaskStats(tasks)
   const isLoading = tasksLoading || eisenhowerLoading
@@ -97,17 +109,17 @@ export default function OverviewPage() {
   )
 
   return (
-    <div className="p-8">
-      {/* Hero Section */}
-      <div className="mb-12 rounded-2xl bg-gradient-to-br from-[#2e7de9]/10 via-[#9854f1]/5 to-[#33b579]/10 p-12 border border-[#2e7de9]/20">
+    <div className="p-4 lg:p-8">
+      {/* Hero Section - compact on mobile */}
+      <div className="mb-6 lg:mb-12 rounded-2xl bg-gradient-to-br from-[#2e7de9]/10 via-[#9854f1]/5 to-[#33b579]/10 p-6 lg:p-12 border border-[#2e7de9]/20">
         <div className="max-w-4xl">
-          <h2 className="text-sm font-semibold text-[#2e7de9] uppercase tracking-wide mb-2">
+          <h2 className="text-xs lg:text-sm font-semibold text-[#2e7de9] uppercase tracking-wide mb-1 lg:mb-2">
             Live Task Dashboard
           </h2>
-          <h1 className="text-5xl font-bold text-gray-900 mb-4">
+          <h1 className="text-3xl lg:text-5xl font-bold text-gray-900 mb-2 lg:mb-4">
             tasks-ng
           </h1>
-          <p className="text-xl text-gray-600 mb-6">
+          <p className="text-base lg:text-xl text-gray-600 mb-4 lg:mb-6">
             Real-time view of ~/tasks.md
           </p>
           {isLoading ? (
@@ -137,9 +149,9 @@ export default function OverviewPage() {
 
       {/* Current Focus */}
       {inProgressTask && (
-        <div className="mb-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-            <Zap className="h-6 w-6 text-[#2e7de9]" />
+        <div className="mb-6 lg:mb-8">
+          <h2 className="text-xl lg:text-2xl font-bold text-gray-900 mb-3 lg:mb-4 flex items-center gap-2">
+            <Zap className="h-5 w-5 lg:h-6 lg:w-6 text-[#2e7de9]" />
             Current Focus
           </h2>
           <Card className="border-l-4 border-l-[#2e7de9] bg-gradient-to-r from-[#2e7de9]/5 to-transparent">
@@ -175,9 +187,9 @@ export default function OverviewPage() {
       )}
 
       {/* Key Metrics Grid */}
-      <div className="mb-8">
-        <h2 className="text-2xl font-bold text-gray-900 mb-4">Task Overview</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="mb-6 lg:mb-8">
+        <h2 className="text-xl lg:text-2xl font-bold text-gray-900 mb-3 lg:mb-4">Task Overview</h2>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-6">
 
           {isLoading ? (
             <>
@@ -286,9 +298,9 @@ export default function OverviewPage() {
 
       {/* Eisenhower Matrix */}
       {!isLoading && !error && eisenhowerCounts && (
-        <div className="mb-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Eisenhower Matrix</h2>
-          <div className="grid grid-cols-2 gap-4">
+        <div className="mb-6 lg:mb-8">
+          <h2 className="text-xl lg:text-2xl font-bold text-gray-900 mb-3 lg:mb-4">Eisenhower Matrix</h2>
+          <div className="grid grid-cols-2 gap-2 lg:gap-4">
             <Card className="bg-red-50 border-red-200">
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium text-red-800">
@@ -342,8 +354,8 @@ export default function OverviewPage() {
 
       {/* Active Tasks List */}
       {!isLoading && !error && activeTasks.length > 0 && (
-        <div className="mb-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Active Tasks</h2>
+        <div className="mb-6 lg:mb-8">
+          <h2 className="text-xl lg:text-2xl font-bold text-gray-900 mb-3 lg:mb-4">Active Tasks</h2>
           <Card>
             <CardContent className="pt-6">
               <div className="space-y-3">
@@ -385,8 +397,8 @@ export default function OverviewPage() {
         </div>
       )}
 
-      {/* Format Specifications Grid */}
-      <div className="mb-8">
+      {/* Format Specifications Grid - hidden on mobile for cleaner quick capture experience */}
+      <div className="hidden lg:block mb-8">
         <h2 className="text-2xl font-bold text-gray-900 mb-4">Format Reference</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 
