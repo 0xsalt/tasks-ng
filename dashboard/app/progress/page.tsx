@@ -90,14 +90,14 @@ export default async function BacklogPage() {
     {
       title: "NOW",
       items: backlogData.now,
-      borderColor: "border-l-[#4a6fa5]",
+      borderColor: "border-l-[#1a759f]",
       badgeVariant: "primary" as const,
       description: "Current work in progress"
     },
     {
       title: "BACKLOG",
       items: backlogData.backlog,
-      borderColor: "border-l-[#2c4a6e]",
+      borderColor: "border-l-[#1e6091]",
       badgeVariant: "default" as const,
       description: "Queued for development"
     },
@@ -111,7 +111,7 @@ export default async function BacklogPage() {
     {
       title: "DONE",
       items: backlogData.done,
-      borderColor: "border-l-[#5a8a72]",
+      borderColor: "border-l-[#76c893]",
       badgeVariant: "success" as const,
       description: "Completed tasks"
     }
@@ -151,7 +151,7 @@ export default async function BacklogPage() {
                       >
                         <div className="flex items-start gap-2">
                           {column.title === "DONE" && (
-                            <CheckCircle2 className="h-4 w-4 text-[#5a8a72] mt-0.5 flex-shrink-0" />
+                            <CheckCircle2 className="h-4 w-4 text-[#76c893] mt-0.5 flex-shrink-0" />
                           )}
                           <div className="flex-1 min-w-0">
                             <p className="text-sm text-gray-900 break-words">
