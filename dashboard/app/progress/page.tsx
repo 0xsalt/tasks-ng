@@ -4,6 +4,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { CheckCircle2 } from "lucide-react"
 
+// Force dynamic rendering - this page reads from filesystem at runtime
+export const dynamic = 'force-dynamic'
+
 interface BacklogItem {
   text: string
   completionDate?: string
@@ -71,9 +74,17 @@ function parseBacklogMarkdown(content: string): BacklogData {
 
 export default async function BacklogPage() {
   // Read and parse BACKLOG.md server-side
-  const backlogPath = path.join(process.cwd(), "..", "docs", "BACKLOG.md")
-  const content = await fs.readFile(backlogPath, "utf-8")
-  const backlogData = parseBacklogMarkdown(content)
+  // Use env var for Docker deployment, fallback to relative path for local dev
+  const backlogPath = process.env.BACKLOG_PATH || path.join(process.cwd(), "..", "docs", "BACKLOG.md")
+
+  let backlogData: BacklogData = { now: [], backlog: [], roadmap: [], done: [] }
+  try {
+    const content = await fs.readFile(backlogPath, "utf-8")
+    backlogData = parseBacklogMarkdown(content)
+  } catch (error) {
+    console.error("Failed to read BACKLOG.md:", error)
+    // Continue with empty data - page will show "No items"
+  }
 
   const columns = [
     {
@@ -86,7 +97,7 @@ export default async function BacklogPage() {
     {
       title: "BACKLOG",
       items: backlogData.backlog,
-      borderColor: "border-l-[#a626a4]",
+      borderColor: "border-l-[#1e40af]",
       badgeVariant: "default" as const,
       description: "Queued for development"
     },

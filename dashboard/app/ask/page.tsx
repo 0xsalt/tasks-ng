@@ -135,7 +135,7 @@ export default function AskPage() {
                   </div>
                   {message.role === "user" && (
                     <div className="flex-shrink-0">
-                      <div className="w-8 h-8 rounded-full bg-[#9854f1] flex items-center justify-center">
+                      <div className="w-8 h-8 rounded-full bg-[#1e40af] flex items-center justify-center">
                         <User className="h-5 w-5 text-white" />
                       </div>
                     </div>

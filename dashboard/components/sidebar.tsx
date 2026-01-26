@@ -68,9 +68,9 @@ export function Sidebar() {
   }, [])
 
   return (
-    <div className="flex h-screen w-64 flex-col fixed left-0 top-0 bg-gradient-to-b from-[#2e7de9]/5 to-[#9854f1]/5 border-r">
+    <div className="flex h-screen w-64 flex-col fixed left-0 top-0 bg-gradient-to-b from-[#2e7de9]/5 to-[#1e40af]/5 border-r">
       <div className="flex h-16 items-center px-6 border-b">
-        <h1 className="text-2xl font-bold bg-gradient-to-r from-[#2e7de9] to-[#9854f1] bg-clip-text text-transparent">
+        <h1 className="text-2xl font-bold bg-gradient-to-r from-[#2e7de9] to-[#1e40af] bg-clip-text text-transparent">
           tasks-ng
         </h1>
       </div>
