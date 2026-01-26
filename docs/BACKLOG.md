@@ -8,10 +8,13 @@
 
 ## NOW
 
-- [ ] Deploy updated skill to ~/.claude/skills/tasks/
+- [ ] Make current dashboard dynamic - connect to actual task data
 
 ## BACKLOG
 
+- [ ] Investigate optimistic locking for concurrent CRUD writes (design note: rapid parallel inserts can overlap)
+- [ ] Go mobile-first PWA - quick capture focus
+- [ ] Deploy updated skill to ~/.claude/skills/tasks/
 - [ ] Standalone TypeScript parser module (importable, not just CLI)
 - [ ] Validation command (check tasks.md against spec)
 - [ ] migrate-completed-tasks.md update for new checkbox states
@@ -20,13 +23,39 @@
 
 ## ROADMAP
 
-- [ ] Remote CRUD API for mobile access (IDEA-011)
+### Web UI - Core Task CRUD
+- [ ] Live task list from tasks.md - parse and display with filters
+- [ ] Create/edit tasks via form - generate valid format, write back
+- [ ] Inline editing - click task to edit in place
+- [ ] Drag-drop reordering - move between NOW/BACKLOG/DONE
+
+### Web UI - Visualization
+- [ ] Eisenhower matrix view - 4-quadrant visual grid
+- [ ] Kanban board - columns by status or section
+- [ ] Calendar view - tasks by _due: date
+- [ ] Time tracking charts - burndown, time by tag
+
+### Web UI - Mobile/PWA
+- [ ] Touch-optimized PWA - offline-first with sync
+- [ ] Quick capture widget - add tasks fast on mobile
+
+### Web UI - API Layer
+- [ ] WebSocket sync - multi-device real-time
+
+### Web UI - AI-Enhanced
+- [ ] Natural language task entry - "Remind me to call Bob Tuesday"
+- [ ] Web voice interface - record audio, transcribe to file, process as updates
+- [ ] Smart prioritization - suggest Eisenhower quadrant
+- [ ] Task decomposition - break down large tasks
+
+### Other
 - [ ] Task dependencies (blocked-by relationships)
 - [ ] Project-specific task file discovery
 - [ ] Integration with private-journal for task completion logging
 
 ## DONE
 
+- [x] Build CRUD API with parser module, file locking, backup system [2026-01-26]
 - [x] Update README for v2.0.0 with checkbox states and features [2026-01-22]
 - [x] Bump to v2.0.0 with checkbox states and Eisenhower support [2026-01-22]
 - [x] Add CLAUDE.md with branch-only development policy [2026-01-22]
