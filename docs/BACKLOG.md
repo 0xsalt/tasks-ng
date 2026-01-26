@@ -8,12 +8,11 @@
 
 ## NOW
 
-- [ ] Go mobile-first PWA - quick capture focus
+- [ ] Standalone TypeScript parser module (importable, not just CLI)
 
 ## BACKLOG
 
 - [ ] Investigate optimistic locking for concurrent CRUD writes (design note: rapid parallel inserts can overlap)
-- [ ] Go mobile-first PWA - quick capture focus
 - [ ] Deploy updated skill to ~/.claude/skills/tasks/
 - [ ] Standalone TypeScript parser module (importable, not just CLI)
 - [ ] Validation command (check tasks.md against spec)
@@ -55,6 +54,7 @@
 
 ## DONE
 
+- [x] Go mobile-first PWA with quick capture FAB, bottom nav, responsive layout [2026-01-26]
 - [x] Make dashboard dynamic - live data from ~/tasks.md via API [2026-01-26]
 - [x] Build CRUD API with parser module, file locking, backup system [2026-01-26]
 - [x] Update README for v2.0.0 with checkbox states and features [2026-01-22]
