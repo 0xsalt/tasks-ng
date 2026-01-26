@@ -88,9 +88,9 @@ export default function FilePage() {
         <div>
           <h1 className="text-4xl font-bold text-gray-900 mb-2 flex items-center">
             {isCSV ? (
-              <TableIcon className="h-10 w-10 mr-3 text-[#5a8a72]" />
+              <TableIcon className="h-10 w-10 mr-3 text-[#76c893]" />
             ) : (
-              <FileText className="h-10 w-10 mr-3 text-[#4a6fa5]" />
+              <FileText className="h-10 w-10 mr-3 text-[#1a759f]" />
             )}
             {file.name}
           </h1>
@@ -102,7 +102,7 @@ export default function FilePage() {
           {!isEditing ? (
             <Button
               onClick={() => setIsEditing(true)}
-              className="bg-[#4a6fa5] hover:bg-[#4a6fa5]/90"
+              className="bg-[#1a759f] hover:bg-[#1a759f]/90"
             >
               <Edit2 className="h-4 w-4 mr-2" />
               Edit
@@ -123,7 +123,7 @@ export default function FilePage() {
               <Button
                 onClick={handleSave}
                 disabled={isSaving}
-                className="bg-[#5a8a72] hover:bg-[#5a8a72]/90"
+                className="bg-[#76c893] hover:bg-[#76c893]/90"
               >
                 <Save className="h-4 w-4 mr-2" />
                 {isSaving ? "Saving..." : "Save"}
@@ -134,7 +134,7 @@ export default function FilePage() {
       </div>
 
       {saveStatus === "success" && (
-        <div className="mb-4 p-4 bg-[#5a8a72]/10 text-[#5a8a72] rounded-lg">
+        <div className="mb-4 p-4 bg-[#76c893]/10 text-[#76c893] rounded-lg">
           File saved successfully!
         </div>
       )}
@@ -145,7 +145,7 @@ export default function FilePage() {
         </div>
       )}
 
-      <Card className="border-l-4 border-l-[#4a6fa5]">
+      <Card className="border-l-4 border-l-[#1a759f]">
         <CardHeader>
           <CardTitle>Content</CardTitle>
         </CardHeader>
@@ -154,7 +154,7 @@ export default function FilePage() {
             <textarea
               value={editedContent}
               onChange={(e) => setEditedContent(e.target.value)}
-              className="w-full h-[600px] p-4 border rounded-lg font-mono text-sm resize-y focus:outline-none focus:ring-2 focus:ring-[#4a6fa5]"
+              className="w-full h-[600px] p-4 border rounded-lg font-mono text-sm resize-y focus:outline-none focus:ring-2 focus:ring-[#1a759f]"
             />
           ) : (
             <>

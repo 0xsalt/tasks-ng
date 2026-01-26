@@ -68,9 +68,9 @@ export function Sidebar() {
   }, [])
 
   return (
-    <div className="flex h-screen w-64 flex-col fixed left-0 top-0 bg-gradient-to-b from-[#4a6fa5]/5 to-[#2c4a6e]/5 border-r">
+    <div className="flex h-screen w-64 flex-col fixed left-0 top-0 bg-gradient-to-b from-[#1a759f]/5 to-[#1e6091]/5 border-r">
       <div className="flex h-16 items-center px-6 border-b">
-        <h1 className="text-2xl font-bold bg-gradient-to-r from-[#4a6fa5] to-[#2c4a6e] bg-clip-text text-transparent">
+        <h1 className="text-2xl font-bold bg-gradient-to-r from-[#1a759f] to-[#1e6091] bg-clip-text text-transparent">
           tasks-ng
         </h1>
       </div>
@@ -85,14 +85,14 @@ export function Sidebar() {
               className={cn(
                 "group flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all",
                 isActive
-                  ? "bg-[#4a6fa5] text-white shadow-lg shadow-[#4a6fa5]/20"
-                  : "text-gray-700 hover:bg-white hover:text-[#4a6fa5] hover:shadow-sm"
+                  ? "bg-[#1a759f] text-white shadow-lg shadow-[#1a759f]/20"
+                  : "text-gray-700 hover:bg-white hover:text-[#1a759f] hover:shadow-sm"
               )}
             >
               <item.icon
                 className={cn(
                   "mr-3 h-5 w-5 flex-shrink-0 transition-colors",
-                  isActive ? "text-white" : "text-gray-500 group-hover:text-[#4a6fa5]"
+                  isActive ? "text-white" : "text-gray-500 group-hover:text-[#1a759f]"
                 )}
               />
               {item.name}
@@ -122,22 +122,22 @@ export function Sidebar() {
               className={cn(
                 "group flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all",
                 isActive
-                  ? "bg-[#4a6fa5] text-white shadow-lg shadow-[#4a6fa5]/20"
-                  : "text-gray-700 hover:bg-white hover:text-[#4a6fa5] hover:shadow-sm"
+                  ? "bg-[#1a759f] text-white shadow-lg shadow-[#1a759f]/20"
+                  : "text-gray-700 hover:bg-white hover:text-[#1a759f] hover:shadow-sm"
               )}
             >
               {item.isCSV ? (
                 <Table
                   className={cn(
                     "mr-3 h-4 w-4 flex-shrink-0 transition-colors",
-                    isActive ? "text-white" : "text-[#5a8a72] group-hover:text-[#4a6fa5]"
+                    isActive ? "text-white" : "text-[#76c893] group-hover:text-[#1a759f]"
                   )}
                 />
               ) : (
                 <FileText
                   className={cn(
                     "mr-3 h-4 w-4 flex-shrink-0 transition-colors",
-                    isActive ? "text-white" : "text-[#4a6fa5] group-hover:text-[#4a6fa5]"
+                    isActive ? "text-white" : "text-[#1a759f] group-hover:text-[#1a759f]"
                   )}
                 />
               )}
@@ -150,7 +150,7 @@ export function Sidebar() {
       <div className="border-t p-3">
         <div className="text-xs text-gray-500 text-center">
           Task Format Specification
-          <div className="mt-1 font-semibold text-[#4a6fa5]">v2.0.0</div>
+          <div className="mt-1 font-semibold text-[#1a759f]">v2.0.0</div>
         </div>
       </div>
     </div>
