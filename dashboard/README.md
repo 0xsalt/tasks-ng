@@ -136,10 +136,11 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 The template uses a professionally-designed color palette:
 
 - **Primary**: `#2e7de9` (Blue)
-- **Accent**: `#9854f1` (Purple)
+- **Accent**: `#1e40af` (Deep Blue)
+- **Secondary**: `#60a5fa` (Light Blue)
 - **Success**: `#33b579` (Green)
 - **Warning**: `#f0a020` (Orange)
-- **Destructive**: `#f52a65` (Red)
+- **Destructive**: `#dc2626` (Red)
 - **Background**: `#ffffff` (White)
 - **Foreground**: `#1a1b26` (Dark)
 

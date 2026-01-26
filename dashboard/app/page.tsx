@@ -111,7 +111,7 @@ export default function OverviewPage() {
   return (
     <div className="p-4 lg:p-8">
       {/* Hero Section - compact on mobile */}
-      <div className="mb-6 lg:mb-12 rounded-2xl bg-gradient-to-br from-[#2e7de9]/10 via-[#9854f1]/5 to-[#33b579]/10 p-6 lg:p-12 border border-[#2e7de9]/20">
+      <div className="mb-6 lg:mb-12 rounded-2xl bg-gradient-to-br from-[#2e7de9]/10 via-[#1e40af]/5 to-[#33b579]/10 p-6 lg:p-12 border border-[#2e7de9]/20">
         <div className="max-w-4xl">
           <h2 className="text-xs lg:text-sm font-semibold text-[#2e7de9] uppercase tracking-wide mb-1 lg:mb-2">
             Live Task Dashboard
@@ -444,7 +444,7 @@ export default function OverviewPage() {
           <Card className="hover:shadow-lg transition-shadow">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Hash className="h-5 w-5 text-[#9854f1]" />
+                <Hash className="h-5 w-5 text-[#1e40af]" />
                 Metadata Types
               </CardTitle>
             </CardHeader>

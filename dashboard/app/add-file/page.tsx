@@ -159,7 +159,7 @@ export default function AddFilePage() {
 
         {/* Upload History */}
         {uploadedFiles.length > 0 && (
-          <Card className="border-l-4 border-l-[#9854f1]">
+          <Card className="border-l-4 border-l-[#1e40af]">
             <CardHeader>
               <CardTitle>Upload History</CardTitle>
             </CardHeader>
