@@ -140,7 +140,7 @@ export default function FilePage() {
       )}
 
       {saveStatus === "error" && (
-        <div className="mb-4 p-4 bg-[#f52a65]/10 text-[#f52a65] rounded-lg">
+        <div className="mb-4 p-4 bg-[#dc2626]/10 text-[#dc2626] rounded-lg">
           Error saving file. Please try again.
         </div>
       )}

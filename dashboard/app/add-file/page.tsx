@@ -206,7 +206,7 @@ export default function AddFilePage() {
                         <CheckCircle className="h-6 w-6 text-[#33b579]" />
                       )}
                       {file.status === "error" && (
-                        <XCircle className="h-6 w-6 text-[#f52a65]" />
+                        <XCircle className="h-6 w-6 text-[#dc2626]" />
                       )}
                       {file.status === "uploading" && (
                         <Loader2 className="h-6 w-6 text-[#2e7de9] animate-spin" />
