@@ -84,7 +84,7 @@ export function QuickCapture() {
       <button
         onClick={() => setIsOpen(true)}
         className={cn(
-          "fixed z-50 flex items-center justify-center rounded-full bg-[#2e7de9] text-white shadow-lg shadow-[#2e7de9]/30 transition-all active:scale-95 touch-manipulation",
+          "fixed z-50 flex items-center justify-center rounded-full bg-[#4a6fa5] text-white shadow-lg shadow-[#4a6fa5]/30 transition-all active:scale-95 touch-manipulation",
           "lg:bottom-6 lg:right-6 lg:h-14 lg:w-14",
           "bottom-24 right-4 h-16 w-16" // Mobile: larger, above bottom nav
         )}
@@ -114,7 +114,7 @@ export function QuickCapture() {
             {/* Header */}
             <div className="flex items-center justify-between px-4 py-3 border-b">
               <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                <Zap className="h-5 w-5 text-[#2e7de9]" />
+                <Zap className="h-5 w-5 text-[#4a6fa5]" />
                 Quick Capture
               </h2>
               <button
@@ -144,7 +144,7 @@ export function QuickCapture() {
                     value={value}
                     onChange={(e) => setValue(e.target.value)}
                     placeholder="What needs to be done?"
-                    className="w-full text-lg px-4 py-3 rounded-xl border border-gray-200 focus:border-[#2e7de9] focus:ring-2 focus:ring-[#2e7de9]/20 outline-none transition-all"
+                    className="w-full text-lg px-4 py-3 rounded-xl border border-gray-200 focus:border-[#4a6fa5] focus:ring-2 focus:ring-[#4a6fa5]/20 outline-none transition-all"
                     disabled={isSubmitting}
                     autoComplete="off"
                     autoCorrect="off"
@@ -201,7 +201,7 @@ export function QuickCapture() {
                     className={cn(
                       "w-full py-4 rounded-xl font-semibold text-white transition-all touch-manipulation flex items-center justify-center gap-2",
                       value.trim() && !isSubmitting
-                        ? "bg-[#2e7de9] active:bg-[#2463c0]"
+                        ? "bg-[#4a6fa5] active:bg-[#2463c0]"
                         : "bg-gray-300 cursor-not-allowed"
                     )}
                   >
