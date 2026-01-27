@@ -98,7 +98,20 @@ export interface EisenhowerMatrix {
 // Constants
 // ============================================================================
 
-const TASKS_FILE = process.env.TASKS_FILE || path.join(os.homedir(), 'tasks.md')
+// XDG Base Directory compliant: ~/.local/share/tasks-ng/tasks.md
+// Falls back to ~/tasks.md for legacy compatibility
+const XDG_DATA_HOME = process.env.XDG_DATA_HOME || path.join(os.homedir(), '.local', 'share')
+const DEFAULT_TASKS_FILE = path.join(XDG_DATA_HOME, 'tasks-ng', 'tasks.md')
+const LEGACY_TASKS_FILE = path.join(os.homedir(), 'tasks.md')
+
+// Priority: TASKS_FILE env > XDG path (if exists) > legacy path
+function resolveTasksFile(): string {
+  if (process.env.TASKS_FILE) return process.env.TASKS_FILE
+  if (fsSync.existsSync(DEFAULT_TASKS_FILE)) return DEFAULT_TASKS_FILE
+  return LEGACY_TASKS_FILE
+}
+
+const TASKS_FILE = resolveTasksFile()
 const BACKUP_DIR = path.join(path.dirname(TASKS_FILE), '.task-backups')
 
 // Regex patterns from SPEC.md
