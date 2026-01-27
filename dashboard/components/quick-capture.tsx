@@ -1,26 +1,36 @@
 "use client"
 
 import { useState, useRef, useEffect } from "react"
-import { Plus, X, Send, Loader2, Check, Zap, Clock, AlertTriangle } from "lucide-react"
+import { Plus, X, Send, Loader2, Check, Zap, Clock, AlertTriangle, Brain, FileText } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 type QuickModifier = "urgent" | "important" | "none"
+type CaptureMode = "task" | "braindump"
 
 export function QuickCapture() {
   const [isOpen, setIsOpen] = useState(false)
+  const [mode, setMode] = useState<CaptureMode>("task")
   const [value, setValue] = useState("")
   const [modifier, setModifier] = useState<QuickModifier>("none")
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [success, setSuccess] = useState(false)
+  const [successMessage, setSuccessMessage] = useState("")
   const [error, setError] = useState<string | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   // Focus input when modal opens
   useEffect(() => {
-    if (isOpen && inputRef.current) {
-      inputRef.current.focus()
+    if (isOpen) {
+      setTimeout(() => {
+        if (mode === "task" && inputRef.current) {
+          inputRef.current.focus()
+        } else if (mode === "braindump" && textareaRef.current) {
+          textareaRef.current.focus()
+        }
+      }, 100)
     }
-  }, [isOpen])
+  }, [isOpen, mode])
 
   // Reset success state after delay
   useEffect(() => {
@@ -33,7 +43,7 @@ export function QuickCapture() {
     }
   }, [success])
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmitTask = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!value.trim() || isSubmitting) return
 
@@ -45,9 +55,6 @@ export function QuickCapture() {
       const modifiers: string[] = []
       if (modifier === "urgent") modifiers.push("urgent")
       if (modifier === "important") modifiers.push("important")
-      if (modifier === "urgent" || modifier === "important") {
-        // Q1 gets both
-      }
 
       const response = await fetch("/api/tasks", {
         method: "POST",
@@ -67,6 +74,7 @@ export function QuickCapture() {
       // Success!
       setValue("")
       setModifier("none")
+      setSuccessMessage("Task added!")
       setSuccess(true)
 
       // Trigger refetch on main page
@@ -77,6 +85,43 @@ export function QuickCapture() {
       setIsSubmitting(false)
     }
   }
+
+  const handleSubmitBrainDump = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!value.trim() || isSubmitting) return
+
+    setIsSubmitting(true)
+    setError(null)
+
+    try {
+      const response = await fetch("/api/inbox", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          text: value.trim(),
+        }),
+      })
+
+      if (!response.ok) {
+        const data = await response.json()
+        throw new Error(data.error || "Failed to add to inbox")
+      }
+
+      // Success!
+      setValue("")
+      setSuccessMessage("Added to Inbox!")
+      setSuccess(true)
+
+      // Trigger refetch on main page
+      window.dispatchEvent(new CustomEvent("taskCreated"))
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Unknown error")
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  const handleSubmit = mode === "task" ? handleSubmitTask : handleSubmitBrainDump
 
   return (
     <>
@@ -114,8 +159,17 @@ export function QuickCapture() {
             {/* Header */}
             <div className="flex items-center justify-between px-4 py-3 border-b">
               <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                <Zap className="h-5 w-5 text-[#1a759f]" />
-                Quick Capture
+                {mode === "task" ? (
+                  <>
+                    <Zap className="h-5 w-5 text-[#1a759f]" />
+                    Quick Capture
+                  </>
+                ) : (
+                  <>
+                    <Brain className="h-5 w-5 text-purple-500" />
+                    Brain Dump
+                  </>
+                )}
               </h2>
               <button
                 onClick={() => !isSubmitting && setIsOpen(false)}
@@ -126,15 +180,54 @@ export function QuickCapture() {
               </button>
             </div>
 
+            {/* Mode Toggle */}
+            <div className="px-4 pt-4">
+              <div className="flex gap-2 p-1 bg-gray-100 rounded-xl">
+                <button
+                  type="button"
+                  onClick={() => setMode("task")}
+                  className={cn(
+                    "flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all touch-manipulation flex items-center justify-center gap-2",
+                    mode === "task"
+                      ? "bg-white text-[#1a759f] shadow"
+                      : "text-gray-500"
+                  )}
+                >
+                  <FileText className="h-4 w-4" />
+                  Task
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setMode("braindump")}
+                  className={cn(
+                    "flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all touch-manipulation flex items-center justify-center gap-2",
+                    mode === "braindump"
+                      ? "bg-white text-purple-600 shadow"
+                      : "text-gray-500"
+                  )}
+                >
+                  <Brain className="h-4 w-4" />
+                  Brain Dump
+                </button>
+              </div>
+            </div>
+
             {/* Success state */}
             {success ? (
               <div className="flex flex-col items-center justify-center py-12">
-                <div className="h-16 w-16 rounded-full bg-green-100 flex items-center justify-center mb-4">
-                  <Check className="h-8 w-8 text-green-600" />
+                <div className={cn(
+                  "h-16 w-16 rounded-full flex items-center justify-center mb-4",
+                  mode === "task" ? "bg-green-100" : "bg-purple-100"
+                )}>
+                  <Check className={cn(
+                    "h-8 w-8",
+                    mode === "task" ? "text-green-600" : "text-purple-600"
+                  )} />
                 </div>
-                <p className="text-lg font-medium text-gray-900">Task added!</p>
+                <p className="text-lg font-medium text-gray-900">{successMessage}</p>
               </div>
-            ) : (
+            ) : mode === "task" ? (
+              // Task Mode Form
               <form onSubmit={handleSubmit}>
                 {/* Input */}
                 <div className="p-4">
@@ -201,7 +294,7 @@ export function QuickCapture() {
                     className={cn(
                       "w-full py-4 rounded-xl font-semibold text-white transition-all touch-manipulation flex items-center justify-center gap-2",
                       value.trim() && !isSubmitting
-                        ? "bg-[#1a759f] active:bg-[#2463c0]"
+                        ? "bg-[#1a759f] active:bg-[#1e6091]"
                         : "bg-gray-300 cursor-not-allowed"
                     )}
                   >
@@ -214,6 +307,62 @@ export function QuickCapture() {
                       <>
                         <Send className="h-5 w-5" />
                         Add to NOW
+                      </>
+                    )}
+                  </button>
+                </div>
+              </form>
+            ) : (
+              // Brain Dump Mode Form
+              <form onSubmit={handleSubmit}>
+                {/* Textarea for brain dump */}
+                <div className="p-4">
+                  <textarea
+                    ref={textareaRef}
+                    value={value}
+                    onChange={(e) => setValue(e.target.value)}
+                    placeholder="Dump your thoughts here... Ideas, notes, random things you need to capture. Process later."
+                    className="w-full text-base px-4 py-3 rounded-xl border border-gray-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 outline-none transition-all resize-none"
+                    rows={4}
+                    disabled={isSubmitting}
+                    autoComplete="off"
+                    autoCorrect="off"
+                  />
+
+                  <p className="mt-2 text-xs text-gray-400">
+                    Raw text saved to INBOX section. No validation - just capture now, process later.
+                  </p>
+
+                  {/* Error message */}
+                  {error && (
+                    <p className="mt-2 text-sm text-red-600 flex items-center gap-1">
+                      <AlertTriangle className="h-4 w-4" />
+                      {error}
+                    </p>
+                  )}
+                </div>
+
+                {/* Submit button */}
+                <div className="p-4 border-t">
+                  <button
+                    type="submit"
+                    disabled={!value.trim() || isSubmitting}
+                    className={cn(
+                      "w-full py-4 rounded-xl font-semibold text-white transition-all touch-manipulation flex items-center justify-center gap-2",
+                      value.trim() && !isSubmitting
+                        ? "bg-purple-600 active:bg-purple-700"
+                        : "bg-gray-300 cursor-not-allowed"
+                    )}
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="h-5 w-5 animate-spin" />
+                        Saving...
+                      </>
+                    ) : (
+                      <>
+                        <Brain className="h-5 w-5" />
+                        Save to Inbox
                       </>
                     )}
                   </button>
