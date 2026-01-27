@@ -28,21 +28,27 @@ export interface BacklogStats {
   total: number
 }
 
-// Point to tasks-ng project directory instead of personal TELOS
-const TELOS_DIR = path.join(os.homedir(), 'local/projects/tasks-ng')
+// Use DOCS_DIR env var for Docker container, fallback to project directory for local dev
+// Docker sets DOCS_DIR=/app/docs (where docs are mounted)
+// Local dev uses ~/local/projects/tasks-ng/docs
+const DOCS_DIR = process.env.DOCS_DIR || path.join(os.homedir(), 'local/projects/tasks-ng/docs')
+const PROJECT_DIR = process.env.DOCS_DIR ? '/app' : path.join(os.homedir(), 'local/projects/tasks-ng')
 
 export function getAllTelosData(): TelosFile[] {
   const files: TelosFile[] = []
 
   try {
-    // Scan for .md files in root directory
-    if (fs.existsSync(TELOS_DIR)) {
-      const rootFiles = fs.readdirSync(TELOS_DIR)
+    // In Docker: only scan DOCS_DIR (mounted docs directory)
+    // In local dev: scan both project root and docs/
+
+    // Scan for .md files in project root (local dev only)
+    if (!process.env.DOCS_DIR && fs.existsSync(PROJECT_DIR)) {
+      const rootFiles = fs.readdirSync(PROJECT_DIR)
 
       for (const filename of rootFiles) {
         if (filename.endsWith('.md') && !filename.startsWith('.')) {
           try {
-            const filePath = path.join(TELOS_DIR, filename)
+            const filePath = path.join(PROJECT_DIR, filename)
             const stats = fs.statSync(filePath)
 
             if (stats.isFile()) {
@@ -59,30 +65,29 @@ export function getAllTelosData(): TelosFile[] {
           }
         }
       }
+    }
 
-      // Scan for .md files in docs/ directory
-      const docsDir = path.join(TELOS_DIR, 'docs')
-      if (fs.existsSync(docsDir)) {
-        const docsFiles = fs.readdirSync(docsDir)
+    // Scan docs directory (works for both Docker and local dev)
+    if (fs.existsSync(DOCS_DIR)) {
+      const docsFiles = fs.readdirSync(DOCS_DIR)
 
-        for (const filename of docsFiles) {
-          if (filename.endsWith('.md') && !filename.startsWith('.')) {
-            try {
-              const filePath = path.join(docsDir, filename)
-              const stats = fs.statSync(filePath)
+      for (const filename of docsFiles) {
+        if (filename.endsWith('.md') && !filename.startsWith('.')) {
+          try {
+            const filePath = path.join(DOCS_DIR, filename)
+            const stats = fs.statSync(filePath)
 
-              if (stats.isFile()) {
-                const content = fs.readFileSync(filePath, 'utf-8')
-                files.push({
-                  name: filename.replace('.md', ''),
-                  filename: `docs/${filename}`,
-                  content,
-                  type: 'markdown',
-                })
-              }
-            } catch (error) {
-              console.error(`Error reading docs/${filename}:`, error)
+            if (stats.isFile()) {
+              const content = fs.readFileSync(filePath, 'utf-8')
+              files.push({
+                name: filename.replace('.md', ''),
+                filename: `docs/${filename}`,
+                content,
+                type: 'markdown',
+              })
             }
+          } catch (error) {
+            console.error(`Error reading docs/${filename}:`, error)
           }
         }
       }
@@ -138,7 +143,7 @@ export function getTelosFileCount(): number {
  * Returns sections with their items parsed
  */
 export function parseBacklog(): BacklogSection[] {
-  const backlogPath = path.join(TELOS_DIR, 'docs', 'BACKLOG.md')
+  const backlogPath = process.env.BACKLOG_PATH || path.join(DOCS_DIR, 'BACKLOG.md')
 
   if (!fs.existsSync(backlogPath)) {
     console.error('BACKLOG.md not found')

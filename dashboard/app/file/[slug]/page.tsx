@@ -23,7 +23,12 @@ export default function FilePage() {
       .then(res => res.json())
       .then(data => {
         const matchingFile = data.files.find((f: string) => {
-          const fileSlug = f.replace('.md', '').replace('.csv', '').replace('data/', '')
+          // Strip extension and directory prefixes (docs/, data/) for URL-friendly slug
+          const fileSlug = f
+            .replace('.md', '')
+            .replace('.csv', '')
+            .replace('docs/', '')
+            .replace('data/', '')
           return fileSlug === slug
         })
 
