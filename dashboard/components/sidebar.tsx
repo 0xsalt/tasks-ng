@@ -2,10 +2,11 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Home, MessageSquare, Upload, FileText, Table } from "lucide-react"
+import { Home, MessageSquare, Upload, FileText, Table, Target, Calendar } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 import { useEffect, useState } from "react"
+import { SyncStatus } from "@/components/sync-status"
 
 interface FileNav {
   name: string
@@ -16,7 +17,9 @@ interface FileNav {
 
 const staticNavigation = [
   { name: "Overview", href: "/", icon: Home },
+  { name: "Sprint", href: "/sprint", icon: Calendar },
   { name: "Backlog", href: "/progress", icon: FileText },
+  { name: "Strategy", href: "/strategy", icon: Target },
   { name: "Specification", href: "/file/SPEC", icon: FileText },
   { name: "Ideas", href: "/file/IDEAS", icon: FileText },
   { name: "Ask", href: "/ask", icon: MessageSquare },
@@ -38,7 +41,12 @@ export function Sidebar() {
         // Build file navigation
         const navItems: FileNav[] = data.files.map((filename: string) => {
           const isCSV = filename.endsWith('.csv')
-          const slug = filename.replace('.md', '').replace('.csv', '').replace('data/', '')
+          // Strip extension and directory prefixes (docs/, data/) for URL-friendly slug
+          const slug = filename
+            .replace('.md', '')
+            .replace('.csv', '')
+            .replace('docs/', '')
+            .replace('data/', '')
           return {
             name: slug,
             slug,
@@ -146,6 +154,11 @@ export function Sidebar() {
           )
         })}
       </nav>
+
+      {/* Sync Status */}
+      <div className="border-t p-3">
+        <SyncStatus />
+      </div>
 
       <div className="border-t p-3">
         <div className="text-xs text-gray-500 text-center">
