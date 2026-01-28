@@ -8,9 +8,11 @@
 
 ## NOW
 
-- [ ] Make checkbox icons clickable to cycle states: [ ] → [/] → [x] → [ ] (simple 3-state cycle; consider [-] cancelled as 4th) #frontend
+- [ ] Eisenhower quadrant grid as default homepage layout with "Today" title #005 #frontend #ux
 
 ## BACKLOG
+- [ ] Add info bubble "(i)" next to "Eisenhower" header with description and link to authoritative source #frontend #ux
+- [ ] Fix Eisenhower filter tile unselect bug - should revert to default unclicked state with no outline #frontend #bugfix
 - [ ] Light/Dark/Auto mode toggle - implement same pattern as ~/local/projects/whereis-emmy/ #frontend #ui
 - [ ] Settings page: Toggle for single-task-in-progress enforcement (currently allows multiple [/] tasks, make it optional) #frontend #settings
 - [ ] Investigate optimistic locking for concurrent CRUD writes (design note: rapid parallel inserts can overlap) #backend
