@@ -8,63 +8,62 @@
 
 ## NOW
 
-- [ ] Standalone TypeScript parser module (importable, not just CLI)
+- [ ] Standalone TypeScript parser module (importable, not just CLI) #tools
 
 ## BACKLOG
 
-- [ ] Make checkbox icons clickable to cycle states: [ ] → [/] → [x] → [ ] (simple 3-state cycle; consider [-] cancelled as 4th)
-- [ ] Investigate optimistic locking for concurrent CRUD writes (design note: rapid parallel inserts can overlap)
-- [ ] Deploy updated skill to ~/.claude/skills/tasks/
-- [ ] Standalone TypeScript parser module (importable, not just CLI)
-- [ ] Validation command (check tasks.md against spec)
-- [ ] migrate-completed-tasks.md update for new checkbox states
-- [ ] Time tracking summary command (sum _spent: by tag/date)
-- [ ] Due date reminder integration (ntfy?)
+- [ ] Make checkbox icons clickable to cycle states: [ ] → [/] → [x] → [ ] (simple 3-state cycle; consider [-] cancelled as 4th) #frontend
+- [ ] Investigate optimistic locking for concurrent CRUD writes (design note: rapid parallel inserts can overlap) #backend
+- [ ] Deploy updated skill to ~/.claude/skills/tasks/ #tools
+- [ ] Validation command (check tasks.md against spec) #tools
+- [ ] migrate-completed-tasks.md update for new checkbox states #docs
+- [ ] Time tracking summary command (sum _spent: by tag/date) #tools
+- [ ] Due date reminder integration (ntfy?) #tools
 
 ## ROADMAP
 
 ### Web UI - Core Task CRUD
-- [ ] Live task list from tasks.md - parse and display with filters
-- [ ] Create/edit tasks via form - generate valid format, write back
-- [ ] Inline editing - click task to edit in place
-- [ ] Drag-drop reordering - move between NOW/BACKLOG/DONE
+- [ ] Live task list from tasks.md - parse and display with filters #frontend
+- [ ] Create/edit tasks via form - generate valid format, write back #frontend
+- [ ] Inline editing - click task to edit in place #frontend
+- [ ] Drag-drop reordering - move between NOW/BACKLOG/DONE #frontend
 
 ### Web UI - Visualization
-- [ ] Eisenhower matrix view - 4-quadrant visual grid
-- [ ] Kanban board - columns by status or section
-- [ ] Calendar view - tasks by _due: date
-- [ ] Time tracking charts - burndown, time by tag
+- [ ] Eisenhower matrix view - 4-quadrant visual grid #frontend
+- [ ] Kanban board - columns by status or section #frontend
+- [ ] Calendar view - tasks by _due: date #frontend
+- [ ] Time tracking charts - burndown, time by tag #frontend
 
 ### Web UI - Mobile/PWA
-- [ ] Touch-optimized PWA - offline-first with sync
-- [ ] Quick capture widget - add tasks fast on mobile
+- [ ] Touch-optimized PWA - offline-first with sync #frontend
+- [ ] Quick capture widget - add tasks fast on mobile #frontend
 
 ### Web UI - API Layer
-- [ ] WebSocket sync - multi-device real-time
+- [ ] WebSocket sync - multi-device real-time #backend
 
 ### Web UI - AI-Enhanced
-- [ ] Natural language task entry - "Remind me to call Bob Tuesday"
-- [ ] Web voice interface - record audio, transcribe to file, process as updates
-- [ ] Smart prioritization - suggest Eisenhower quadrant
-- [ ] Task decomposition - break down large tasks
+- [ ] Natural language task entry - "Remind me to call Bob Tuesday" #ai
+- [ ] Web voice interface - record audio, transcribe to file, process as updates #ai
+- [ ] Smart prioritization - suggest Eisenhower quadrant #ai
+- [ ] Task decomposition - break down large tasks #ai
 
 ### Other
-- [ ] Task dependencies (blocked-by relationships)
-- [ ] Project-specific task file discovery
-- [ ] Integration with private-journal for task completion logging
+- [ ] Task dependencies (blocked-by relationships) #tools
+- [ ] Project-specific task file discovery #tools
+- [ ] Integration with private-journal for task completion logging #tools
 
 ## DONE
 
-- [x] Go mobile-first PWA with quick capture FAB, bottom nav, responsive layout [2026-01-26]
-- [x] Make dashboard dynamic - live data from ~/tasks.md via API [2026-01-26]
-- [x] Build CRUD API with parser module, file locking, backup system [2026-01-26]
-- [x] Update README for v2.0.0 with checkbox states and features [2026-01-22]
-- [x] Bump to v2.0.0 with checkbox states and Eisenhower support [2026-01-22]
-- [x] Add CLAUDE.md with branch-only development policy [2026-01-22]
-- [x] Update list-tasks.md for new states and Eisenhower display [2026-01-22]
-- [x] Fix data location default to ~/tasks.md [2026-01-22]
-- [x] Add 3-level nesting with completion semantics [2026-01-10]
-- [x] Add @mentions to format spec [2026-01-10]
-- [x] Add _spent: time tracking to format spec [2026-01-10]
-- [x] Create docs/SPEC.md canonical specification [2026-01-10]
-- [x] Initial project setup [2026-01-10]
+- [x] Go mobile-first PWA with quick capture FAB, bottom nav, responsive layout #frontend _done:2026-01-26
+- [x] Make dashboard dynamic - live data from ~/tasks.md via API #frontend _done:2026-01-26
+- [x] Build CRUD API with parser module, file locking, backup system #backend _done:2026-01-26
+- [x] Update README for v2.0.0 with checkbox states and features #docs _done:2026-01-22
+- [x] Bump to v2.0.0 with checkbox states and Eisenhower support #tools _done:2026-01-22
+- [x] Add CLAUDE.md with branch-only development policy #docs _done:2026-01-22
+- [x] Update list-tasks.md for new states and Eisenhower display #tools _done:2026-01-22
+- [x] Fix data location default to ~/tasks.md #tools _done:2026-01-22
+- [x] Add 3-level nesting with completion semantics #tools _done:2026-01-10
+- [x] Add @mentions to format spec #docs _done:2026-01-10
+- [x] Add _spent: time tracking to format spec #docs _done:2026-01-10
+- [x] Create docs/SPEC.md canonical specification #docs _done:2026-01-10
+- [x] Initial project setup #tools _done:2026-01-10
