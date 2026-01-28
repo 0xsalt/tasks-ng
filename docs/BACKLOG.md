@@ -11,6 +11,7 @@
 - [ ] Eisenhower quadrant grid as default homepage layout with "Today" title #005 #frontend #ux
 
 ## BACKLOG
+- [ ] Research Docker build time optimization - Current: 60s+ full rebuilds for code changes. Research: (1) is full rebuild needed every time? (2) what triggers rebuilds? (3) hot reload in dev? (4) build caching strategies? (5) service-dashboard compatibility? (6) separate dev (fast iteration) vs prod (robust) workflows? Goal: rapid iterative development with <5s feedback loop. #devops #performance #research
 - [ ] Add info bubble "(i)" next to "Eisenhower" header with description and link to authoritative source #frontend #ux
 - [ ] Fix Eisenhower filter tile unselect bug - should revert to default unclicked state with no outline #frontend #bugfix
 - [ ] Light/Dark/Auto mode toggle - implement same pattern as ~/local/projects/whereis-emmy/ #frontend #ui

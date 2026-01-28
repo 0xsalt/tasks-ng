@@ -215,6 +215,13 @@ function QuadrantButton({
   )
 }
 
+// Get status prefix indicator for task
+function getStatusPrefix(task: Task): string {
+  if (task.status === 'completed') return '✓ '
+  if (task.status === 'in_progress') return '→ '
+  return ''
+}
+
 export default function OverviewPage() {
   const { tasks, isLoading: tasksLoading, error: tasksError, refetch: refetchTasks } = useTasks({ flat: true })
   const { matrix, counts: eisenhowerCounts, isLoading: eisenhowerLoading, error: eisenhowerError, refetch: refetchMatrix } = useEisenhower()
@@ -222,6 +229,8 @@ export default function OverviewPage() {
   // Filter state
   const [tagFilters, setTagFilters] = useState<Set<TagFilter>>(new Set())
   const [quadrantFilters, setQuadrantFilters] = useState<Set<QuadrantFilter>>(new Set())
+  const [statusFilter, setStatusFilter] = useState<Task['status'] | null>(null)
+  const [isTodayCollapsed, setIsTodayCollapsed] = useState(false)
 
   // Toggle tag filter
   const toggleTag = useCallback((tag: TagFilter) => {
@@ -387,11 +396,27 @@ export default function OverviewPage() {
     })
   }, [tagFilteredTasks])
 
+  // Apply status filter if active
+  const statusFilteredTasks = useMemo(() => {
+    if (!statusFilter) return activeTasks
+    return activeTasks.filter(t => t.status === statusFilter)
+  }, [activeTasks, statusFilter])
+
   // Final filtered tasks for Active Tasks list (tag + quadrant filters)
   const displayedTasks = useMemo(() =>
-    filterByQuadrants(activeTasks),
-    [filterByQuadrants, activeTasks]
+    filterByQuadrants(statusFilteredTasks),
+    [filterByQuadrants, statusFilteredTasks]
   )
+
+  // Group tasks by Eisenhower quadrant for grid view
+  const tasksByQuadrant = useMemo(() => {
+    const grouped: Record<QuadrantFilter, Task[]> = { Q1: [], Q2: [], Q3: [], Q4: [] }
+    for (const task of displayedTasks) {
+      const q = getQuadrant(task)
+      grouped[q].push(task)
+    }
+    return grouped
+  }, [displayedTasks, getQuadrant])
 
   const isLoading = tasksLoading || eisenhowerLoading
   const error = tasksError || eisenhowerError
@@ -405,26 +430,26 @@ export default function OverviewPage() {
   }> = [
     {
       quadrant: 'Q1',
-      label: 'Do First',
+      label: 'Urgent',
       icon: Target,
       colorClass: { bg: 'bg-red-50', text: 'text-red-700', border: 'border-red-200', activeBg: 'bg-red-100' }
     },
     {
       quadrant: 'Q2',
-      label: 'Schedule',
+      label: 'Important',
       icon: Calendar,
       colorClass: { bg: 'bg-yellow-50', text: 'text-yellow-700', border: 'border-yellow-200', activeBg: 'bg-yellow-100' }
     },
     {
       quadrant: 'Q3',
-      label: 'Delegate',
-      icon: Users,
+      label: 'Quick Wins',
+      icon: Zap,
       colorClass: { bg: 'bg-orange-50', text: 'text-orange-700', border: 'border-orange-200', activeBg: 'bg-orange-100' }
     },
     {
       quadrant: 'Q4',
-      label: 'Drop',
-      icon: Trash2,
+      label: 'Later',
+      icon: Clock,
       colorClass: { bg: 'bg-gray-50', text: 'text-gray-600', border: 'border-gray-200', activeBg: 'bg-gray-100' }
     }
   ]
@@ -525,130 +550,199 @@ export default function OverviewPage() {
         </div>
       )}
 
-      {/* Current Focus - Stats at top, then In-Progress Tasks */}
+      {/* Today Section - Collapseable */}
       {!isLoading && !error && (
         <div className="mb-6">
-          <h2 className="text-lg lg:text-xl font-bold text-gray-900 mb-3 flex items-center gap-2">
-            <Zap className="h-5 w-5 text-[#1a759f]" />
-            Current Focus
-            {inProgressTasks.length > 0 && (
-              <Badge variant="primary" className="ml-2">{inProgressTasks.length}</Badge>
-            )}
-          </h2>
+          {/* Heading with inline status filters and collapse toggle */}
+          <div className="flex items-center justify-between gap-4 mb-3 flex-wrap">
+            <div className="flex items-center gap-3 flex-wrap">
+              <div className="flex items-center gap-2">
+                <Zap className="h-5 w-5 text-[#1a759f]" />
+                <h2 className="text-lg lg:text-xl font-bold text-gray-900">Today</h2>
+                {inProgressTasks.length > 0 && (
+                  <Badge variant="primary">{inProgressTasks.length}</Badge>
+                )}
+              </div>
 
-          {/* Stats mini-cards at top of Current Focus */}
-          <div className="flex items-center gap-3 flex-wrap mb-4">
-            <div className="flex items-center gap-2 bg-white rounded-lg px-3 py-2 border shadow-sm">
-              <CheckSquare className="h-4 w-4 text-[#1a759f]" />
-              <span className="text-sm text-gray-600">Total:</span>
-              <span className="font-bold text-gray-900">{stats.total}</span>
+              {/* Status Filter Buttons - inline with heading */}
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setStatusFilter(null)}
+                  className={`flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 border transition-all text-xs ${
+                    statusFilter === null
+                      ? 'bg-gray-900 text-white border-gray-900'
+                      : 'bg-white text-gray-600 border-gray-300 hover:border-gray-400'
+                  }`}
+                >
+                  <CheckSquare className="h-3.5 w-3.5" />
+                  <span>Total: {stats.total}</span>
+                </button>
+                <button
+                  onClick={() => setStatusFilter(statusFilter === 'in_progress' ? null : 'in_progress')}
+                  className={`flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 border transition-all text-xs ${
+                    statusFilter === 'in_progress'
+                      ? 'bg-blue-500 text-white border-blue-500'
+                      : 'bg-white text-gray-600 border-gray-300 hover:border-blue-400'
+                  }`}
+                >
+                  <Zap className="h-3.5 w-3.5" />
+                  <span>In Progress: {stats.byStatus.in_progress}</span>
+                </button>
+                <button
+                  onClick={() => setStatusFilter(statusFilter === 'blocked' ? null : 'blocked')}
+                  className={`flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 border transition-all text-xs ${
+                    statusFilter === 'blocked'
+                      ? 'bg-red-500 text-white border-red-500'
+                      : 'bg-white text-gray-600 border-gray-300 hover:border-red-400'
+                  }`}
+                >
+                  <AlertCircle className="h-3.5 w-3.5" />
+                  <span>Blocked: {stats.byStatus.blocked}</span>
+                </button>
+              </div>
             </div>
-            <div className="flex items-center gap-2 bg-white rounded-lg px-3 py-2 border shadow-sm">
-              <Clock className="h-4 w-4 text-[#76c893]" />
-              <span className="text-sm text-gray-600">Active:</span>
-              <span className="font-bold text-[#76c893]">{stats.active}</span>
-            </div>
-            <div className="flex items-center gap-2 bg-white rounded-lg px-3 py-2 border shadow-sm">
-              <Zap className="h-4 w-4 text-blue-500" />
-              <span className="text-sm text-gray-600">In Progress:</span>
-              <span className="font-bold text-blue-600">{stats.byStatus.in_progress}</span>
-            </div>
-            <div className="flex items-center gap-2 bg-white rounded-lg px-3 py-2 border shadow-sm">
-              <AlertCircle className="h-4 w-4 text-red-500" />
-              <span className="text-sm text-gray-600">Blocked:</span>
-              <span className="font-bold text-red-600">{stats.byStatus.blocked}</span>
-            </div>
+
+            {/* Collapse toggle button */}
+            <button
+              onClick={() => setIsTodayCollapsed(!isTodayCollapsed)}
+              className="text-sm text-gray-500 hover:text-gray-700 flex items-center gap-1"
+            >
+              {isTodayCollapsed ? (
+                <>
+                  <span>Show</span>
+                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </>
+              ) : (
+                <>
+                  <span>Hide</span>
+                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                  </svg>
+                </>
+              )}
+            </button>
           </div>
 
-          {/* In-progress task list */}
-          {inProgressTasks.length > 0 ? (
-            <div className="space-y-2">
-              {inProgressTasks.map(task => (
-                <Card key={task.id} className="border-l-4 border-l-[#1a759f] bg-gradient-to-r from-[#1a759f]/5 to-transparent">
-                  <CardContent className="py-3 px-4">
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="flex items-start gap-3 min-w-0">
-                        <CheckboxIcon state={task.checkboxState} taskId={task.id} onUpdate={handleTaskCreated} task={task} />
-                        <div className="min-w-0">
-                          <p className="font-medium text-gray-900 truncate">
-                            {task.description}
-                          </p>
-                          <div className="flex items-center gap-2 mt-1 text-xs text-gray-500 flex-wrap">
-                            <span className="bg-gray-100 px-2 py-0.5 rounded">{task.section}</span>
-                            {task.tags.slice(0, 3).map(tag => (
-                              <span key={tag} className="text-[#1a759f]">#{tag}</span>
-                            ))}
-                            {task.dates.due && (
-                              <span className="flex items-center gap-1 text-orange-600">
-                                <Calendar className="h-3 w-3" />
-                                {task.dates.due}
-                              </span>
-                            )}
+          {/* In-progress task list - collapseable */}
+          {!isTodayCollapsed && (
+            <>
+              {inProgressTasks.length > 0 ? (
+                <div className="space-y-2">
+                  {inProgressTasks.map(task => (
+                    <Card key={task.id} className="border-l-4 border-l-[#1a759f] bg-gradient-to-r from-[#1a759f]/5 to-transparent">
+                      <CardContent className="py-3 px-4">
+                        <div className="flex items-start gap-3 min-w-0">
+                          <CheckboxIcon state={task.checkboxState} taskId={task.id} onUpdate={handleTaskCreated} task={task} />
+                          <div className="min-w-0 flex-1">
+                            <p className="font-medium text-gray-900 truncate">
+                              {getStatusPrefix(task)}{task.description}
+                            </p>
+                            <div className="flex items-center gap-2 mt-1 text-xs text-gray-500 flex-wrap">
+                              <span className="bg-gray-100 px-2 py-0.5 rounded">{task.section}</span>
+                              {task.tags.slice(0, 3).map(tag => (
+                                <span key={tag} className="text-[#1a759f]">#{tag}</span>
+                              ))}
+                              {task.dates.due && (
+                                <span className="flex items-center gap-1 text-orange-600">
+                                  <Calendar className="h-3 w-3" />
+                                  {task.dates.due}
+                                </span>
+                              )}
+                            </div>
                           </div>
                         </div>
-                      </div>
-                      <TaskStatusBadge status={task.status} />
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          ) : (
-            <p className="text-sm text-gray-500 italic">No tasks currently in progress</p>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-gray-500 italic">No tasks currently in progress</p>
+              )}
+            </>
           )}
         </div>
       )}
 
-      {/* Active Tasks List */}
+      {/* Eisenhower 4-Quadrant Grid */}
       {!isLoading && !error && displayedTasks.length > 0 && (
         <div className="mb-6 lg:mb-8">
           <h2 className="text-lg lg:text-xl font-bold text-gray-900 mb-3 flex items-center gap-2">
-            Active Tasks
-            <Badge variant="secondary">{displayedTasks.length}</Badge>
-            {quadrantFilters.size > 0 && (
-              <span className="text-sm font-normal text-gray-500">
-                ({[...quadrantFilters].join(', ')})
-              </span>
+            Priority Matrix
+            <Badge variant="secondary">{displayedTasks.length} tasks</Badge>
+            {(quadrantFilters.size > 0 || statusFilter) && (
+              <button
+                onClick={() => {
+                  setQuadrantFilters(new Set())
+                  setStatusFilter(null)
+                }}
+                className="text-xs text-gray-500 hover:text-gray-700 underline ml-2"
+              >
+                clear all filters
+              </button>
             )}
           </h2>
-          <Card>
-            <CardContent className="pt-4">
-              <div className="space-y-2">
-                {displayedTasks.slice(0, 15).map(task => (
-                  <div
-                    key={task.id}
-                    className="flex items-start justify-between p-3 rounded-lg hover:bg-gray-50 transition-colors border"
-                  >
-                    <div className="flex items-start gap-3 min-w-0">
-                      <CheckboxIcon state={task.checkboxState} taskId={task.id} onUpdate={handleTaskCreated} task={task} />
-                      <div className="min-w-0">
-                        <p className={`font-medium truncate ${task.isUrgent && task.isImportant ? 'text-red-600' : 'text-gray-900'}`}>
-                          {task.description}
-                        </p>
-                        <div className="flex items-center gap-2 mt-1 text-xs text-gray-500 flex-wrap">
-                          <span className="bg-gray-100 px-2 py-0.5 rounded">{task.section}</span>
-                          {task.tags.slice(0, 3).map(tag => (
-                            <span key={tag} className="text-[#1a759f]">#{tag}</span>
-                          ))}
-                          {task.isUrgent && <Badge variant="destructive" className="text-[10px] px-1.5 py-0">urgent</Badge>}
-                          {task.isImportant && <Badge variant="warning" className="text-[10px] px-1.5 py-0">important</Badge>}
-                          {task.dates.due && (
-                            <span className="text-orange-600">Due: {task.dates.due}</span>
-                          )}
-                        </div>
+
+          {/* 2x2 Grid Layout */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {quadrantConfigs.map(config => {
+              const quadrantTasks = tasksByQuadrant[config.quadrant]
+              return (
+                <Card key={config.quadrant} className={`border-2 ${config.colorClass.border}`}>
+                  <CardHeader className={`${config.colorClass.bg} border-b ${config.colorClass.border} pb-3`}>
+                    <CardTitle className={`text-base flex items-center justify-between ${config.colorClass.text}`}>
+                      <div className="flex items-center gap-2">
+                        <config.icon className="h-4 w-4" />
+                        <span>{config.label}</span>
                       </div>
-                    </div>
-                    <TaskStatusBadge status={task.status} />
-                  </div>
-                ))}
-                {displayedTasks.length > 15 && (
-                  <p className="text-center text-sm text-gray-500 pt-2">
-                    + {displayedTasks.length - 15} more tasks
-                  </p>
-                )}
-              </div>
-            </CardContent>
-          </Card>
+                      <Badge variant="secondary" className="text-xs">
+                        {quadrantTasks.length}
+                      </Badge>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="pt-3">
+                    {quadrantTasks.length > 0 ? (
+                      <div className="space-y-2">
+                        {quadrantTasks.slice(0, 10).map(task => (
+                          <div
+                            key={task.id}
+                            className="flex items-start gap-2 p-2 rounded hover:bg-gray-50 transition-colors"
+                          >
+                            <CheckboxIcon state={task.checkboxState} taskId={task.id} onUpdate={handleTaskCreated} task={task} />
+                            <div className="min-w-0 flex-1">
+                              <p className="text-xs font-normal text-gray-900 line-clamp-2 leading-relaxed">
+                                {getStatusPrefix(task)}{task.description}
+                              </p>
+                              <div className="flex items-center gap-1.5 mt-1 text-xs text-gray-500 flex-wrap">
+                                <span className="bg-gray-100 px-1.5 py-0.5 rounded text-[10px]">{task.section}</span>
+                                {task.tags.slice(0, 2).map(tag => (
+                                  <span key={tag} className="text-[#1a759f]">#{tag}</span>
+                                ))}
+                                {task.dates.due && (
+                                  <span className="text-orange-600 flex items-center gap-0.5">
+                                    <Calendar className="h-2.5 w-2.5" />
+                                    {task.dates.due}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                        {quadrantTasks.length > 10 && (
+                          <p className="text-center text-xs text-gray-500 pt-1">
+                            + {quadrantTasks.length - 10} more
+                          </p>
+                        )}
+                      </div>
+                    ) : (
+                      <p className="text-sm text-gray-400 italic text-center py-4">No tasks in this quadrant</p>
+                    )}
+                  </CardContent>
+                </Card>
+              )
+            })}
+          </div>
         </div>
       )}
 
