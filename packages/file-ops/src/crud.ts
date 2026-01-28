@@ -233,17 +233,20 @@ export async function updateTask(taskId: string, input: UpdateTaskInput): Promis
     }
   }
 
-  // Validation: Only one task in progress at a time
-  if (checkboxState === '/' && task.checkboxState !== '/') {
-    const existingInProgress = parsed.tasks.find(
-      t => t.id !== taskId && t.checkboxState === '/'
-    )
-    if (existingInProgress) {
-      throw new Error(
-        `Cannot start task: another task is already in progress (${existingInProgress.id})`
-      )
-    }
-  }
+  // TODO: Make single-task-in-progress enforcement a settings page toggle
+  // Default: Allow multiple tasks in progress
+  // Optional: Enforce only one task in progress at a time
+  // Validation commented out per user request 2026-01-27
+  // if (checkboxState === '/' && task.checkboxState !== '/') {
+  //   const existingInProgress = parsed.tasks.find(
+  //     t => t.id !== taskId && t.checkboxState === '/'
+  //   )
+  //   if (existingInProgress) {
+  //     throw new Error(
+  //       `Cannot start task: another task is already in progress (${existingInProgress.id})`
+  //     )
+  //   }
+  // }
 
   // Build new line
   const newLine = buildTaskLine({
