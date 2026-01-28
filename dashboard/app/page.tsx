@@ -46,7 +46,11 @@ function CheckboxIcon({
   taskId: string
   onUpdate: () => void
 }) {
+  const [optimisticState, setOptimisticState] = useState<Task['checkboxState'] | null>(null)
   const [isUpdating, setIsUpdating] = useState(false)
+
+  // Use optimistic state if available, otherwise use prop state
+  const displayState = optimisticState ?? state
 
   const icons: Record<Task['checkboxState'], { icon: string, color: string }> = {
     ' ': { icon: '[ ]', color: 'text-gray-400' },
@@ -70,8 +74,11 @@ function CheckboxIcon({
     e.stopPropagation() // Prevent parent click handlers
     if (isUpdating) return // Prevent double-clicks
 
+    const nextState = cycleState(displayState)
+
+    // OPTIMISTIC UPDATE: Show change immediately
+    setOptimisticState(nextState)
     setIsUpdating(true)
-    const nextState = cycleState(state)
 
     try {
       const res = await fetch(`/api/tasks/${taskId}`, {
@@ -87,23 +94,28 @@ function CheckboxIcon({
 
       // Trigger refetch after successful update
       onUpdate()
+
+      // Clear optimistic state after a short delay to let refetch complete
+      setTimeout(() => setOptimisticState(null), 500)
     } catch (error) {
       console.error('Error updating checkbox state:', error)
-      // TODO: Add toast notification for errors
+      // REVERT: On error, revert to original state
+      setOptimisticState(null)
+      alert('Failed to update task. Please try again.')
     } finally {
       setIsUpdating(false)
     }
   }
 
-  const { icon, color } = icons[state]
+  const { icon, color } = icons[displayState]
 
   return (
     <button
       onClick={handleClick}
       disabled={isUpdating}
       className={`font-mono text-sm whitespace-nowrap shrink-0 ${color} ${
-        isUpdating ? 'opacity-50 cursor-wait' : 'cursor-pointer hover:scale-110 active:scale-95'
-      } transition-all`}
+        isUpdating ? 'opacity-70' : 'cursor-pointer hover:scale-110 active:scale-95'
+      } transition-all touch-manipulation`}
       title="Click to cycle state"
     >
       {icon}

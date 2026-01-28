@@ -68,7 +68,11 @@ function CheckboxIcon({
   taskId: string
   onUpdate: () => void
 }) {
+  const [optimisticState, setOptimisticState] = useState<string | null>(null)
   const [isUpdating, setIsUpdating] = useState(false)
+
+  // Use optimistic state if available, otherwise use prop state
+  const displayState = optimisticState ?? state
 
   const icons: Record<string, { icon: string, color: string }> = {
     ' ': { icon: '[ ]', color: 'text-gray-400' },
@@ -92,8 +96,11 @@ function CheckboxIcon({
     e.stopPropagation()
     if (isUpdating) return
 
+    const nextState = cycleState(displayState)
+
+    // OPTIMISTIC UPDATE: Show change immediately
+    setOptimisticState(nextState)
     setIsUpdating(true)
-    const nextState = cycleState(state)
 
     try {
       const res = await fetch(`/api/tasks/${taskId}`, {
@@ -108,22 +115,28 @@ function CheckboxIcon({
       }
 
       onUpdate()
+
+      // Clear optimistic state after a short delay to let refetch complete
+      setTimeout(() => setOptimisticState(null), 500)
     } catch (error) {
       console.error('Error updating checkbox state:', error)
+      // REVERT: On error, revert to original state
+      setOptimisticState(null)
+      alert('Failed to update task. Please try again.')
     } finally {
       setIsUpdating(false)
     }
   }
 
-  const display = icons[state] ?? icons[' ']!
+  const display = icons[displayState] ?? icons[' ']!
 
   return (
     <button
       onClick={handleClick}
       disabled={isUpdating}
       className={`font-mono text-sm ${display.color} ${
-        isUpdating ? 'opacity-50 cursor-wait' : 'cursor-pointer hover:scale-110 active:scale-95'
-      } transition-all`}
+        isUpdating ? 'opacity-70' : 'cursor-pointer hover:scale-110 active:scale-95'
+      } transition-all touch-manipulation`}
       title="Click to cycle state"
     >
       {display.icon}
