@@ -12,6 +12,7 @@
 
 ## BACKLOG
 
+- [ ] Make checkbox icons clickable to cycle states: [ ] → [/] → [x] → [ ] (simple 3-state cycle; consider [-] cancelled as 4th)
 - [ ] Investigate optimistic locking for concurrent CRUD writes (design note: rapid parallel inserts can overlap)
 - [ ] Deploy updated skill to ~/.claude/skills/tasks/
 - [ ] Standalone TypeScript parser module (importable, not just CLI)
