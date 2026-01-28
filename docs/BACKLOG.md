@@ -11,6 +11,7 @@
 - [ ] Make checkbox icons clickable to cycle states: [ ] → [/] → [x] → [ ] (simple 3-state cycle; consider [-] cancelled as 4th) #frontend
 
 ## BACKLOG
+- [ ] Light/Dark/Auto mode toggle - implement same pattern as ~/local/projects/whereis-emmy/ #frontend #ui
 - [ ] Settings page: Toggle for single-task-in-progress enforcement (currently allows multiple [/] tasks, make it optional) #frontend #settings
 - [ ] Investigate optimistic locking for concurrent CRUD writes (design note: rapid parallel inserts can overlap) #backend
 - [ ] Deploy updated skill to ~/.claude/skills/tasks/ #tools
