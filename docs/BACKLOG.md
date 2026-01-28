@@ -8,9 +8,14 @@
 
 ## NOW
 
-- [ ] Investigate optimistic locking for concurrent CRUD writes (design note: rapid parallel inserts can overlap) #backend
+- [ ] Eisenhower quadrant grid as default homepage layout with "Today" title #005 #frontend #ux
 
 ## BACKLOG
+- [ ] Add info bubble "(i)" next to "Eisenhower" header with description and link to authoritative source #frontend #ux
+- [ ] Fix Eisenhower filter tile unselect bug - should revert to default unclicked state with no outline #frontend #bugfix
+- [ ] Light/Dark/Auto mode toggle - implement same pattern as ~/local/projects/whereis-emmy/ #frontend #ui
+- [ ] Settings page: Toggle for single-task-in-progress enforcement (currently allows multiple [/] tasks, make it optional) #frontend #settings
+- [ ] Investigate optimistic locking for concurrent CRUD writes (design note: rapid parallel inserts can overlap) #backend
 - [ ] Deploy updated skill to ~/.claude/skills/tasks/ #tools
 - [ ] Validation command (check tasks.md against spec) #tools
 - [ ] migrate-completed-tasks.md update for new checkbox states #docs
@@ -108,3 +113,4 @@
 - [x] Add _spent: time tracking to format spec #docs _done:2026-01-10
 - [x] Create docs/SPEC.md canonical specification #docs _done:2026-01-10
 - [x] Initial project setup #tools _done:2026-01-10
+- [ ] Build reporting page for viewing recently completed tasks - Allow filtering/viewing completed items beyond 12-hour grace period, with date ranges, filters by tag/section, export options #tasks-ng #feature +important

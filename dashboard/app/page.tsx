@@ -40,29 +40,44 @@ function TaskStatusBadge({ status }: { status: Task['status'] }) {
 function CheckboxIcon({
   state,
   taskId,
-  onUpdate
+  onUpdate,
+  task
 }: {
   state: Task['checkboxState']
   taskId: string
   onUpdate: () => void
+  task: Task
 }) {
+  const [optimisticState, setOptimisticState] = useState<Task['checkboxState'] | null>(null)
   const [isUpdating, setIsUpdating] = useState(false)
+
+  // Use optimistic state if available, otherwise use prop state
+  const displayState = optimisticState ?? state
+
+  // Check if task is in grace period
+  const inGracePeriod = task.status === 'completed' && task.dates.done ? (() => {
+    const now = new Date()
+    const doneDate = new Date(task.dates.done)
+    const hoursAgo = (now.getTime() - doneDate.getTime()) / (1000 * 60 * 60)
+    return hoursAgo < 12
+  })() : false
 
   const icons: Record<Task['checkboxState'], { icon: string, color: string }> = {
     ' ': { icon: '[ ]', color: 'text-gray-400' },
     '/': { icon: '[/]', color: 'text-blue-500' },
-    'x': { icon: '[x]', color: 'text-green-500' },
+    'x': { icon: inGracePeriod ? '[x]⏱' : '[x]', color: inGracePeriod ? 'text-green-400 font-bold' : 'text-green-500' },
     '-': { icon: '[-]', color: 'text-gray-500' },
     '>': { icon: '[>]', color: 'text-yellow-500' },
     '?': { icon: '[?]', color: 'text-red-500' }
   }
 
   const cycleState = (current: Task['checkboxState']): Task['checkboxState'] => {
-    // Simple 3-state cycle: [ ] → [/] → [x] → [ ]
-    if (current === ' ') return '/'
-    if (current === '/') return 'x'
-    if (current === 'x') return ' '
-    // For other states, return to pending
+    // 4-state cycle: [ ] → [/] → [x] → [-] → [ ]
+    if (current === ' ') return '/'  // pending → in-progress
+    if (current === '/') return 'x'  // in-progress → completed
+    if (current === 'x') return '-'  // completed → cancelled
+    if (current === '-') return ' '  // cancelled → pending
+    // For other states (deferred, blocked), return to pending
     return ' '
   }
 
@@ -70,8 +85,11 @@ function CheckboxIcon({
     e.stopPropagation() // Prevent parent click handlers
     if (isUpdating) return // Prevent double-clicks
 
+    const nextState = cycleState(displayState)
+
+    // OPTIMISTIC UPDATE: Show change immediately
+    setOptimisticState(nextState)
     setIsUpdating(true)
-    const nextState = cycleState(state)
 
     try {
       const res = await fetch(`/api/tasks/${taskId}`, {
@@ -87,23 +105,28 @@ function CheckboxIcon({
 
       // Trigger refetch after successful update
       onUpdate()
+
+      // Clear optimistic state after a short delay to let refetch complete
+      setTimeout(() => setOptimisticState(null), 500)
     } catch (error) {
       console.error('Error updating checkbox state:', error)
-      // TODO: Add toast notification for errors
+      // REVERT: On error, revert to original state
+      setOptimisticState(null)
+      alert('Failed to update task. Please try again.')
     } finally {
       setIsUpdating(false)
     }
   }
 
-  const { icon, color } = icons[state]
+  const { icon, color } = icons[displayState]
 
   return (
     <button
       onClick={handleClick}
       disabled={isUpdating}
       className={`font-mono text-sm whitespace-nowrap shrink-0 ${color} ${
-        isUpdating ? 'opacity-50 cursor-wait' : 'cursor-pointer hover:scale-110 active:scale-95'
-      } transition-all`}
+        isUpdating ? 'opacity-70' : 'cursor-pointer hover:scale-110 active:scale-95'
+      } transition-all touch-manipulation`}
       title="Click to cycle state"
     >
       {icon}
@@ -263,18 +286,38 @@ export default function OverviewPage() {
   }, [quadrantFilters, getQuadrant])
 
   // Filtered tasks (apply tag filter first)
-  const tagFilteredTasks = useMemo(() => filterByTags(tasks), [filterByTags, tasks])
+  const tagFilteredTasks = useMemo(() => {
+    console.log(`[tagFilteredTasks] Processing ${tasks.length} tasks`)
+    const filtered = filterByTags(tasks)
+    console.log(`[tagFilteredTasks] After tag filter: ${filtered.length} tasks`)
+    return filtered
+  }, [filterByTags, tasks])
 
   // Compute stats on tag-filtered tasks
   const stats = useMemo(() => computeTaskStats(tagFilteredTasks), [tagFilteredTasks])
 
   // Eisenhower counts (on tag-filtered tasks)
   const filteredEisenhowerCounts = useMemo(() => {
+    const GRACE_PERIOD_HOURS = 12
+    const now = new Date()
     const counts = { Q1: 0, Q2: 0, Q3: 0, Q4: 0, total: 0 }
-    const activeTasks = tagFilteredTasks.filter(t =>
-      t.status !== 'completed' && t.status !== 'cancelled'
-    )
-    for (const task of activeTasks) {
+
+    // Count tasks that are not completed/cancelled, or recently completed (grace period)
+    const countableTasks = tagFilteredTasks.filter(t => {
+      // Always count non-completed/non-cancelled tasks
+      if (t.status !== 'completed' && t.status !== 'cancelled') return true
+
+      // For completed/cancelled: check if done within grace period
+      if (t.dates.done) {
+        const doneDate = new Date(t.dates.done)
+        const hoursAgo = (now.getTime() - doneDate.getTime()) / (1000 * 60 * 60)
+        return hoursAgo < GRACE_PERIOD_HOURS
+      }
+
+      return false
+    })
+
+    for (const task of countableTasks) {
       const q = getQuadrant(task)
       counts[q]++
       counts.total++
@@ -283,16 +326,66 @@ export default function OverviewPage() {
   }, [tagFilteredTasks, getQuadrant])
 
   // Active tasks (not completed, not cancelled)
-  const activeTasks = useMemo(() =>
-    tagFilteredTasks.filter(t => t.status !== 'completed' && t.status !== 'cancelled'),
-    [tagFilteredTasks]
-  )
+  // BUT keep completed/cancelled tasks visible for 12 hours (grace period for undo)
+  const activeTasks = useMemo(() => {
+    console.log(`[activeTasks] Starting filter with ${tagFilteredTasks.length} tasks`)
+    console.log(`[activeTasks] Completed tasks in input:`, tagFilteredTasks.filter(t => t.status === 'completed').map(t => ({
+      desc: t.description.substring(0, 40),
+      done: t.dates.done,
+      status: t.status
+    })))
+
+    const GRACE_PERIOD_HOURS = 12
+    const now = new Date()
+
+    const filtered = tagFilteredTasks.filter(t => {
+      // Always show non-completed/non-cancelled tasks
+      if (t.status !== 'completed' && t.status !== 'cancelled') return true
+
+      // For completed/cancelled: check if done within grace period
+      if (t.dates.done) {
+        const doneDate = new Date(t.dates.done)
+        const hoursAgo = (now.getTime() - doneDate.getTime()) / (1000 * 60 * 60)
+        const withinGracePeriod = hoursAgo < GRACE_PERIOD_HOURS
+
+        console.log(`[Grace Period] Task: ${t.description.substring(0, 40)}...`)
+        console.log(`  Status: ${t.status}, Done: ${t.dates.done}`)
+        console.log(`  Now: ${now.toISOString()}, DoneDate: ${doneDate.toISOString()}`)
+        console.log(`  Hours ago: ${hoursAgo.toFixed(2)}, Within period: ${withinGracePeriod}`)
+
+        return withinGracePeriod
+      }
+
+      // If no done date, filter out (old completed tasks)
+      console.log(`[Grace Period] Filtering out ${t.description.substring(0, 40)}... (no done date)`)
+      return false
+    })
+
+    console.log(`[Grace Period] Total tasks: ${tagFilteredTasks.length}, After filter: ${filtered.length}`)
+    return filtered
+  }, [tagFilteredTasks])
 
   // In-progress tasks (for Current Focus)
-  const inProgressTasks = useMemo(() =>
-    tagFilteredTasks.filter(t => t.status === 'in_progress'),
-    [tagFilteredTasks]
-  )
+  // Option A: Show any task that was in-progress within last 12 hours
+  // Mental model: "What I worked on today while it's still today"
+  const inProgressTasks = useMemo(() => {
+    const GRACE_PERIOD_HOURS = 12
+    const now = new Date()
+
+    return tagFilteredTasks.filter(t => {
+      // Always show actual in-progress tasks
+      if (t.status === 'in_progress') return true
+
+      // Show ANY task that left in-progress recently (Option A: Full Grace Period)
+      if (t.dates.last_in_progress) {
+        const lastInProgressDate = new Date(t.dates.last_in_progress)
+        const hoursAgo = (now.getTime() - lastInProgressDate.getTime()) / (1000 * 60 * 60)
+        return hoursAgo < GRACE_PERIOD_HOURS
+      }
+
+      return false
+    })
+  }, [tagFilteredTasks])
 
   // Final filtered tasks for Active Tasks list (tag + quadrant filters)
   const displayedTasks = useMemo(() =>
@@ -475,7 +568,7 @@ export default function OverviewPage() {
                   <CardContent className="py-3 px-4">
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex items-start gap-3 min-w-0">
-                        <CheckboxIcon state={task.checkboxState} taskId={task.id} onUpdate={handleTaskCreated} />
+                        <CheckboxIcon state={task.checkboxState} taskId={task.id} onUpdate={handleTaskCreated} task={task} />
                         <div className="min-w-0">
                           <p className="font-medium text-gray-900 truncate">
                             {task.description}
@@ -527,7 +620,7 @@ export default function OverviewPage() {
                     className="flex items-start justify-between p-3 rounded-lg hover:bg-gray-50 transition-colors border"
                   >
                     <div className="flex items-start gap-3 min-w-0">
-                      <CheckboxIcon state={task.checkboxState} taskId={task.id} onUpdate={handleTaskCreated} />
+                      <CheckboxIcon state={task.checkboxState} taskId={task.id} onUpdate={handleTaskCreated} task={task} />
                       <div className="min-w-0">
                         <p className={`font-medium truncate ${task.isUrgent && task.isImportant ? 'text-red-600' : 'text-gray-900'}`}>
                           {task.description}

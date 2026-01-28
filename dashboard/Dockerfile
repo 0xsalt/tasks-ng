@@ -6,10 +6,11 @@
 FROM oven/bun:1-debian AS base
 WORKDIR /app
 
-# Install dependencies
+# Copy pre-built dependencies (includes local file: packages)
 FROM base AS deps
-COPY package.json bun.lock* ./
-RUN bun install --frozen-lockfile
+COPY package.json ./
+COPY packages ./packages
+COPY node_modules ./node_modules
 
 # Build the application
 FROM base AS builder
