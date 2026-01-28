@@ -230,7 +230,7 @@ export default function OverviewPage() {
   const [tagFilters, setTagFilters] = useState<Set<TagFilter>>(new Set())
   const [quadrantFilters, setQuadrantFilters] = useState<Set<QuadrantFilter>>(new Set())
   const [statusFilter, setStatusFilter] = useState<Task['status'] | null>(null)
-  const [isTodayCollapsed, setIsTodayCollapsed] = useState(false)
+  const [isTodayCollapsed, setIsTodayCollapsed] = useState(true)
 
   // Toggle tag filter
   const toggleTag = useCallback((tag: TagFilter) => {
@@ -553,8 +553,11 @@ export default function OverviewPage() {
       {/* Today Section - Collapseable */}
       {!isLoading && !error && (
         <div className="mb-6">
-          {/* Heading with inline status filters and collapse toggle */}
-          <div className="flex items-center justify-between gap-4 mb-3 flex-wrap">
+          {/* Full-width clickable Today bar */}
+          <button
+            onClick={() => setIsTodayCollapsed(!isTodayCollapsed)}
+            className="w-full flex items-center justify-between gap-4 px-4 py-3 mb-3 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg transition-colors cursor-pointer"
+          >
             <div className="flex items-center gap-3 flex-wrap">
               <div className="flex items-center gap-2">
                 <Zap className="h-5 w-5 text-[#1a759f]" />
@@ -565,7 +568,7 @@ export default function OverviewPage() {
               </div>
 
               {/* Status Filter Buttons - inline with heading */}
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
                 <button
                   onClick={() => setStatusFilter(null)}
                   className={`flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 border transition-all text-xs ${
@@ -602,28 +605,18 @@ export default function OverviewPage() {
               </div>
             </div>
 
-            {/* Collapse toggle button */}
-            <button
-              onClick={() => setIsTodayCollapsed(!isTodayCollapsed)}
-              className="text-sm text-gray-500 hover:text-gray-700 flex items-center gap-1"
-            >
-              {isTodayCollapsed ? (
-                <>
-                  <span>Show</span>
-                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </>
-              ) : (
-                <>
-                  <span>Hide</span>
-                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
-                  </svg>
-                </>
-              )}
-            </button>
-          </div>
+            {/* Collapse indicator */}
+            <div className="flex items-center gap-1 text-sm text-gray-500">
+              <span>{isTodayCollapsed ? 'Show' : 'Hide'}</span>
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                {isTodayCollapsed ? (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                ) : (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                )}
+              </svg>
+            </div>
+          </button>
 
           {/* In-progress task list - collapseable */}
           {!isTodayCollapsed && (
@@ -703,11 +696,11 @@ export default function OverviewPage() {
                   </CardHeader>
                   <CardContent className="pt-3">
                     {quadrantTasks.length > 0 ? (
-                      <div className="space-y-2">
+                      <div className="space-y-1">
                         {quadrantTasks.slice(0, 10).map(task => (
                           <div
                             key={task.id}
-                            className="flex items-start gap-2 p-2 rounded hover:bg-gray-50 transition-colors"
+                            className="flex items-start gap-2 px-1.5 py-1.5 rounded hover:bg-gray-50 transition-colors"
                           >
                             <CheckboxIcon state={task.checkboxState} taskId={task.id} onUpdate={handleTaskCreated} task={task} />
                             <div className="min-w-0 flex-1">
