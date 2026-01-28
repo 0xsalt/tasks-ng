@@ -365,7 +365,8 @@ export default function OverviewPage() {
   }, [tagFilteredTasks])
 
   // In-progress tasks (for Current Focus)
-  // Include completed tasks within grace period (they were "in progress" recently)
+  // Option A: Show any task that was in-progress within last 12 hours
+  // Mental model: "What I worked on today while it's still today"
   const inProgressTasks = useMemo(() => {
     const GRACE_PERIOD_HOURS = 12
     const now = new Date()
@@ -374,10 +375,10 @@ export default function OverviewPage() {
       // Always show actual in-progress tasks
       if (t.status === 'in_progress') return true
 
-      // Also show recently completed tasks (grace period - they were just "in focus")
-      if (t.status === 'completed' && t.dates.done) {
-        const doneDate = new Date(t.dates.done)
-        const hoursAgo = (now.getTime() - doneDate.getTime()) / (1000 * 60 * 60)
+      // Show ANY task that left in-progress recently (Option A: Full Grace Period)
+      if (t.dates.last_in_progress) {
+        const lastInProgressDate = new Date(t.dates.last_in_progress)
+        const hoursAgo = (now.getTime() - lastInProgressDate.getTime()) / (1000 * 60 * 60)
         return hoursAgo < GRACE_PERIOD_HOURS
       }
 

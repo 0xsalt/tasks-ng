@@ -70,3 +70,4 @@
 - [x] Add _spent: time tracking to format spec #docs _done:2026-01-10
 - [x] Create docs/SPEC.md canonical specification #docs _done:2026-01-10
 - [x] Initial project setup #tools _done:2026-01-10
+- [ ] Build reporting page for viewing recently completed tasks - Allow filtering/viewing completed items beyond 12-hour grace period, with date ranges, filters by tag/section, export options #tasks-ng #feature +important

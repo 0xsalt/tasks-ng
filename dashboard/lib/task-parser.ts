@@ -32,6 +32,7 @@ export interface TaskDates {
   due?: string
   done?: string
   created?: string
+  last_in_progress?: string // Timestamp when task last left in-progress state
 }
 
 export interface Task {
@@ -120,7 +121,8 @@ const TAG_REGEX = /#[a-z0-9-]+/gi
 const MENTION_REGEX = /@[a-z0-9-]+/gi
 const MODIFIER_REGEX = /\+[a-z]+(?::[a-z0-9-]+)?/gi
 // Match both date-only (2026-01-28) and ISO timestamps (2026-01-28T16:30:00.000Z)
-const DATE_REGEX = /_([a-z]+):(\d{4}-\d{2}-\d{2}(?:T[\d:.]+Z)?)/gi
+// Also match last_in_progress with underscores: _last_in_progress:2026-01-28T16:30:00.000Z
+const DATE_REGEX = /_([a-z_]+):(\d{4}-\d{2}-\d{2}(?:T[\d:.]+Z)?)/gi
 const TIME_SPENT_REGEX = /_spent:(\d+)/i
 const SECTION_H2_REGEX = /^##\s+(.+)$/
 const SECTION_H3_REGEX = /^###\s+(.+)$/
@@ -232,6 +234,7 @@ function extractDates(line: string): TaskDates {
     if (key === 'due' && value) dates.due = value
     else if (key === 'done' && value) dates.done = value
     else if (key === 'created' && value) dates.created = value
+    else if (key === 'last_in_progress' && value) dates.last_in_progress = value
   }
 
   return dates
@@ -504,6 +507,7 @@ export function buildTaskLine(
   if (dates.due) parts.push(`_due:${dates.due}`)
   if (dates.done) parts.push(`_done:${dates.done}`)
   if (dates.created) parts.push(`_created:${dates.created}`)
+  if (dates.last_in_progress) parts.push(`_last_in_progress:${dates.last_in_progress}`)
 
   // Add time spent
   if (timeSpent !== undefined) parts.push(`_spent:${timeSpent}`)
@@ -658,9 +662,17 @@ export async function updateTask(taskId: string, input: UpdateTaskInput): Promis
   const dates: TaskDates = {
     due: input.due ?? task.dates.due,
     done: input.done ?? task.dates.done,
-    created: task.dates.created
+    created: task.dates.created,
+    last_in_progress: task.dates.last_in_progress
   }
   const timeSpent = input.timeSpent ?? task.timeSpent
+
+  // Track when task leaves in-progress state (for Current Focus grace period)
+  // Option A: Full grace period - show any task that was in-progress within 12 hours
+  if (task.checkboxState === '/' && checkboxState !== '/') {
+    // Task is moving FROM in-progress TO something else
+    dates.last_in_progress = new Date().toISOString()
+  }
 
   // Validation: If completing, require done date
   // IMPORTANT: Store full ISO timestamp for accurate grace period calculation

@@ -23,6 +23,7 @@ export interface Task {
     due?: string
     done?: string
     created?: string
+    last_in_progress?: string
   }
   timeSpent?: number
   isUrgent: boolean
