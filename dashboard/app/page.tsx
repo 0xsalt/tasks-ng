@@ -282,11 +282,26 @@ export default function OverviewPage() {
 
   // Eisenhower counts (on tag-filtered tasks)
   const filteredEisenhowerCounts = useMemo(() => {
+    const GRACE_PERIOD_HOURS = 12
+    const now = new Date()
     const counts = { Q1: 0, Q2: 0, Q3: 0, Q4: 0, total: 0 }
-    const activeTasks = tagFilteredTasks.filter(t =>
-      t.status !== 'completed' && t.status !== 'cancelled'
-    )
-    for (const task of activeTasks) {
+
+    // Count tasks that are not completed/cancelled, or recently completed (grace period)
+    const countableTasks = tagFilteredTasks.filter(t => {
+      // Always count non-completed/non-cancelled tasks
+      if (t.status !== 'completed' && t.status !== 'cancelled') return true
+
+      // For completed/cancelled: check if done within grace period
+      if (t.dates.done) {
+        const doneDate = new Date(t.dates.done)
+        const hoursAgo = (now.getTime() - doneDate.getTime()) / (1000 * 60 * 60)
+        return hoursAgo < GRACE_PERIOD_HOURS
+      }
+
+      return false
+    })
+
+    for (const task of countableTasks) {
       const q = getQuadrant(task)
       counts[q]++
       counts.total++
@@ -295,10 +310,26 @@ export default function OverviewPage() {
   }, [tagFilteredTasks, getQuadrant])
 
   // Active tasks (not completed, not cancelled)
-  const activeTasks = useMemo(() =>
-    tagFilteredTasks.filter(t => t.status !== 'completed' && t.status !== 'cancelled'),
-    [tagFilteredTasks]
-  )
+  // BUT keep completed/cancelled tasks visible for 12 hours (grace period for undo)
+  const activeTasks = useMemo(() => {
+    const GRACE_PERIOD_HOURS = 12
+    const now = new Date()
+
+    return tagFilteredTasks.filter(t => {
+      // Always show non-completed/non-cancelled tasks
+      if (t.status !== 'completed' && t.status !== 'cancelled') return true
+
+      // For completed/cancelled: check if done within grace period
+      if (t.dates.done) {
+        const doneDate = new Date(t.dates.done)
+        const hoursAgo = (now.getTime() - doneDate.getTime()) / (1000 * 60 * 60)
+        return hoursAgo < GRACE_PERIOD_HOURS
+      }
+
+      // If no done date, filter out (old completed tasks)
+      return false
+    })
+  }, [tagFilteredTasks])
 
   // In-progress tasks (for Current Focus)
   const inProgressTasks = useMemo(() =>
