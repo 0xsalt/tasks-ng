@@ -285,7 +285,12 @@ export default function OverviewPage() {
   }, [quadrantFilters, getQuadrant])
 
   // Filtered tasks (apply tag filter first)
-  const tagFilteredTasks = useMemo(() => filterByTags(tasks), [filterByTags, tasks])
+  const tagFilteredTasks = useMemo(() => {
+    console.log(`[tagFilteredTasks] Processing ${tasks.length} tasks`)
+    const filtered = filterByTags(tasks)
+    console.log(`[tagFilteredTasks] After tag filter: ${filtered.length} tasks`)
+    return filtered
+  }, [filterByTags, tasks])
 
   // Compute stats on tag-filtered tasks
   const stats = useMemo(() => computeTaskStats(tagFilteredTasks), [tagFilteredTasks])
@@ -322,6 +327,13 @@ export default function OverviewPage() {
   // Active tasks (not completed, not cancelled)
   // BUT keep completed/cancelled tasks visible for 12 hours (grace period for undo)
   const activeTasks = useMemo(() => {
+    console.log(`[activeTasks] Starting filter with ${tagFilteredTasks.length} tasks`)
+    console.log(`[activeTasks] Completed tasks in input:`, tagFilteredTasks.filter(t => t.status === 'completed').map(t => ({
+      desc: t.description.substring(0, 40),
+      done: t.dates.done,
+      status: t.status
+    })))
+
     const GRACE_PERIOD_HOURS = 12
     const now = new Date()
 

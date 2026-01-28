@@ -123,6 +123,11 @@ export function useTasks(filters?: {
       }
 
       const data: TasksResponse = await res.json()
+      console.log(`[useTasks] Fetched ${data.tasks.length} tasks from API`)
+      console.log(`[useTasks] Completed tasks in response:`, data.tasks.filter(t => t.status === 'completed').map(t => ({
+        desc: t.description.substring(0, 40),
+        done: t.dates.done
+      })))
       setTasks(data.tasks)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error')
