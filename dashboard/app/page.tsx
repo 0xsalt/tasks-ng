@@ -47,7 +47,7 @@ function CheckboxIcon({ state }: { state: Task['checkboxState'] }) {
     '?': { icon: '[?]', color: 'text-red-500' }
   }
   const { icon, color } = icons[state]
-  return <span className={`font-mono text-sm ${color}`}>{icon}</span>
+  return <span className={`font-mono text-sm whitespace-nowrap shrink-0 ${color}`}>{icon}</span>
 }
 
 function LoadingSpinner() {
@@ -339,77 +339,7 @@ export default function OverviewPage() {
 
       {error && <ErrorDisplay message={error} />}
 
-      {/* Current Focus - All In-Progress Tasks */}
-      {!isLoading && !error && inProgressTasks.length > 0 && (
-        <div className="mb-6">
-          <h2 className="text-lg lg:text-xl font-bold text-gray-900 mb-3 flex items-center gap-2">
-            <Zap className="h-5 w-5 text-[#1a759f]" />
-            Current Focus
-            <Badge variant="primary" className="ml-2">{inProgressTasks.length}</Badge>
-          </h2>
-          <div className="space-y-2">
-            {inProgressTasks.map(task => (
-              <Card key={task.id} className="border-l-4 border-l-[#1a759f] bg-gradient-to-r from-[#1a759f]/5 to-transparent">
-                <CardContent className="py-3 px-4">
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex items-start gap-3 min-w-0">
-                      <CheckboxIcon state={task.checkboxState} />
-                      <div className="min-w-0">
-                        <p className="font-medium text-gray-900 truncate">
-                          {task.description}
-                        </p>
-                        <div className="flex items-center gap-2 mt-1 text-xs text-gray-500 flex-wrap">
-                          <span className="bg-gray-100 px-2 py-0.5 rounded">{task.section}</span>
-                          {task.tags.slice(0, 3).map(tag => (
-                            <span key={tag} className="text-[#1a759f]">#{tag}</span>
-                          ))}
-                          {task.dates.due && (
-                            <span className="flex items-center gap-1 text-orange-600">
-                              <Calendar className="h-3 w-3" />
-                              {task.dates.due}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                    <TaskStatusBadge status={task.status} />
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Compact Task Overview */}
-      {!isLoading && !error && (
-        <div className="mb-6">
-          <div className="flex items-center gap-3 flex-wrap">
-            <div className="flex items-center gap-2 bg-white rounded-lg px-3 py-2 border shadow-sm">
-              <CheckSquare className="h-4 w-4 text-[#1a759f]" />
-              <span className="text-sm text-gray-600">Total:</span>
-              <span className="font-bold text-gray-900">{stats.total}</span>
-            </div>
-            <div className="flex items-center gap-2 bg-white rounded-lg px-3 py-2 border shadow-sm">
-              <Clock className="h-4 w-4 text-[#76c893]" />
-              <span className="text-sm text-gray-600">Active:</span>
-              <span className="font-bold text-[#76c893]">{stats.active}</span>
-            </div>
-            <div className="flex items-center gap-2 bg-white rounded-lg px-3 py-2 border shadow-sm">
-              <Zap className="h-4 w-4 text-blue-500" />
-              <span className="text-sm text-gray-600">In Progress:</span>
-              <span className="font-bold text-blue-600">{stats.byStatus.in_progress}</span>
-            </div>
-            <div className="flex items-center gap-2 bg-white rounded-lg px-3 py-2 border shadow-sm">
-              <AlertCircle className="h-4 w-4 text-red-500" />
-              <span className="text-sm text-gray-600">Blocked:</span>
-              <span className="font-bold text-red-600">{stats.byStatus.blocked}</span>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Eisenhower Quadrant Buttons */}
+      {/* Eisenhower Quadrant Buttons - FIRST */}
       {!isLoading && !error && (
         <div className="mb-6">
           <div className="flex items-center gap-2 mb-3">
@@ -436,6 +366,80 @@ export default function OverviewPage() {
               />
             ))}
           </div>
+        </div>
+      )}
+
+      {/* Current Focus - Stats at top, then In-Progress Tasks */}
+      {!isLoading && !error && (
+        <div className="mb-6">
+          <h2 className="text-lg lg:text-xl font-bold text-gray-900 mb-3 flex items-center gap-2">
+            <Zap className="h-5 w-5 text-[#1a759f]" />
+            Current Focus
+            {inProgressTasks.length > 0 && (
+              <Badge variant="primary" className="ml-2">{inProgressTasks.length}</Badge>
+            )}
+          </h2>
+
+          {/* Stats mini-cards at top of Current Focus */}
+          <div className="flex items-center gap-3 flex-wrap mb-4">
+            <div className="flex items-center gap-2 bg-white rounded-lg px-3 py-2 border shadow-sm">
+              <CheckSquare className="h-4 w-4 text-[#1a759f]" />
+              <span className="text-sm text-gray-600">Total:</span>
+              <span className="font-bold text-gray-900">{stats.total}</span>
+            </div>
+            <div className="flex items-center gap-2 bg-white rounded-lg px-3 py-2 border shadow-sm">
+              <Clock className="h-4 w-4 text-[#76c893]" />
+              <span className="text-sm text-gray-600">Active:</span>
+              <span className="font-bold text-[#76c893]">{stats.active}</span>
+            </div>
+            <div className="flex items-center gap-2 bg-white rounded-lg px-3 py-2 border shadow-sm">
+              <Zap className="h-4 w-4 text-blue-500" />
+              <span className="text-sm text-gray-600">In Progress:</span>
+              <span className="font-bold text-blue-600">{stats.byStatus.in_progress}</span>
+            </div>
+            <div className="flex items-center gap-2 bg-white rounded-lg px-3 py-2 border shadow-sm">
+              <AlertCircle className="h-4 w-4 text-red-500" />
+              <span className="text-sm text-gray-600">Blocked:</span>
+              <span className="font-bold text-red-600">{stats.byStatus.blocked}</span>
+            </div>
+          </div>
+
+          {/* In-progress task list */}
+          {inProgressTasks.length > 0 ? (
+            <div className="space-y-2">
+              {inProgressTasks.map(task => (
+                <Card key={task.id} className="border-l-4 border-l-[#1a759f] bg-gradient-to-r from-[#1a759f]/5 to-transparent">
+                  <CardContent className="py-3 px-4">
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex items-start gap-3 min-w-0">
+                        <CheckboxIcon state={task.checkboxState} />
+                        <div className="min-w-0">
+                          <p className="font-medium text-gray-900 truncate">
+                            {task.description}
+                          </p>
+                          <div className="flex items-center gap-2 mt-1 text-xs text-gray-500 flex-wrap">
+                            <span className="bg-gray-100 px-2 py-0.5 rounded">{task.section}</span>
+                            {task.tags.slice(0, 3).map(tag => (
+                              <span key={tag} className="text-[#1a759f]">#{tag}</span>
+                            ))}
+                            {task.dates.due && (
+                              <span className="flex items-center gap-1 text-orange-600">
+                                <Calendar className="h-3 w-3" />
+                                {task.dates.due}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                      <TaskStatusBadge status={task.status} />
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-gray-500 italic">No tasks currently in progress</p>
+          )}
         </div>
       )}
 
