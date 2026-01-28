@@ -8,10 +8,9 @@
 
 ## NOW
 
-- [ ] 002: Parser Layer 2 - File operations module with locking, backup, XDG paths #tools
+- [ ] 003: Parser Layer 3 - PAI integration module with AI features, journal sync #tools +pai
 
 ## BACKLOG
-- [ ] 003: Parser Layer 3 - PAI integration module with AI features, journal sync #tools +pai
 - [ ] Make checkbox icons clickable to cycle states: [ ] → [/] → [x] → [ ] (simple 3-state cycle; consider [-] cancelled as 4th) #frontend
 - [ ] Investigate optimistic locking for concurrent CRUD writes (design note: rapid parallel inserts can overlap) #backend
 - [ ] Deploy updated skill to ~/.claude/skills/tasks/ #tools
@@ -54,6 +53,7 @@
 
 ## DONE
 
+- [x] 002: Parser Layer 2 - File operations module with locking, backup, XDG paths #tools _done:2026-01-27
 - [x] 001: Parser Layer 1 - Pure parser module, zero deps, SPEC-compliant #tools _done:2026-01-27
 - [x] Go mobile-first PWA with quick capture FAB, bottom nav, responsive layout #frontend _done:2026-01-26
 - [x] Make dashboard dynamic - live data from ~/tasks.md via API #frontend _done:2026-01-26
