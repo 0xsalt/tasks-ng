@@ -9,13 +9,11 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import fs from 'fs/promises'
-import path from 'path'
-import os from 'os'
-import { withLock } from '@/lib/file-lock'
+import { withLock, getTasksFilePath } from '@/lib/task-parser'
 
 export const dynamic = 'force-dynamic'
 
-const TASKS_FILE = process.env.TASKS_FILE || path.join(os.homedir(), 'tasks.md')
+const TASKS_FILE = getTasksFilePath()
 
 /**
  * Ensure INBOX section exists and get its position

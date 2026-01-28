@@ -22,6 +22,7 @@
     "typescript": "^5"
   },
   "dependencies": {
+    "@tasks-ng/file-ops": "file:../packages/file-ops",
     "@tasks-ng/parser": "file:../packages/parser",
     "@radix-ui/react-slot": "^1.2.4",
     "class-variance-authority": "^0.7.1",
