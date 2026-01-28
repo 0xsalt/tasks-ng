@@ -59,7 +59,17 @@ interface SprintSummary {
   overdueTasks: SprintTask[]
 }
 
-function CheckboxIcon({ state }: { state: string }) {
+function CheckboxIcon({
+  state,
+  taskId,
+  onUpdate
+}: {
+  state: string
+  taskId: string
+  onUpdate: () => void
+}) {
+  const [isUpdating, setIsUpdating] = useState(false)
+
   const icons: Record<string, { icon: string, color: string }> = {
     ' ': { icon: '[ ]', color: 'text-gray-400' },
     '/': { icon: '[/]', color: 'text-blue-500' },
@@ -68,14 +78,63 @@ function CheckboxIcon({ state }: { state: string }) {
     '>': { icon: '[>]', color: 'text-yellow-500' },
     '?': { icon: '[?]', color: 'text-red-500' }
   }
+
+  const cycleState = (current: string): string => {
+    // Simple 3-state cycle: [ ] → [/] → [x] → [ ]
+    if (current === ' ') return '/'
+    if (current === '/') return 'x'
+    if (current === 'x') return ' '
+    // For other states, return to pending
+    return ' '
+  }
+
+  const handleClick = async (e: React.MouseEvent) => {
+    e.stopPropagation()
+    if (isUpdating) return
+
+    setIsUpdating(true)
+    const nextState = cycleState(state)
+
+    try {
+      const res = await fetch(`/api/tasks/${taskId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ checkboxState: nextState })
+      })
+
+      if (!res.ok) {
+        const data = await res.json()
+        throw new Error(data.error || 'Failed to update task')
+      }
+
+      onUpdate()
+    } catch (error) {
+      console.error('Error updating checkbox state:', error)
+    } finally {
+      setIsUpdating(false)
+    }
+  }
+
   const display = icons[state] ?? icons[' ']!
-  return <span className={`font-mono text-sm ${display.color}`}>{display.icon}</span>
+
+  return (
+    <button
+      onClick={handleClick}
+      disabled={isUpdating}
+      className={`font-mono text-sm ${display.color} ${
+        isUpdating ? 'opacity-50 cursor-wait' : 'cursor-pointer hover:scale-110 active:scale-95'
+      } transition-all`}
+      title="Click to cycle state"
+    >
+      {display.icon}
+    </button>
+  )
 }
 
-function TaskRow({ task }: { task: SprintTask }) {
+function TaskRow({ task, onUpdate }: { task: SprintTask; onUpdate: () => void }) {
   return (
     <div className="flex items-start gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors border">
-      <CheckboxIcon state={task.checkboxState} />
+      <CheckboxIcon state={task.checkboxState} taskId={task.id} onUpdate={onUpdate} />
       <div className="flex-1 min-w-0">
         <p className={cn(
           "font-medium text-sm",
@@ -259,7 +318,7 @@ export default function SprintPage() {
           <Card className="border-l-4 border-l-[#1a759f] bg-gradient-to-r from-[#1a759f]/5 to-transparent">
             <CardContent className="pt-4 pb-4">
               <div className="flex items-start gap-3">
-                <CheckboxIcon state={data.currentFocus.checkboxState} />
+                <CheckboxIcon state={data.currentFocus.checkboxState} taskId={data.currentFocus.id} onUpdate={fetchSprint} />
                 <div className="flex-1">
                   <p className="text-lg font-semibold text-gray-900">
                     {data.currentFocus.description}
@@ -306,7 +365,7 @@ export default function SprintPage() {
                 </p>
               ) : (
                 data.nowTasks.slice(0, 8).map(task => (
-                  <TaskRow key={task.id} task={task} />
+                  <TaskRow key={task.id} task={task} onUpdate={fetchSprint} />
                 ))
               )}
               {data.nowTasks.length > 8 && (
@@ -337,7 +396,7 @@ export default function SprintPage() {
                 </p>
               ) : (
                 data.upNext.map(task => (
-                  <TaskRow key={task.id} task={task} />
+                  <TaskRow key={task.id} task={task} onUpdate={fetchSprint} />
                 ))
               )}
             </div>
@@ -359,7 +418,7 @@ export default function SprintPage() {
             <CardContent>
               <div className="space-y-2">
                 {data.overdueTasks.map(task => (
-                  <TaskRow key={task.id} task={task} />
+                  <TaskRow key={task.id} task={task} onUpdate={fetchSprint} />
                 ))}
               </div>
             </CardContent>
@@ -381,7 +440,7 @@ export default function SprintPage() {
             <CardContent>
               <div className="space-y-2">
                 {data.blockedTasks.map(task => (
-                  <TaskRow key={task.id} task={task} />
+                  <TaskRow key={task.id} task={task} onUpdate={fetchSprint} />
                 ))}
               </div>
             </CardContent>

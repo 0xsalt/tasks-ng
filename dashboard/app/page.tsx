@@ -37,7 +37,17 @@ function TaskStatusBadge({ status }: { status: Task['status'] }) {
   return <Badge variant={variant}>{label}</Badge>
 }
 
-function CheckboxIcon({ state }: { state: Task['checkboxState'] }) {
+function CheckboxIcon({
+  state,
+  taskId,
+  onUpdate
+}: {
+  state: Task['checkboxState']
+  taskId: string
+  onUpdate: () => void
+}) {
+  const [isUpdating, setIsUpdating] = useState(false)
+
   const icons: Record<Task['checkboxState'], { icon: string, color: string }> = {
     ' ': { icon: '[ ]', color: 'text-gray-400' },
     '/': { icon: '[/]', color: 'text-blue-500' },
@@ -46,8 +56,59 @@ function CheckboxIcon({ state }: { state: Task['checkboxState'] }) {
     '>': { icon: '[>]', color: 'text-yellow-500' },
     '?': { icon: '[?]', color: 'text-red-500' }
   }
+
+  const cycleState = (current: Task['checkboxState']): Task['checkboxState'] => {
+    // Simple 3-state cycle: [ ] → [/] → [x] → [ ]
+    if (current === ' ') return '/'
+    if (current === '/') return 'x'
+    if (current === 'x') return ' '
+    // For other states, return to pending
+    return ' '
+  }
+
+  const handleClick = async (e: React.MouseEvent) => {
+    e.stopPropagation() // Prevent parent click handlers
+    if (isUpdating) return // Prevent double-clicks
+
+    setIsUpdating(true)
+    const nextState = cycleState(state)
+
+    try {
+      const res = await fetch(`/api/tasks/${taskId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ checkboxState: nextState })
+      })
+
+      if (!res.ok) {
+        const data = await res.json()
+        throw new Error(data.error || 'Failed to update task')
+      }
+
+      // Trigger refetch after successful update
+      onUpdate()
+    } catch (error) {
+      console.error('Error updating checkbox state:', error)
+      // TODO: Add toast notification for errors
+    } finally {
+      setIsUpdating(false)
+    }
+  }
+
   const { icon, color } = icons[state]
-  return <span className={`font-mono text-sm whitespace-nowrap shrink-0 ${color}`}>{icon}</span>
+
+  return (
+    <button
+      onClick={handleClick}
+      disabled={isUpdating}
+      className={`font-mono text-sm whitespace-nowrap shrink-0 ${color} ${
+        isUpdating ? 'opacity-50 cursor-wait' : 'cursor-pointer hover:scale-110 active:scale-95'
+      } transition-all`}
+      title="Click to cycle state"
+    >
+      {icon}
+    </button>
+  )
 }
 
 function LoadingSpinner() {
@@ -414,7 +475,7 @@ export default function OverviewPage() {
                   <CardContent className="py-3 px-4">
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex items-start gap-3 min-w-0">
-                        <CheckboxIcon state={task.checkboxState} />
+                        <CheckboxIcon state={task.checkboxState} taskId={task.id} onUpdate={handleTaskCreated} />
                         <div className="min-w-0">
                           <p className="font-medium text-gray-900 truncate">
                             {task.description}
@@ -466,7 +527,7 @@ export default function OverviewPage() {
                     className="flex items-start justify-between p-3 rounded-lg hover:bg-gray-50 transition-colors border"
                   >
                     <div className="flex items-start gap-3 min-w-0">
-                      <CheckboxIcon state={task.checkboxState} />
+                      <CheckboxIcon state={task.checkboxState} taskId={task.id} onUpdate={handleTaskCreated} />
                       <div className="min-w-0">
                         <p className={`font-medium truncate ${task.isUrgent && task.isImportant ? 'text-red-600' : 'text-gray-900'}`}>
                           {task.description}
