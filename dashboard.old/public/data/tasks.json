@@ -1,0 +1,53 @@
+{
+  "tasks": [
+    {
+      "id": "1",
+      "subject": "Complete service-dashboard architecture",
+      "description": "Implement project vs deployment separation pattern",
+      "status": "in_progress",
+      "priority": "P1",
+      "tags": ["@pai", "@work"],
+      "created": "2026-01-26T06:00:00Z"
+    },
+    {
+      "id": "2",
+      "subject": "Add v0.dev API integration",
+      "description": "Enable rapid dashboard prototyping with v0.dev",
+      "status": "pending",
+      "priority": "P2",
+      "tags": ["@pai"],
+      "created": "2026-01-26T09:00:00Z"
+    },
+    {
+      "id": "3",
+      "subject": "Review quarterly goals",
+      "description": "Check progress on Q1 objectives",
+      "status": "pending",
+      "priority": "P2",
+      "tags": ["@personal"],
+      "due": "2026-01-31T00:00:00Z",
+      "created": "2026-01-20T00:00:00Z"
+    },
+    {
+      "id": "4",
+      "subject": "Fix auth token refresh",
+      "description": "Tokens expiring before refresh happens",
+      "status": "blocked",
+      "priority": "P1",
+      "tags": ["@work"],
+      "blockedBy": "Waiting for API team",
+      "created": "2026-01-24T00:00:00Z"
+    },
+    {
+      "id": "5",
+      "subject": "Update PAI documentation",
+      "description": "Document new skill system patterns",
+      "status": "completed",
+      "priority": "P3",
+      "tags": ["@pai"],
+      "created": "2026-01-22T00:00:00Z",
+      "completedAt": "2026-01-25T00:00:00Z"
+    }
+  ],
+  "lastUpdated": "2026-01-26T17:40:00Z"
+}

@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tasks Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .priority-p1 { border-left: 4px solid #ef4444; }
+    .priority-p2 { border-left: 4px solid #f59e0b; }
+    .priority-p3 { border-left: 4px solid #3b82f6; }
+    .priority-p4 { border-left: 4px solid #6b7280; }
+    .kanban-column { min-height: 400px; }
+    .task-card:hover { transform: translateY(-2px); transition: transform 0.2s; }
+    .tag { font-size: 0.75rem; padding: 0.125rem 0.5rem; border-radius: 9999px; }
+    .filter-active { background-color: #3b82f6; color: white; }
+  </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+  <div class="container mx-auto p-4 max-w-7xl">
+    <header class="mb-6">
+      <h1 class="text-2xl font-bold text-gray-900">Tasks Dashboard</h1>
+      <p class="text-gray-600 text-sm">Kanban view of ~/tasks.md</p>
+      <div id="last-updated" class="text-xs text-gray-500 mt-1"></div>
+    </header>
+
+    <!-- Filters -->
+    <div class="mb-4 flex flex-wrap gap-2">
+      <button class="filter-btn filter-active px-3 py-1 rounded text-sm bg-gray-200" data-filter="all">All</button>
+      <button class="filter-btn px-3 py-1 rounded text-sm bg-gray-200" data-filter="p1">P1</button>
+      <button class="filter-btn px-3 py-1 rounded text-sm bg-gray-200" data-filter="p2">P2</button>
+      <button class="filter-btn px-3 py-1 rounded text-sm bg-gray-200" data-filter="p3">P3</button>
+      <span class="mx-2 text-gray-300">|</span>
+      <button class="filter-btn px-3 py-1 rounded text-sm bg-gray-200" data-filter="@work">@work</button>
+      <button class="filter-btn px-3 py-1 rounded text-sm bg-gray-200" data-filter="@personal">@personal</button>
+      <button class="filter-btn px-3 py-1 rounded text-sm bg-gray-200" data-filter="@pai">@pai</button>
+    </div>
+
+    <!-- Kanban Board -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <!-- Pending -->
+      <div class="bg-white rounded-lg shadow p-4">
+        <h2 class="font-semibold text-gray-700 mb-3 flex items-center">
+          <span class="w-3 h-3 rounded-full bg-gray-400 mr-2"></span>
+          Pending
+          <span id="pending-count" class="ml-auto text-sm text-gray-500">0</span>
+        </h2>
+        <div id="pending-tasks" class="kanban-column space-y-2"></div>
+      </div>
+
+      <!-- In Progress -->
+      <div class="bg-white rounded-lg shadow p-4">
+        <h2 class="font-semibold text-gray-700 mb-3 flex items-center">
+          <span class="w-3 h-3 rounded-full bg-blue-500 mr-2"></span>
+          In Progress
+          <span id="in-progress-count" class="ml-auto text-sm text-gray-500">0</span>
+        </h2>
+        <div id="in-progress-tasks" class="kanban-column space-y-2"></div>
+      </div>
+
+      <!-- Blocked -->
+      <div class="bg-white rounded-lg shadow p-4">
+        <h2 class="font-semibold text-gray-700 mb-3 flex items-center">
+          <span class="w-3 h-3 rounded-full bg-red-500 mr-2"></span>
+          Blocked
+          <span id="blocked-count" class="ml-auto text-sm text-gray-500">0</span>
+        </h2>
+        <div id="blocked-tasks" class="kanban-column space-y-2"></div>
+      </div>
+
+      <!-- Completed -->
+      <div class="bg-white rounded-lg shadow p-4">
+        <h2 class="font-semibold text-gray-700 mb-3 flex items-center">
+          <span class="w-3 h-3 rounded-full bg-green-500 mr-2"></span>
+          Completed
+          <span id="completed-count" class="ml-auto text-sm text-gray-500">0</span>
+        </h2>
+        <div id="completed-tasks" class="kanban-column space-y-2 opacity-60"></div>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div class="bg-white rounded-lg shadow p-4 text-center">
+        <div id="total-tasks" class="text-2xl font-bold text-gray-900">0</div>
+        <div class="text-sm text-gray-500">Total Tasks</div>
+      </div>
+      <div class="bg-white rounded-lg shadow p-4 text-center">
+        <div id="p1-tasks" class="text-2xl font-bold text-red-500">0</div>
+        <div class="text-sm text-gray-500">P1 (Urgent)</div>
+      </div>
+      <div class="bg-white rounded-lg shadow p-4 text-center">
+        <div id="overdue-tasks" class="text-2xl font-bold text-orange-500">0</div>
+        <div class="text-sm text-gray-500">Overdue</div>
+      </div>
+      <div class="bg-white rounded-lg shadow p-4 text-center">
+        <div id="completion-rate" class="text-2xl font-bold text-green-500">0%</div>
+        <div class="text-sm text-gray-500">Done This Week</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let allTasks = [];
+    let currentFilter = 'all';
+
+    async function loadTasks() {
+      try {
+        const response = await fetch('/data/tasks.json');
+        const data = await response.json();
+        allTasks = data.tasks || [];
+        document.getElementById('last-updated').textContent = `Last updated: ${new Date(data.lastUpdated).toLocaleString()}`;
+        renderTasks();
+        updateStats();
+      } catch (err) {
+        console.error('Failed to load tasks:', err);
+        document.getElementById('pending-tasks').innerHTML = '<p class="text-gray-500 text-sm">No tasks data found</p>';
+      }
+    }
+
+    function renderTasks() {
+      const containers = {
+        'pending': document.getElementById('pending-tasks'),
+        'in_progress': document.getElementById('in-progress-tasks'),
+        'blocked': document.getElementById('blocked-tasks'),
+        'completed': document.getElementById('completed-tasks'),
+      };
+
+      // Clear containers
+      Object.values(containers).forEach(c => c.innerHTML = '');
+
+      // Filter tasks
+      const filtered = currentFilter === 'all'
+        ? allTasks
+        : allTasks.filter(t =>
+            t.priority === currentFilter ||
+            (t.tags && t.tags.includes(currentFilter))
+          );
+
+      // Group by status
+      const grouped = { pending: [], in_progress: [], blocked: [], completed: [] };
+      filtered.forEach(task => {
+        const status = task.status || 'pending';
+        if (grouped[status]) grouped[status].push(task);
+      });
+
+      // Render each group
+      Object.entries(grouped).forEach(([status, tasks]) => {
+        const container = containers[status];
+        if (!container) return;
+
+        tasks.forEach(task => {
+          container.appendChild(createTaskCard(task));
+        });
+
+        // Update counts
+        const countEl = document.getElementById(`${status.replace('_', '-')}-count`);
+        if (countEl) countEl.textContent = tasks.length;
+      });
+    }
+
+    function createTaskCard(task) {
+      const card = document.createElement('div');
+      const priorityClass = task.priority ? `priority-${task.priority.toLowerCase()}` : '';
+
+      card.className = `task-card bg-gray-50 rounded p-3 ${priorityClass} cursor-pointer`;
+      card.innerHTML = `
+        <div class="flex items-start justify-between">
+          <h3 class="text-sm font-medium text-gray-900 flex-1">${escapeHtml(task.subject)}</h3>
+          ${task.priority ? `<span class="text-xs font-semibold text-gray-500 ml-2">${task.priority}</span>` : ''}
+        </div>
+        ${task.description ? `<p class="text-xs text-gray-500 mt-1 line-clamp-2">${escapeHtml(task.description)}</p>` : ''}
+        ${task.tags && task.tags.length ? `
+          <div class="mt-2 flex flex-wrap gap-1">
+            ${task.tags.map(tag => `<span class="tag bg-blue-100 text-blue-700">${escapeHtml(tag)}</span>`).join('')}
+          </div>
+        ` : ''}
+        ${task.due ? `
+          <div class="mt-2 text-xs text-gray-400">
+            Due: ${new Date(task.due).toLocaleDateString()}
+          </div>
+        ` : ''}
+      `;
+      return card;
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function updateStats() {
+      const total = allTasks.length;
+      const p1 = allTasks.filter(t => t.priority === 'P1').length;
+      const overdue = allTasks.filter(t => t.due && new Date(t.due) < new Date() && t.status !== 'completed').length;
+      const completed = allTasks.filter(t => t.status === 'completed').length;
+      const rate = total > 0 ? Math.round((completed / total) * 100) : 0;
+
+      document.getElementById('total-tasks').textContent = total;
+      document.getElementById('p1-tasks').textContent = p1;
+      document.getElementById('overdue-tasks').textContent = overdue;
+      document.getElementById('completion-rate').textContent = `${rate}%`;
+    }
+
+    // Filter buttons
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('filter-active'));
+        btn.classList.add('filter-active');
+        currentFilter = btn.dataset.filter;
+        renderTasks();
+      });
+    });
+
+    // Initial load
+    loadTasks();
+
+    // Auto-refresh every 30 seconds
+    setInterval(loadTasks, 30000);
+  </script>
+</body>
+</html>
