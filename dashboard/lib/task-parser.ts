@@ -785,7 +785,24 @@ export async function getTasks(filters: TaskFilters = {}): Promise<Task[]> {
     tasks = tasks.filter(t => filters.status!.includes(t.status))
   } else if (!filters.includeCompleted) {
     // Default: exclude completed and cancelled
-    tasks = tasks.filter(t => t.status !== 'completed' && t.status !== 'cancelled')
+    // BUT keep completed tasks visible for 12 hours (grace period for undo)
+    const GRACE_PERIOD_HOURS = 12
+    const now = new Date()
+
+    tasks = tasks.filter(t => {
+      // Always show non-completed/non-cancelled tasks
+      if (t.status !== 'completed' && t.status !== 'cancelled') return true
+
+      // For completed/cancelled: check if done within grace period
+      if (t.dates.done) {
+        const doneDate = new Date(t.dates.done)
+        const hoursAgo = (now.getTime() - doneDate.getTime()) / (1000 * 60 * 60)
+        return hoursAgo < GRACE_PERIOD_HOURS
+      }
+
+      // If no done date, filter out (old completed tasks)
+      return false
+    })
   }
 
   // Filter by tags
