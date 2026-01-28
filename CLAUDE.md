@@ -44,6 +44,46 @@ git push origin main
 - **Runtime location:** ~/local/services/tasks-ng/
 - **Port:** Dynamically assigned by service-dashboard (currently 8082)
 
+## Web Testing
+
+**CRITICAL: Verify web changes with Playwright before claiming they are implemented.**
+
+### Why
+- Source edits in `~/local/projects/tasks-ng/dashboard/` must be synced to `~/local/services/tasks-ng/`
+- Docker containers cache builds; services must be rebuilt and restarted
+- HTML response may show loading skeleton before JavaScript hydrates
+
+### Verification Process
+
+```bash
+# 1. Sync source to services
+cp <changed-files> ~/local/services/tasks-ng/<path>/
+
+# 2. Rebuild and restart
+cd ~/local/services/tasks-ng
+docker compose build --no-cache app
+docker compose down && docker compose up -d
+
+# 3. Wait for healthy status
+sleep 20 && docker compose ps
+
+# 4. Screenshot with Playwright
+cd ~/.claude/skills/Browser
+bun -e "
+import { chromium } from 'playwright';
+const browser = await chromium.launch({ headless: true });
+const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+await page.goto('https://the-commons.taila8bee6.ts.net:8082/', { waitUntil: 'networkidle' });
+await page.screenshot({ path: '/tmp/verify.png' });
+await browser.close();
+"
+
+# 5. View screenshot to confirm changes
+Read /tmp/verify.png
+```
+
+**Never claim a web change is complete without viewing the screenshot.**
+
 ## Key Decisions
 
 - **OpenAI API over subprocess:** Direct fetch to OpenAI API (not bun subprocess spawn) for chat feature
