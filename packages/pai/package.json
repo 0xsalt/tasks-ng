@@ -1,0 +1,45 @@
+{
+  "name": "@tasks-ng/pai",
+  "version": "1.0.0",
+  "description": "PAI integration for tasks-ng - AI features, journal sync, notifications",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "test": "bun test",
+    "prepublishOnly": "bun run build"
+  },
+  "keywords": [
+    "tasks",
+    "pai",
+    "ai",
+    "journal",
+    "notifications"
+  ],
+  "author": "tasks-ng",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tasks-ng/tasks-ng.git",
+    "directory": "packages/pai"
+  },
+  "dependencies": {
+    "@tasks-ng/parser": "file:../parser",
+    "@tasks-ng/file-ops": "file:../file-ops"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.3.0"
+  }
+}
