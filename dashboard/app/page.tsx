@@ -365,10 +365,25 @@ export default function OverviewPage() {
   }, [tagFilteredTasks])
 
   // In-progress tasks (for Current Focus)
-  const inProgressTasks = useMemo(() =>
-    tagFilteredTasks.filter(t => t.status === 'in_progress'),
-    [tagFilteredTasks]
-  )
+  // Include completed tasks within grace period (they were "in progress" recently)
+  const inProgressTasks = useMemo(() => {
+    const GRACE_PERIOD_HOURS = 12
+    const now = new Date()
+
+    return tagFilteredTasks.filter(t => {
+      // Always show actual in-progress tasks
+      if (t.status === 'in_progress') return true
+
+      // Also show recently completed tasks (grace period - they were just "in focus")
+      if (t.status === 'completed' && t.dates.done) {
+        const doneDate = new Date(t.dates.done)
+        const hoursAgo = (now.getTime() - doneDate.getTime()) / (1000 * 60 * 60)
+        return hoursAgo < GRACE_PERIOD_HOURS
+      }
+
+      return false
+    })
+  }, [tagFilteredTasks])
 
   // Final filtered tasks for Active Tasks list (tag + quadrant filters)
   const displayedTasks = useMemo(() =>
