@@ -48,6 +48,18 @@ git push origin main
 
 **CRITICAL: Verify web changes with Playwright before claiming they are implemented.**
 
+### When to Rebuild vs Reload
+
+| Change Type | Action Required |
+|------------|-----------------|
+| Source code (JS/TS/TSX) | Full rebuild: `docker compose build --no-cache app` |
+| CSS/styles | Full rebuild (compiled at build time) |
+| Environment variables | Restart only: `docker compose down && docker compose up -d` |
+| nginx.conf | Restart nginx: `docker compose restart nginx` |
+| Mounted files (tasks.md, docs/) | No action (live mounts) |
+
+**Rule:** Next.js production builds compile at build time. Any code change requires a full rebuild - there is no hot reload in Docker production mode.
+
 ### Why
 - Source edits in `~/local/projects/tasks-ng/dashboard/` must be synced to `~/local/services/tasks-ng/`
 - Docker containers cache builds; services must be rebuilt and restarted
