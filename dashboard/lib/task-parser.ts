@@ -1,8 +1,8 @@
 /**
- * Task Parser Module for tasks-ng
+ * Task Parser Module for tasks-ng Dashboard
  *
- * Parses tasks.md files into structured Task objects and provides
- * file operations for CRUD functionality.
+ * This module re-exports the pure parser from @tasks-ng/parser
+ * and adds file operations (Layer 2 functionality).
  *
  * Based on SPEC.md v2.0.0
  */
@@ -14,88 +14,88 @@ import os from 'os'
 import crypto from 'crypto'
 import { withLock } from './file-lock'
 
+// Re-export everything from the pure parser package
+export {
+  // Types
+  type CheckboxState,
+  type TaskStatus,
+  type TaskDates,
+  type Task,
+  type EisenhowerQuadrant,
+  type EisenhowerMatrix,
+  type ParsedFile,
+  type BuildTaskLineOptions,
+
+  // Parser functions
+  parseTasksFile,
+  parseLine,
+  buildTaskTree,
+  getTopLevelTasks,
+  filterByStatus,
+  filterByTags,
+  filterBySection,
+  getActiveTasks,
+
+  // Builder functions
+  buildTaskLine,
+  taskToLine,
+  updateTaskLine,
+  replaceTaskLine,
+  insertLine,
+  deleteLine,
+  deleteLines,
+
+  // Extractors
+  checkboxToStatus,
+  statusToCheckbox,
+  generateTaskId,
+  simpleHash,
+  extractTags,
+  extractMentions,
+  extractModifiers,
+  extractDates,
+  extractTimeSpent,
+  extractDescription,
+  getIndentLevel,
+  isTaskLine,
+  extractCheckboxState,
+  CHECKBOX_REGEX,
+  TAG_REGEX,
+  MENTION_REGEX,
+  MODIFIER_REGEX,
+  DATE_REGEX,
+  TIME_SPENT_REGEX,
+  SECTION_H2_REGEX,
+  SECTION_H3_REGEX,
+
+  // Eisenhower
+  getQuadrant,
+  groupByQuadrant,
+  filterByQuadrant,
+  getQuadrantInfo,
+  sortByEisenhower
+} from '@tasks-ng/parser'
+
+// Import types we need for file operations
+import type {
+  Task,
+  TaskStatus,
+  CheckboxState,
+  TaskDates,
+  ParsedFile
+} from '@tasks-ng/parser'
+
+import {
+  parseTasksFile,
+  buildTaskLine,
+  statusToCheckbox,
+  CHECKBOX_REGEX,
+  SECTION_H2_REGEX,
+  SECTION_H3_REGEX
+} from '@tasks-ng/parser'
+
 // ============================================================================
-// Types
-// ============================================================================
-
-export type CheckboxState = ' ' | '/' | 'x' | '-' | '>' | '?'
-
-export type TaskStatus =
-  | 'pending'
-  | 'in_progress'
-  | 'completed'
-  | 'cancelled'
-  | 'deferred'
-  | 'blocked'
-
-export interface TaskDates {
-  due?: string
-  done?: string
-  created?: string
-}
-
-export interface Task {
-  id: string
-  lineNumber: number
-  description: string
-  rawLine: string
-  checkboxState: CheckboxState
-  status: TaskStatus
-  level: number // Nesting 0-3
-  parentId?: string
-  children: Task[]
-  tags: string[]
-  mentions: string[]
-  modifiers: string[]
-  dates: TaskDates
-  timeSpent?: number
-  isUrgent: boolean
-  isImportant: boolean
-  section: string
-}
-
-export interface ParsedFile {
-  tasks: Task[]
-  sections: string[]
-  rawContent: string
-  lines: string[]
-}
-
-export interface CreateTaskInput {
-  description: string
-  status?: TaskStatus
-  section?: string
-  parentId?: string
-  tags?: string[]
-  mentions?: string[]
-  modifiers?: string[]
-  due?: string
-  timeSpent?: number
-}
-
-export interface UpdateTaskInput {
-  description?: string
-  status?: TaskStatus
-  checkboxState?: CheckboxState
-  tags?: string[]
-  mentions?: string[]
-  modifiers?: string[]
-  due?: string
-  done?: string
-  timeSpent?: number
-}
-
-export type EisenhowerQuadrant = 'Q1' | 'Q2' | 'Q3' | 'Q4'
-
-export interface EisenhowerMatrix {
-  Q1: Task[] // Urgent + Important: Do first
-  Q2: Task[] // Important: Schedule
-  Q3: Task[] // Urgent: Delegate
-  Q4: Task[] // Neither: Consider dropping
-}
-
-// ============================================================================
-// Constants
+// File Location Configuration (Layer 2)
 // ============================================================================
 
 // XDG Base Directory compliant: ~/.local/share/tasks-ng/tasks.md
@@ -114,288 +114,8 @@ function resolveTasksFile(): string {
 const TASKS_FILE = resolveTasksFile()
 const BACKUP_DIR = path.join(path.dirname(TASKS_FILE), '.task-backups')
 
-// Regex patterns from SPEC.md
-const CHECKBOX_REGEX = /^(\s*)- \[([ /x\->?])\]\s*/
-const TAG_REGEX = /#[a-z0-9-]+/gi
-const MENTION_REGEX = /@[a-z0-9-]+/gi
-const MODIFIER_REGEX = /\+[a-z]+(?::[a-z0-9-]+)?/gi
-const DATE_REGEX = /_([a-z]+):(\d{4}-\d{2}-\d{2})/gi
-const TIME_SPENT_REGEX = /_spent:(\d+)/i
-const SECTION_H2_REGEX = /^##\s+(.+)$/
-const SECTION_H3_REGEX = /^###\s+(.+)$/
-
 // ============================================================================
-// Helper Functions
-// ============================================================================
-
-/**
- * Map checkbox state to task status
- */
-export function checkboxToStatus(state: CheckboxState): TaskStatus {
-  switch (state) {
-    case ' ':
-      return 'pending'
-    case '/':
-      return 'in_progress'
-    case 'x':
-      return 'completed'
-    case '-':
-      return 'cancelled'
-    case '>':
-      return 'deferred'
-    case '?':
-      return 'blocked'
-    default:
-      return 'pending'
-  }
-}
-
-/**
- * Map task status to checkbox state
- */
-export function statusToCheckbox(status: TaskStatus): CheckboxState {
-  switch (status) {
-    case 'pending':
-      return ' '
-    case 'in_progress':
-      return '/'
-    case 'completed':
-      return 'x'
-    case 'cancelled':
-      return '-'
-    case 'deferred':
-      return '>'
-    case 'blocked':
-      return '?'
-    default:
-      return ' '
-  }
-}
-
-/**
- * Generate task ID: L{lineNumber}_{contentHash}
- */
-export function generateTaskId(lineNumber: number, content: string): string {
-  const hash = crypto.createHash('md5').update(content).digest('hex').substring(0, 6)
-  return `L${lineNumber}_${hash}`
-}
-
-/**
- * Extract Eisenhower quadrant from task
- */
-export function getQuadrant(task: Task): EisenhowerQuadrant {
-  if (task.isUrgent && task.isImportant) return 'Q1'
-  if (task.isImportant) return 'Q2'
-  if (task.isUrgent) return 'Q3'
-  return 'Q4'
-}
-
-/**
- * Parse tags from line
- */
-function extractTags(line: string): string[] {
-  const matches = line.match(TAG_REGEX)
-  return matches ? matches.map(t => t.slice(1).toLowerCase()) : []
-}
-
-/**
- * Parse mentions from line
- */
-function extractMentions(line: string): string[] {
-  const matches = line.match(MENTION_REGEX)
-  return matches ? matches.map(m => m.slice(1).toLowerCase()) : []
-}
-
-/**
- * Parse modifiers from line
- */
-function extractModifiers(line: string): string[] {
-  const matches = line.match(MODIFIER_REGEX)
-  return matches ? matches.map(m => m.slice(1).toLowerCase()) : []
-}
-
-/**
- * Parse dates from line
- */
-function extractDates(line: string): TaskDates {
-  const dates: TaskDates = {}
-  let match: RegExpExecArray | null
-
-  // Reset regex lastIndex
-  DATE_REGEX.lastIndex = 0
-
-  while ((match = DATE_REGEX.exec(line)) !== null) {
-    const key = match[1]?.toLowerCase()
-    const value = match[2]
-
-    if (key === 'due' && value) dates.due = value
-    else if (key === 'done' && value) dates.done = value
-    else if (key === 'created' && value) dates.created = value
-  }
-
-  return dates
-}
-
-/**
- * Extract time spent from line
- */
-function extractTimeSpent(line: string): number | undefined {
-  const match = line.match(TIME_SPENT_REGEX)
-  return match?.[1] ? parseInt(match[1], 10) : undefined
-}
-
-/**
- * Extract description (text between checkbox and metadata)
- */
-function extractDescription(line: string): string {
-  // Remove checkbox
-  let desc = line.replace(CHECKBOX_REGEX, '')
-
-  // Remove all metadata tokens
-  desc = desc.replace(TAG_REGEX, '')
-  desc = desc.replace(MENTION_REGEX, '')
-  desc = desc.replace(MODIFIER_REGEX, '')
-  desc = desc.replace(DATE_REGEX, '')
-  desc = desc.replace(TIME_SPENT_REGEX, '')
-  desc = desc.replace(/\*\*/g, '') // Remove bold markers
-
-  return desc.trim()
-}
-
-/**
- * Calculate indentation level
- */
-function getIndentLevel(line: string): number {
-  const match = line.match(/^(\s*)/)
-  if (!match?.[1]) return 0
-  const spaces = match[1].length
-  return Math.floor(spaces / 4)
-}
-
-// ============================================================================
-// Parser Functions
-// ============================================================================
-
-/**
- * Parse a single line into a Task object
- */
-export function parseLine(line: string, lineNumber: number, section: string): Task | null {
-  const checkboxMatch = line.match(CHECKBOX_REGEX)
-  if (!checkboxMatch) return null
-
-  const checkboxState = checkboxMatch[2] as CheckboxState
-  const level = getIndentLevel(line)
-
-  // Validate max nesting depth
-  if (level > 3) return null
-
-  const tags = extractTags(line)
-  const modifiers = extractModifiers(line)
-  const isUrgent = modifiers.includes('urgent')
-  const isImportant = modifiers.includes('important')
-
-  const task: Task = {
-    id: generateTaskId(lineNumber, line),
-    lineNumber,
-    description: extractDescription(line),
-    rawLine: line,
-    checkboxState,
-    status: checkboxToStatus(checkboxState),
-    level,
-    children: [],
-    tags,
-    mentions: extractMentions(line),
-    modifiers,
-    dates: extractDates(line),
-    timeSpent: extractTimeSpent(line),
-    isUrgent,
-    isImportant,
-    section
-  }
-
-  return task
-}
-
-/**
- * Parse entire tasks.md file
- */
-export function parseTasksFile(content: string): ParsedFile {
-  const lines = content.split('\n')
-  const tasks: Task[] = []
-  const sections: string[] = []
-  let currentSection = 'Unsorted'
-
-  // First pass: parse all tasks
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i]
-    if (line === undefined) continue
-    const lineNumber = i + 1 // 1-indexed
-
-    // Track sections
-    const h2Match = line.match(SECTION_H2_REGEX)
-    if (h2Match?.[1]) {
-      currentSection = h2Match[1].trim()
-      if (!sections.includes(currentSection)) {
-        sections.push(currentSection)
-      }
-      continue
-    }
-
-    const h3Match = line.match(SECTION_H3_REGEX)
-    if (h3Match?.[1]) {
-      currentSection = h3Match[1].trim()
-      if (!sections.includes(currentSection)) {
-        sections.push(currentSection)
-      }
-      continue
-    }
-
-    // Parse task
-    const task = parseLine(line, lineNumber, currentSection)
-    if (task) {
-      tasks.push(task)
-    }
-  }
-
-  // Second pass: build parent-child relationships
-  buildTaskTree(tasks)
-
-  return {
-    tasks,
-    sections,
-    rawContent: content,
-    lines
-  }
-}
-
-/**
- * Build parent-child relationships based on indentation
- */
-function buildTaskTree(tasks: Task[]): void {
-  const stack: Task[] = []
-
-  for (const task of tasks) {
-    // Pop tasks from stack until we find parent level
-    let top = stack[stack.length - 1]
-    while (stack.length > 0 && top && top.level >= task.level) {
-      stack.pop()
-      top = stack[stack.length - 1]
-    }
-
-    // If stack has items, top is our parent
-    const parent = stack[stack.length - 1]
-    if (parent) {
-      task.parentId = parent.id
-      parent.children.push(task)
-    }
-
-    // Push current task to stack
-    stack.push(task)
-  }
-}
-
-// ============================================================================
-// File Operations
+// File Operations (Layer 2)
 // ============================================================================
 
 /**
@@ -467,52 +187,42 @@ export async function writeTasksFile(content: string): Promise<void> {
 }
 
 /**
- * Build a task line from components
+ * Check if tasks.md exists
  */
-export function buildTaskLine(
-  description: string,
-  checkboxState: CheckboxState,
-  level: number,
-  tags: string[],
-  mentions: string[],
-  modifiers: string[],
-  dates: TaskDates,
+export function tasksFileExists(): boolean {
+  return fsSync.existsSync(TASKS_FILE)
+}
+
+// ============================================================================
+// CRUD Operations (Layer 2)
+// ============================================================================
+
+export interface CreateTaskInput {
+  description: string
+  status?: TaskStatus
+  section?: string
+  parentId?: string
+  tags?: string[]
+  mentions?: string[]
+  modifiers?: string[]
+  due?: string
   timeSpent?: number
-): string {
-  const indent = '    '.repeat(level)
-  const checkbox = `- [${checkboxState}]`
+}
 
-  const parts = [description]
-
-  // Add tags
-  for (const tag of tags) {
-    parts.push(`#${tag}`)
-  }
-
-  // Add mentions
-  for (const mention of mentions) {
-    parts.push(`@${mention}`)
-  }
-
-  // Add modifiers
-  for (const mod of modifiers) {
-    parts.push(`+${mod}`)
-  }
-
-  // Add dates
-  if (dates.due) parts.push(`_due:${dates.due}`)
-  if (dates.done) parts.push(`_done:${dates.done}`)
-  if (dates.created) parts.push(`_created:${dates.created}`)
-
-  // Add time spent
-  if (timeSpent !== undefined) parts.push(`_spent:${timeSpent}`)
-
-  return `${indent}${checkbox} ${parts.join(' ')}`
+export interface UpdateTaskInput {
+  description?: string
+  status?: TaskStatus
+  checkboxState?: CheckboxState
+  tags?: string[]
+  mentions?: string[]
+  modifiers?: string[]
+  due?: string
+  done?: string
+  timeSpent?: number
 }
 
 /**
  * Find the line number to insert a new task in a section
- * Returns the line number after the section header or after the last task in section
  */
 function findInsertPosition(
   lines: string[],
@@ -596,16 +306,16 @@ export async function insertTask(input: CreateTaskInput): Promise<Task> {
   }
 
   // Build task line
-  const taskLine = buildTaskLine(
-    input.description,
+  const taskLine = buildTaskLine({
+    description: input.description,
     checkboxState,
     level,
-    input.tags || [],
-    input.mentions || [],
+    tags: input.tags || [],
+    mentions: input.mentions || [],
     modifiers,
-    { due: input.due },
-    input.timeSpent
-  )
+    dates: { due: input.due },
+    timeSpent: input.timeSpent
+  })
 
   // Find insert position
   const insertLineNum = findInsertPosition(
@@ -689,16 +399,16 @@ export async function updateTask(taskId: string, input: UpdateTaskInput): Promis
   }
 
   // Build new line
-  const newLine = buildTaskLine(
+  const newLine = buildTaskLine({
     description,
     checkboxState,
-    task.level,
+    level: task.level,
     tags,
     mentions,
     modifiers,
     dates,
     timeSpent
-  )
+  })
 
   // Replace line (convert to 0-indexed)
   lines[task.lineNumber - 1] = newLine
@@ -768,7 +478,7 @@ export interface TaskFilters {
   status?: TaskStatus[]
   tags?: string[]
   section?: string
-  quadrant?: EisenhowerQuadrant
+  quadrant?: 'Q1' | 'Q2' | 'Q3' | 'Q4'
   includeCompleted?: boolean
   flat?: boolean
 }
@@ -776,6 +486,9 @@ export interface TaskFilters {
 export async function getTasks(filters: TaskFilters = {}): Promise<Task[]> {
   const parsed = await readTasksFile()
   let tasks = parsed.tasks
+
+  // Import filter helpers from the parser
+  const { getQuadrant } = await import('@tasks-ng/parser')
 
   // Filter by status
   if (filters.status && filters.status.length > 0) {
@@ -812,22 +525,15 @@ export async function getTasks(filters: TaskFilters = {}): Promise<Task[]> {
 /**
  * Get Eisenhower matrix grouping
  */
-export async function getEisenhowerMatrix(includeCompleted = false): Promise<EisenhowerMatrix> {
+export async function getEisenhowerMatrix(includeCompleted = false): Promise<{
+  Q1: Task[]
+  Q2: Task[]
+  Q3: Task[]
+  Q4: Task[]
+}> {
   const tasks = await getTasks({ includeCompleted, flat: true })
-
-  const matrix: EisenhowerMatrix = {
-    Q1: [],
-    Q2: [],
-    Q3: [],
-    Q4: []
-  }
-
-  for (const task of tasks) {
-    const quadrant = getQuadrant(task)
-    matrix[quadrant].push(task)
-  }
-
-  return matrix
+  const { groupByQuadrant } = await import('@tasks-ng/parser')
+  return groupByQuadrant(tasks)
 }
 
 /**
@@ -836,11 +542,4 @@ export async function getEisenhowerMatrix(includeCompleted = false): Promise<Eis
 export async function getSections(): Promise<string[]> {
   const parsed = await readTasksFile()
   return parsed.sections
-}
-
-/**
- * Check if tasks.md exists
- */
-export function tasksFileExists(): boolean {
-  return fsSync.existsSync(TASKS_FILE)
 }
