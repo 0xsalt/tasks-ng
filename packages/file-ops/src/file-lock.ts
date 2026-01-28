@@ -5,7 +5,6 @@
 
 import fs from 'fs/promises'
 import path from 'path'
-import os from 'os'
 
 const LOCK_TIMEOUT_MS = 10000 // 10 second lock timeout
 const POLL_INTERVAL_MS = 50 // Check lock every 50ms

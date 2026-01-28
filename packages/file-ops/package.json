@@ -1,0 +1,45 @@
+{
+  "name": "@tasks-ng/file-ops",
+  "version": "1.0.0",
+  "description": "File operations for tasks.md - XDG paths, atomic writes, backup, locking",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "test": "bun test",
+    "prepublishOnly": "bun run build"
+  },
+  "keywords": [
+    "tasks",
+    "markdown",
+    "file-operations",
+    "xdg",
+    "atomic-write",
+    "backup"
+  ],
+  "author": "tasks-ng",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tasks-ng/tasks-ng.git",
+    "directory": "packages/file-ops"
+  },
+  "dependencies": {
+    "@tasks-ng/parser": "file:../parser"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.3.0"
+  }
+}
