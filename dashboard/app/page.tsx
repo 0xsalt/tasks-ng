@@ -700,11 +700,11 @@ export default function OverviewPage() {
                         {quadrantTasks.slice(0, 10).map(task => (
                           <div
                             key={task.id}
-                            className="flex items-start gap-2 px-1 py-1.5 rounded hover:bg-gray-50 transition-colors"
+                            className="flex items-start gap-2 px-0.5 py-1.5 rounded hover:bg-gray-50 transition-colors"
                           >
                             <CheckboxIcon state={task.checkboxState} taskId={task.id} onUpdate={handleTaskCreated} task={task} />
                             <div className="min-w-0 flex-1">
-                              <p className="text-xs font-normal text-gray-900 line-clamp-2 leading-relaxed">
+                              <p className="text-xs font-normal text-gray-900 line-clamp-2 leading-relaxed break-words">
                                 {getStatusPrefix(task)}{task.description}
                               </p>
                               <div className="flex items-center gap-1.5 mt-1 text-xs text-gray-500 flex-wrap">
