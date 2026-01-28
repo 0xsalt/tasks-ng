@@ -607,7 +607,7 @@ export default function OverviewPage() {
 
             {/* Collapse indicator */}
             <div className="flex items-center gap-1 text-sm text-gray-500">
-              <span>{isTodayCollapsed ? 'Show' : 'Hide'}</span>
+              {!isTodayCollapsed && <span>Hide</span>}
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 {isTodayCollapsed ? (
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -700,7 +700,7 @@ export default function OverviewPage() {
                         {quadrantTasks.slice(0, 10).map(task => (
                           <div
                             key={task.id}
-                            className="flex items-start gap-2 px-1.5 py-1.5 rounded hover:bg-gray-50 transition-colors"
+                            className="flex items-start gap-2 px-1 py-1.5 rounded hover:bg-gray-50 transition-colors"
                           >
                             <CheckboxIcon state={task.checkboxState} taskId={task.id} onUpdate={handleTaskCreated} task={task} />
                             <div className="min-w-0 flex-1">
