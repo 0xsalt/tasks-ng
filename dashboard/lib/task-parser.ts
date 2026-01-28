@@ -119,7 +119,8 @@ const CHECKBOX_REGEX = /^(\s*)- \[([ /x\->?])\]\s*/
 const TAG_REGEX = /#[a-z0-9-]+/gi
 const MENTION_REGEX = /@[a-z0-9-]+/gi
 const MODIFIER_REGEX = /\+[a-z]+(?::[a-z0-9-]+)?/gi
-const DATE_REGEX = /_([a-z]+):(\d{4}-\d{2}-\d{2})/gi
+// Match both date-only (2026-01-28) and ISO timestamps (2026-01-28T16:30:00.000Z)
+const DATE_REGEX = /_([a-z]+):(\d{4}-\d{2}-\d{2}(?:T[\d:.]+Z)?)/gi
 const TIME_SPENT_REGEX = /_spent:(\d+)/i
 const SECTION_H2_REGEX = /^##\s+(.+)$/
 const SECTION_H3_REGEX = /^###\s+(.+)$/
@@ -662,8 +663,9 @@ export async function updateTask(taskId: string, input: UpdateTaskInput): Promis
   const timeSpent = input.timeSpent ?? task.timeSpent
 
   // Validation: If completing, require done date
+  // IMPORTANT: Store full ISO timestamp for accurate grace period calculation
   if (checkboxState === 'x' && !dates.done) {
-    dates.done = new Date().toISOString().split('T')[0]
+    dates.done = new Date().toISOString() // Full timestamp: 2026-01-28T16:30:00.000Z
   }
 
   // Validation: Parent can only be completed if all children are done/cancelled
@@ -789,6 +791,13 @@ export async function getTasks(filters: TaskFilters = {}): Promise<Task[]> {
     const GRACE_PERIOD_HOURS = 12
     const now = new Date()
 
+    console.log(`[BACKEND getTasks] Starting grace period filter. Now: ${now.toISOString()}`)
+    console.log(`[BACKEND getTasks] Completed tasks before filter:`, tasks.filter(t => t.status === 'completed').map(t => ({
+      desc: t.description.substring(0, 40),
+      done: t.dates.done,
+      status: t.status
+    })))
+
     tasks = tasks.filter(t => {
       // Always show non-completed/non-cancelled tasks
       if (t.status !== 'completed' && t.status !== 'cancelled') return true
@@ -797,12 +806,21 @@ export async function getTasks(filters: TaskFilters = {}): Promise<Task[]> {
       if (t.dates.done) {
         const doneDate = new Date(t.dates.done)
         const hoursAgo = (now.getTime() - doneDate.getTime()) / (1000 * 60 * 60)
-        return hoursAgo < GRACE_PERIOD_HOURS
+        const withinPeriod = hoursAgo < GRACE_PERIOD_HOURS
+
+        console.log(`[BACKEND Grace Period] ${t.description.substring(0, 40)}`)
+        console.log(`  Done: ${t.dates.done}, DoneDate: ${doneDate.toISOString()}`)
+        console.log(`  Hours ago: ${hoursAgo.toFixed(2)}, Within period: ${withinPeriod}`)
+
+        return withinPeriod
       }
 
       // If no done date, filter out (old completed tasks)
+      console.log(`[BACKEND Grace Period] Filtering out ${t.description.substring(0, 40)} (no done date)`)
       return false
     })
+
+    console.log(`[BACKEND getTasks] After grace period filter: ${tasks.filter(t => t.status === 'completed').length} completed tasks remain`)
   }
 
   // Filter by tags
