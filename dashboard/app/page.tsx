@@ -290,50 +290,52 @@ export default function OverviewPage() {
             Real-time view of ~/.local/share/tasks-ng/tasks.md
           </p>
 
-          {/* Tag Filter Buttons */}
-          <div className="flex items-center gap-3 mb-4">
-            <span className="text-sm text-gray-500">Filter:</span>
-            <TagFilterButton
-              tag="work"
-              active={tagFilters.has('work')}
-              onClick={() => toggleTag('work')}
-            />
-            <TagFilterButton
-              tag="pers"
-              active={tagFilters.has('pers')}
-              onClick={() => toggleTag('pers')}
-            />
-            {tagFilters.size > 0 && (
-              <button
-                onClick={() => setTagFilters(new Set())}
-                className="text-xs text-gray-500 hover:text-gray-700 underline"
-              >
-                clear
-              </button>
+          {/* Active Tasks Count + Tag Filters (side by side) */}
+          <div className="flex items-center gap-4 flex-wrap">
+            {isLoading ? (
+              <div className="inline-flex items-center gap-2 bg-white rounded-lg px-4 py-3 shadow-md border">
+                <Loader2 className="h-4 w-4 animate-spin text-[#1a759f]" />
+                <span className="text-gray-600">Loading...</span>
+              </div>
+            ) : error ? (
+              <div className="inline-flex items-center gap-2 bg-red-50 rounded-lg px-4 py-3 border border-red-200">
+                <AlertCircle className="h-4 w-4 text-red-500" />
+                <span className="text-red-600">Could not load tasks</span>
+              </div>
+            ) : (
+              <div className="inline-block bg-white rounded-lg px-4 py-3 shadow-md border border-[#76c893]/30">
+                <p className="text-2xl font-bold text-[#76c893]">
+                  {stats.active} Active Tasks
+                </p>
+                <p className="text-xs text-gray-500">
+                  {stats.total} total {tagFilters.size > 0 && `matching #${[...tagFilters].join(' #')}`}
+                </p>
+              </div>
             )}
-          </div>
 
-          {/* Active Tasks Count */}
-          {isLoading ? (
-            <div className="inline-flex items-center gap-2 bg-white rounded-lg px-4 py-3 shadow-md border">
-              <Loader2 className="h-4 w-4 animate-spin text-[#1a759f]" />
-              <span className="text-gray-600">Loading...</span>
+            {/* Tag Filter Buttons - to the right of Active Tasks */}
+            <div className="flex items-center gap-3">
+              <span className="text-sm text-gray-500">Filter:</span>
+              <TagFilterButton
+                tag="work"
+                active={tagFilters.has('work')}
+                onClick={() => toggleTag('work')}
+              />
+              <TagFilterButton
+                tag="pers"
+                active={tagFilters.has('pers')}
+                onClick={() => toggleTag('pers')}
+              />
+              {tagFilters.size > 0 && (
+                <button
+                  onClick={() => setTagFilters(new Set())}
+                  className="text-xs text-gray-500 hover:text-gray-700 underline"
+                >
+                  clear
+                </button>
+              )}
             </div>
-          ) : error ? (
-            <div className="inline-flex items-center gap-2 bg-red-50 rounded-lg px-4 py-3 border border-red-200">
-              <AlertCircle className="h-4 w-4 text-red-500" />
-              <span className="text-red-600">Could not load tasks</span>
-            </div>
-          ) : (
-            <div className="inline-block bg-white rounded-lg px-4 py-3 shadow-md border border-[#76c893]/30">
-              <p className="text-2xl font-bold text-[#76c893]">
-                {stats.active} Active Tasks
-              </p>
-              <p className="text-xs text-gray-500">
-                {stats.total} total {tagFilters.size > 0 && `matching #${[...tagFilters].join(' #')}`}
-              </p>
-            </div>
-          )}
+          </div>
         </div>
       </div>
 
