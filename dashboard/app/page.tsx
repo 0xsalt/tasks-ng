@@ -72,11 +72,12 @@ function CheckboxIcon({
   }
 
   const cycleState = (current: Task['checkboxState']): Task['checkboxState'] => {
-    // Simple 3-state cycle: [ ] → [/] → [x] → [ ]
-    if (current === ' ') return '/'
-    if (current === '/') return 'x'
-    if (current === 'x') return ' '
-    // For other states, return to pending
+    // 4-state cycle: [ ] → [/] → [x] → [-] → [ ]
+    if (current === ' ') return '/'  // pending → in-progress
+    if (current === '/') return 'x'  // in-progress → completed
+    if (current === 'x') return '-'  // completed → cancelled
+    if (current === '-') return ' '  // cancelled → pending
+    // For other states (deferred, blocked), return to pending
     return ' '
   }
 
