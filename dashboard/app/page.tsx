@@ -40,11 +40,13 @@ function TaskStatusBadge({ status }: { status: Task['status'] }) {
 function CheckboxIcon({
   state,
   taskId,
-  onUpdate
+  onUpdate,
+  task
 }: {
   state: Task['checkboxState']
   taskId: string
   onUpdate: () => void
+  task: Task
 }) {
   const [optimisticState, setOptimisticState] = useState<Task['checkboxState'] | null>(null)
   const [isUpdating, setIsUpdating] = useState(false)
@@ -52,10 +54,18 @@ function CheckboxIcon({
   // Use optimistic state if available, otherwise use prop state
   const displayState = optimisticState ?? state
 
+  // Check if task is in grace period
+  const inGracePeriod = task.status === 'completed' && task.dates.done ? (() => {
+    const now = new Date()
+    const doneDate = new Date(task.dates.done)
+    const hoursAgo = (now.getTime() - doneDate.getTime()) / (1000 * 60 * 60)
+    return hoursAgo < 12
+  })() : false
+
   const icons: Record<Task['checkboxState'], { icon: string, color: string }> = {
     ' ': { icon: '[ ]', color: 'text-gray-400' },
     '/': { icon: '[/]', color: 'text-blue-500' },
-    'x': { icon: '[x]', color: 'text-green-500' },
+    'x': { icon: inGracePeriod ? '[x]⏱' : '[x]', color: inGracePeriod ? 'text-green-400 font-bold' : 'text-green-500' },
     '-': { icon: '[-]', color: 'text-gray-500' },
     '>': { icon: '[>]', color: 'text-yellow-500' },
     '?': { icon: '[?]', color: 'text-red-500' }
@@ -315,7 +325,7 @@ export default function OverviewPage() {
     const GRACE_PERIOD_HOURS = 12
     const now = new Date()
 
-    return tagFilteredTasks.filter(t => {
+    const filtered = tagFilteredTasks.filter(t => {
       // Always show non-completed/non-cancelled tasks
       if (t.status !== 'completed' && t.status !== 'cancelled') return true
 
@@ -323,12 +333,23 @@ export default function OverviewPage() {
       if (t.dates.done) {
         const doneDate = new Date(t.dates.done)
         const hoursAgo = (now.getTime() - doneDate.getTime()) / (1000 * 60 * 60)
-        return hoursAgo < GRACE_PERIOD_HOURS
+        const withinGracePeriod = hoursAgo < GRACE_PERIOD_HOURS
+
+        console.log(`[Grace Period] Task: ${t.description.substring(0, 40)}...`)
+        console.log(`  Status: ${t.status}, Done: ${t.dates.done}`)
+        console.log(`  Now: ${now.toISOString()}, DoneDate: ${doneDate.toISOString()}`)
+        console.log(`  Hours ago: ${hoursAgo.toFixed(2)}, Within period: ${withinGracePeriod}`)
+
+        return withinGracePeriod
       }
 
       // If no done date, filter out (old completed tasks)
+      console.log(`[Grace Period] Filtering out ${t.description.substring(0, 40)}... (no done date)`)
       return false
     })
+
+    console.log(`[Grace Period] Total tasks: ${tagFilteredTasks.length}, After filter: ${filtered.length}`)
+    return filtered
   }, [tagFilteredTasks])
 
   // In-progress tasks (for Current Focus)
@@ -518,7 +539,7 @@ export default function OverviewPage() {
                   <CardContent className="py-3 px-4">
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex items-start gap-3 min-w-0">
-                        <CheckboxIcon state={task.checkboxState} taskId={task.id} onUpdate={handleTaskCreated} />
+                        <CheckboxIcon state={task.checkboxState} taskId={task.id} onUpdate={handleTaskCreated} task={task} />
                         <div className="min-w-0">
                           <p className="font-medium text-gray-900 truncate">
                             {task.description}
@@ -570,7 +591,7 @@ export default function OverviewPage() {
                     className="flex items-start justify-between p-3 rounded-lg hover:bg-gray-50 transition-colors border"
                   >
                     <div className="flex items-start gap-3 min-w-0">
-                      <CheckboxIcon state={task.checkboxState} taskId={task.id} onUpdate={handleTaskCreated} />
+                      <CheckboxIcon state={task.checkboxState} taskId={task.id} onUpdate={handleTaskCreated} task={task} />
                       <div className="min-w-0">
                         <p className={`font-medium truncate ${task.isUrgent && task.isImportant ? 'text-red-600' : 'text-gray-900'}`}>
                           {task.description}
