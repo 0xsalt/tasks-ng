@@ -3,6 +3,8 @@ import "./globals.css"
 import { Sidebar } from "../components/sidebar"
 import { MobileNav } from "../components/mobile-nav"
 import { QuickCapture } from "../components/quick-capture"
+import { ThemeProvider } from "./context/ThemeContext"
+import { ThemeToggle } from "./components/ThemeToggle"
 
 export const metadata: Metadata = {
   title: "tasks-ng",
@@ -38,24 +40,31 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="mobile-web-app-capable" content="yes" />
       </head>
-      <body className="bg-gray-50">
-        {/* Desktop sidebar - hidden on mobile */}
-        <div className="hidden lg:block">
-          <Sidebar />
-        </div>
-
-        {/* Main content - full width on mobile, offset on desktop */}
-        <main className="lg:pl-64 pb-20 lg:pb-0">
-          <div className="min-h-screen">
-            {children}
+      <body className="bg-gray-50 dark:bg-gray-900">
+        <ThemeProvider>
+          {/* Theme toggle - positioned top-right */}
+          <div className="fixed top-2 right-2 z-50 lg:top-4 lg:right-4">
+            <ThemeToggle />
           </div>
-        </main>
 
-        {/* Mobile bottom navigation - hidden on desktop */}
-        <MobileNav />
+          {/* Desktop sidebar - hidden on mobile */}
+          <div className="hidden lg:block">
+            <Sidebar />
+          </div>
 
-        {/* Quick capture FAB - visible on mobile */}
-        <QuickCapture />
+          {/* Main content - full width on mobile, offset on desktop */}
+          <main className="lg:pl-64 pb-20 lg:pb-0">
+            <div className="min-h-screen">
+              {children}
+            </div>
+          </main>
+
+          {/* Mobile bottom navigation - hidden on desktop */}
+          <MobileNav />
+
+          {/* Quick capture FAB - visible on mobile */}
+          <QuickCapture />
+        </ThemeProvider>
       </body>
     </html>
   )

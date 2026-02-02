@@ -8,13 +8,15 @@
 
 ## NOW
 
+- [x] Darkmode widget at top right of screen - use same pattern as ~/local/projects/whereis-emmy/ #frontend #ui #ux _done:2026-02-02
+- [ ] Add calendar functionality - calendar view for task scheduling and due dates (see ROADMAP for full spec) #frontend #layer1
 - [ ] Eisenhower quadrant grid as default homepage layout with "Today" title #005 #frontend #ux
 
 ## BACKLOG
+- [ ] Build reporting page for viewing recently completed tasks - Allow filtering/viewing completed items beyond 12-hour grace period, with date ranges, filters by tag/section, export options #frontend #feature +important
 - [ ] Research Docker build time optimization - Current: 60s+ full rebuilds for code changes. Research: (1) is full rebuild needed every time? (2) what triggers rebuilds? (3) hot reload in dev? (4) build caching strategies? (5) service-dashboard compatibility? (6) separate dev (fast iteration) vs prod (robust) workflows? Goal: rapid iterative development with <5s feedback loop. #devops #performance #research
 - [ ] Add info bubble "(i)" next to "Eisenhower" header with description and link to authoritative source #frontend #ux
 - [ ] Fix Eisenhower filter tile unselect bug - should revert to default unclicked state with no outline #frontend #bugfix
-- [ ] Light/Dark/Auto mode toggle - implement same pattern as ~/local/projects/whereis-emmy/ #frontend #ui
 - [ ] Settings page: Toggle for single-task-in-progress enforcement (currently allows multiple [/] tasks, make it optional) #frontend #settings
 - [ ] Investigate optimistic locking for concurrent CRUD writes (design note: rapid parallel inserts can overlap) #backend
 - [ ] Deploy updated skill to ~/.claude/skills/tasks/ #tools
@@ -22,6 +24,7 @@
 - [ ] migrate-completed-tasks.md update for new checkbox states #docs
 - [ ] Time tracking summary command (sum _spent: by tag/date) #tools
 - [ ] Due date reminder integration (ntfy?) #tools
+- [ ] Enhanced auto dark mode - timezone-aware sunrise/sunset switching (port sun-utils.ts from whereis-emmy) #frontend #ux
 
 ## ROADMAP
 
@@ -114,4 +117,3 @@
 - [x] Add _spent: time tracking to format spec #docs _done:2026-01-10
 - [x] Create docs/SPEC.md canonical specification #docs _done:2026-01-10
 - [x] Initial project setup #tools _done:2026-01-10
-- [ ] Build reporting page for viewing recently completed tasks - Allow filtering/viewing completed items beyond 12-hour grace period, with date ranges, filters by tag/section, export options #tasks-ng #feature +important

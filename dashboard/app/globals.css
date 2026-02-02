@@ -9,6 +9,24 @@
   --destructive: #8b4049;
   --success: #76c893;
   --warning: #d9ed92;
+  --card-bg: #ffffff;
+  --card-border: #e5e7eb;
+  --muted: #6b7280;
+}
+
+/* Dark mode theme */
+.dark {
+  --background: #1a1b26;
+  --foreground: #e5e7eb;
+  --primary: #38bdf8;
+  --accent: #60a5fa;
+  --secondary: #818cf8;
+  --destructive: #f87171;
+  --success: #4ade80;
+  --warning: #fbbf24;
+  --card-bg: #24253a;
+  --card-border: #3f3f5a;
+  --muted: #9ca3af;
 }
 
 body {
