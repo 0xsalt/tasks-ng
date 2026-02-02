@@ -4,7 +4,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import {
   CheckSquare,
-  FileText,
   Layers,
   Hash,
   AtSign,
@@ -14,15 +13,16 @@ import {
   Clock,
   Target,
   Zap,
-  Loader2,
-  Users,
-  Trash2
+  Loader2
 } from "lucide-react"
 import { useTasks, useEisenhower, computeTaskStats, type Task, type EisenhowerMatrix } from "@/lib/hooks/use-tasks"
 import { useState, useEffect, useCallback, useMemo } from "react"
 
 type TagFilter = 'work' | 'pers'
 type QuadrantFilter = 'Q1' | 'Q2' | 'Q3' | 'Q4'
+
+// Grace period for completed/cancelled tasks to remain visible (hours)
+const GRACE_PERIOD_HOURS = 12
 
 function TaskStatusBadge({ status }: { status: Task['status'] }) {
   const variants: Record<Task['status'], { variant: "default" | "secondary" | "destructive" | "success" | "primary" | "warning", label: string }> = {
@@ -296,10 +296,7 @@ export default function OverviewPage() {
 
   // Filtered tasks (apply tag filter first)
   const tagFilteredTasks = useMemo(() => {
-    console.log(`[tagFilteredTasks] Processing ${tasks.length} tasks`)
-    const filtered = filterByTags(tasks)
-    console.log(`[tagFilteredTasks] After tag filter: ${filtered.length} tasks`)
-    return filtered
+    return filterByTags(tasks)
   }, [filterByTags, tasks])
 
   // Compute stats on tag-filtered tasks
@@ -307,7 +304,6 @@ export default function OverviewPage() {
 
   // Eisenhower counts (on tag-filtered tasks)
   const filteredEisenhowerCounts = useMemo(() => {
-    const GRACE_PERIOD_HOURS = 12
     const now = new Date()
     const counts = { Q1: 0, Q2: 0, Q3: 0, Q4: 0, total: 0 }
 
@@ -337,17 +333,9 @@ export default function OverviewPage() {
   // Active tasks (not completed, not cancelled)
   // BUT keep completed/cancelled tasks visible for 12 hours (grace period for undo)
   const activeTasks = useMemo(() => {
-    console.log(`[activeTasks] Starting filter with ${tagFilteredTasks.length} tasks`)
-    console.log(`[activeTasks] Completed tasks in input:`, tagFilteredTasks.filter(t => t.status === 'completed').map(t => ({
-      desc: t.description.substring(0, 40),
-      done: t.dates.done,
-      status: t.status
-    })))
-
-    const GRACE_PERIOD_HOURS = 12
     const now = new Date()
 
-    const filtered = tagFilteredTasks.filter(t => {
+    return tagFilteredTasks.filter(t => {
       // Always show non-completed/non-cancelled tasks
       if (t.status !== 'completed' && t.status !== 'cancelled') return true
 
@@ -355,30 +343,17 @@ export default function OverviewPage() {
       if (t.dates.done) {
         const doneDate = new Date(t.dates.done)
         const hoursAgo = (now.getTime() - doneDate.getTime()) / (1000 * 60 * 60)
-        const withinGracePeriod = hoursAgo < GRACE_PERIOD_HOURS
-
-        console.log(`[Grace Period] Task: ${t.description.substring(0, 40)}...`)
-        console.log(`  Status: ${t.status}, Done: ${t.dates.done}`)
-        console.log(`  Now: ${now.toISOString()}, DoneDate: ${doneDate.toISOString()}`)
-        console.log(`  Hours ago: ${hoursAgo.toFixed(2)}, Within period: ${withinGracePeriod}`)
-
-        return withinGracePeriod
+        return hoursAgo < GRACE_PERIOD_HOURS
       }
 
-      // If no done date, filter out (old completed tasks)
-      console.log(`[Grace Period] Filtering out ${t.description.substring(0, 40)}... (no done date)`)
       return false
     })
-
-    console.log(`[Grace Period] Total tasks: ${tagFilteredTasks.length}, After filter: ${filtered.length}`)
-    return filtered
   }, [tagFilteredTasks])
 
   // In-progress tasks (for Current Focus)
   // Option A: Show any task that was in-progress within last 12 hours
   // Mental model: "What I worked on today while it's still today"
   const inProgressTasks = useMemo(() => {
-    const GRACE_PERIOD_HOURS = 12
     const now = new Date()
 
     return tagFilteredTasks.filter(t => {
