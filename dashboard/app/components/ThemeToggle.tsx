@@ -1,6 +1,6 @@
 "use client";
 
-import { Sun, Moon, Monitor } from 'lucide-react';
+import { Sun, Moon, SunMoon } from 'lucide-react';
 import { useTheme } from '@/app/context/ThemeContext';
 import type { ThemePreference } from '@/app/lib/theme-utils';
 
@@ -20,7 +20,7 @@ export function ThemeToggle() {
   const getIcon = () => {
     if (preference === 'light') return <Sun className="w-5 h-5" />;
     if (preference === 'dark') return <Moon className="w-5 h-5" />;
-    return <Monitor className="w-5 h-5" />;
+    return <SunMoon className="w-5 h-5" />;
   };
 
   const getLabel = () => {

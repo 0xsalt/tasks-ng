@@ -144,13 +144,13 @@ function LoadingSpinner() {
 
 function ErrorDisplay({ message }: { message: string }) {
   return (
-    <Card className="border-red-200 bg-red-50">
+    <Card className="border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20">
       <CardContent className="pt-6">
-        <div className="flex items-center gap-2 text-red-600">
+        <div className="flex items-center gap-2 text-red-600 dark:text-red-400">
           <AlertCircle className="h-5 w-5" />
           <span>{message}</span>
         </div>
-        <p className="text-sm text-red-500 mt-2">
+        <p className="text-sm text-red-500 dark:text-red-400 mt-2">
           Make sure ~/.local/share/tasks-ng/tasks.md exists and the server is running.
         </p>
       </CardContent>
@@ -173,8 +173,8 @@ function TagFilterButton({
       onClick={onClick}
       className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all border ${
         active
-          ? 'bg-[#1a759f] text-white border-[#1a759f]'
-          : 'bg-white/80 text-gray-600 border-gray-300 hover:border-[#1a759f] hover:text-[#1a759f]'
+          ? 'bg-[#1a759f] dark:bg-[#38bdf8] text-white border-[#1a759f] dark:border-[#38bdf8]'
+          : 'bg-white/80 dark:bg-gray-700/80 text-gray-600 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:border-[#1a759f] dark:hover:border-[#38bdf8] hover:text-[#1a759f] dark:hover:text-[#38bdf8]'
       }`}
     >
       #{tag}
@@ -196,19 +196,19 @@ function QuadrantButton({
   count: number
   active: boolean
   onClick: () => void
-  colorClass: { bg: string, text: string, border: string, activeBg: string }
+  colorClass: { bg: string, text: string, border: string, activeBg: string, darkBg: string, darkText: string, darkBorder: string, darkActiveBg: string }
 }) {
   return (
     <button
       onClick={onClick}
       className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all border ${
         active
-          ? `${colorClass.activeBg} ${colorClass.text} ${colorClass.border} ring-2 ring-offset-1 ring-${colorClass.text.replace('text-', '')}`
-          : `${colorClass.bg} ${colorClass.text} ${colorClass.border} hover:ring-1 hover:ring-offset-1`
+          ? `${colorClass.activeBg} dark:${colorClass.darkActiveBg} ${colorClass.text} dark:${colorClass.darkText} ${colorClass.border} dark:${colorClass.darkBorder} ring-2 ring-offset-1 dark:ring-offset-gray-900`
+          : `${colorClass.bg} dark:${colorClass.darkBg} ${colorClass.text} dark:${colorClass.darkText} ${colorClass.border} dark:${colorClass.darkBorder} hover:ring-1 hover:ring-offset-1 dark:hover:ring-offset-gray-900`
       }`}
     >
       <span>{label}</span>
-      <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${active ? 'bg-white/30' : 'bg-white/50'}`}>
+      <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${active ? 'bg-white/30 dark:bg-black/20' : 'bg-white/50 dark:bg-black/20'}`}>
         {count}
       </span>
     </button>
@@ -401,67 +401,67 @@ export default function OverviewPage() {
     quadrant: QuadrantFilter
     label: string
     icon: typeof Target
-    colorClass: { bg: string, text: string, border: string, activeBg: string }
+    colorClass: { bg: string, text: string, border: string, activeBg: string, darkBg: string, darkText: string, darkBorder: string, darkActiveBg: string }
   }> = [
     {
       quadrant: 'Q1',
       label: 'Urgent',
       icon: Target,
-      colorClass: { bg: 'bg-red-50', text: 'text-red-700', border: 'border-red-200', activeBg: 'bg-red-100' }
+      colorClass: { bg: 'bg-red-50', text: 'text-red-700', border: 'border-red-200', activeBg: 'bg-red-100', darkBg: 'bg-red-900/30', darkText: 'text-red-400', darkBorder: 'border-red-800', darkActiveBg: 'bg-red-900/50' }
     },
     {
       quadrant: 'Q2',
       label: 'Important',
       icon: Calendar,
-      colorClass: { bg: 'bg-yellow-50', text: 'text-yellow-700', border: 'border-yellow-200', activeBg: 'bg-yellow-100' }
+      colorClass: { bg: 'bg-yellow-50', text: 'text-yellow-700', border: 'border-yellow-200', activeBg: 'bg-yellow-100', darkBg: 'bg-yellow-900/30', darkText: 'text-yellow-400', darkBorder: 'border-yellow-800', darkActiveBg: 'bg-yellow-900/50' }
     },
     {
       quadrant: 'Q3',
       label: 'Quick Wins',
       icon: Zap,
-      colorClass: { bg: 'bg-orange-50', text: 'text-orange-700', border: 'border-orange-200', activeBg: 'bg-orange-100' }
+      colorClass: { bg: 'bg-orange-50', text: 'text-orange-700', border: 'border-orange-200', activeBg: 'bg-orange-100', darkBg: 'bg-orange-900/30', darkText: 'text-orange-400', darkBorder: 'border-orange-800', darkActiveBg: 'bg-orange-900/50' }
     },
     {
       quadrant: 'Q4',
       label: 'Later',
       icon: Clock,
-      colorClass: { bg: 'bg-gray-50', text: 'text-gray-600', border: 'border-gray-200', activeBg: 'bg-gray-100' }
+      colorClass: { bg: 'bg-gray-50', text: 'text-gray-600', border: 'border-gray-200', activeBg: 'bg-gray-100', darkBg: 'bg-gray-800', darkText: 'text-gray-400', darkBorder: 'border-gray-700', darkActiveBg: 'bg-gray-700' }
     }
   ]
 
   return (
     <div className="p-4 lg:p-8">
       {/* Hero Section with Tag Filters */}
-      <div className="mb-6 lg:mb-8 rounded-2xl bg-gradient-to-br from-[#1a759f]/15 via-[#3b82f6]/10 to-[#1e6091]/15 p-6 lg:p-8 border border-[#1a759f]/20">
+      <div className="mb-6 lg:mb-8 rounded-2xl bg-gradient-to-br from-[#1a759f]/15 via-[#3b82f6]/10 to-[#1e6091]/15 dark:from-[#38bdf8]/20 dark:via-[#60a5fa]/15 dark:to-[#818cf8]/20 p-6 lg:p-8 border border-[#1a759f]/20 dark:border-[#38bdf8]/30">
         <div className="max-w-4xl">
-          <h2 className="text-xs lg:text-sm font-semibold text-[#1a759f] uppercase tracking-wide mb-1">
+          <h2 className="text-xs lg:text-sm font-semibold text-[#1a759f] dark:text-[#38bdf8] uppercase tracking-wide mb-1">
             Live Task Dashboard
           </h2>
-          <h1 className="text-2xl lg:text-4xl font-bold text-gray-900 mb-2">
+          <h1 className="text-2xl lg:text-4xl font-bold text-gray-900 dark:text-gray-100 mb-2">
             tasks-ng
           </h1>
-          <p className="text-sm lg:text-base text-gray-600 mb-4">
+          <p className="text-sm lg:text-base text-gray-600 dark:text-gray-400 mb-4">
             Real-time view of ~/.local/share/tasks-ng/tasks.md
           </p>
 
           {/* Active Tasks Count + Tag Filters (side by side) */}
           <div className="flex items-center gap-4 flex-wrap">
             {isLoading ? (
-              <div className="inline-flex items-center gap-2 bg-white rounded-lg px-4 py-3 shadow-md border">
-                <Loader2 className="h-4 w-4 animate-spin text-[#1a759f]" />
-                <span className="text-gray-600">Loading...</span>
+              <div className="inline-flex items-center gap-2 bg-white dark:bg-[var(--card-bg)] rounded-lg px-4 py-3 shadow-md border dark:border-[var(--card-border)]">
+                <Loader2 className="h-4 w-4 animate-spin text-[#1a759f] dark:text-[#38bdf8]" />
+                <span className="text-gray-600 dark:text-gray-400">Loading...</span>
               </div>
             ) : error ? (
-              <div className="inline-flex items-center gap-2 bg-red-50 rounded-lg px-4 py-3 border border-red-200">
-                <AlertCircle className="h-4 w-4 text-red-500" />
-                <span className="text-red-600">Could not load tasks</span>
+              <div className="inline-flex items-center gap-2 bg-red-50 dark:bg-red-900/20 rounded-lg px-4 py-3 border border-red-200 dark:border-red-800">
+                <AlertCircle className="h-4 w-4 text-red-500 dark:text-red-400" />
+                <span className="text-red-600 dark:text-red-400">Could not load tasks</span>
               </div>
             ) : (
-              <div className="inline-block bg-white rounded-lg px-4 py-3 shadow-md border border-[#76c893]/30">
-                <p className="text-2xl font-bold text-[#76c893]">
+              <div className="inline-block bg-white dark:bg-[var(--card-bg)] rounded-lg px-4 py-3 shadow-md border border-[#76c893]/30 dark:border-[#4ade80]/30">
+                <p className="text-2xl font-bold text-[#76c893] dark:text-[#4ade80]">
                   {stats.active} Active Tasks
                 </p>
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-gray-500 dark:text-gray-400">
                   {stats.total} total {tagFilters.size > 0 && `matching #${[...tagFilters].join(' #')}`}
                 </p>
               </div>
@@ -469,7 +469,7 @@ export default function OverviewPage() {
 
             {/* Tag Filter Buttons - to the right of Active Tasks */}
             <div className="flex items-center gap-3">
-              <span className="text-sm text-gray-500">Filter:</span>
+              <span className="text-sm text-gray-500 dark:text-gray-400">Filter:</span>
               <TagFilterButton
                 tag="work"
                 active={tagFilters.has('work')}
@@ -483,7 +483,7 @@ export default function OverviewPage() {
               {tagFilters.size > 0 && (
                 <button
                   onClick={() => setTagFilters(new Set())}
-                  className="text-xs text-gray-500 hover:text-gray-700 underline"
+                  className="text-xs text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 underline"
                 >
                   clear
                 </button>
@@ -499,11 +499,11 @@ export default function OverviewPage() {
       {!isLoading && !error && (
         <div className="mb-6">
           <div className="flex items-center gap-2 mb-3">
-            <h2 className="text-lg lg:text-xl font-bold text-gray-900">Eisenhower</h2>
+            <h2 className="text-lg lg:text-xl font-bold text-gray-900 dark:text-gray-100">Eisenhower</h2>
             {quadrantFilters.size > 0 && (
               <button
                 onClick={() => setQuadrantFilters(new Set())}
-                className="text-xs text-gray-500 hover:text-gray-700 underline"
+                className="text-xs text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 underline"
               >
                 clear
               </button>
@@ -531,12 +531,12 @@ export default function OverviewPage() {
           {/* Full-width clickable Today bar */}
           <button
             onClick={() => setIsTodayCollapsed(!isTodayCollapsed)}
-            className="w-full flex items-center justify-between gap-4 px-4 py-3 mb-3 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg transition-colors cursor-pointer"
+            className="w-full flex items-center justify-between gap-4 px-4 py-3 mb-3 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700 rounded-lg transition-colors cursor-pointer"
           >
             <div className="flex items-center gap-3 flex-wrap">
               <div className="flex items-center gap-2">
-                <Zap className="h-5 w-5 text-[#1a759f]" />
-                <h2 className="text-lg lg:text-xl font-bold text-gray-900">Today</h2>
+                <Zap className="h-5 w-5 text-[#1a759f] dark:text-[#38bdf8]" />
+                <h2 className="text-lg lg:text-xl font-bold text-gray-900 dark:text-gray-100">Today</h2>
                 {inProgressTasks.length > 0 && (
                   <Badge variant="primary">{inProgressTasks.length}</Badge>
                 )}
@@ -548,8 +548,8 @@ export default function OverviewPage() {
                   onClick={() => setStatusFilter(null)}
                   className={`flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 border transition-all text-xs ${
                     statusFilter === null
-                      ? 'bg-gray-900 text-white border-gray-900'
-                      : 'bg-white text-gray-600 border-gray-300 hover:border-gray-400'
+                      ? 'bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 border-gray-900 dark:border-gray-100'
+                      : 'bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'
                   }`}
                 >
                   <CheckSquare className="h-3.5 w-3.5" />
@@ -559,8 +559,8 @@ export default function OverviewPage() {
                   onClick={() => setStatusFilter(statusFilter === 'in_progress' ? null : 'in_progress')}
                   className={`flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 border transition-all text-xs ${
                     statusFilter === 'in_progress'
-                      ? 'bg-blue-500 text-white border-blue-500'
-                      : 'bg-white text-gray-600 border-gray-300 hover:border-blue-400'
+                      ? 'bg-blue-500 dark:bg-blue-400 text-white border-blue-500 dark:border-blue-400'
+                      : 'bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:border-blue-400 dark:hover:border-blue-500'
                   }`}
                 >
                   <Zap className="h-3.5 w-3.5" />
@@ -570,8 +570,8 @@ export default function OverviewPage() {
                   onClick={() => setStatusFilter(statusFilter === 'blocked' ? null : 'blocked')}
                   className={`flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 border transition-all text-xs ${
                     statusFilter === 'blocked'
-                      ? 'bg-red-500 text-white border-red-500'
-                      : 'bg-white text-gray-600 border-gray-300 hover:border-red-400'
+                      ? 'bg-red-500 dark:bg-red-400 text-white border-red-500 dark:border-red-400'
+                      : 'bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:border-red-400 dark:hover:border-red-500'
                   }`}
                 >
                   <AlertCircle className="h-3.5 w-3.5" />
@@ -581,7 +581,7 @@ export default function OverviewPage() {
             </div>
 
             {/* Collapse indicator */}
-            <div className="flex items-center gap-1 text-sm text-gray-500">
+            <div className="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400">
               {!isTodayCollapsed && <span>Hide</span>}
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 {isTodayCollapsed ? (
@@ -599,21 +599,21 @@ export default function OverviewPage() {
               {inProgressTasks.length > 0 ? (
                 <div className="space-y-2">
                   {inProgressTasks.map(task => (
-                    <Card key={task.id} className="border-l-4 border-l-[#1a759f] bg-gradient-to-r from-[#1a759f]/5 to-transparent">
+                    <Card key={task.id} className="border-l-4 border-l-[#1a759f] dark:border-l-[#38bdf8] bg-gradient-to-r from-[#1a759f]/5 dark:from-[#38bdf8]/10 to-transparent">
                       <CardContent className="py-3 px-4">
                         <div className="flex items-start gap-3 min-w-0">
                           <CheckboxIcon state={task.checkboxState} taskId={task.id} onUpdate={handleTaskCreated} task={task} />
                           <div className="min-w-0 flex-1">
-                            <p className="font-medium text-gray-900 truncate">
+                            <p className="font-medium text-gray-900 dark:text-gray-100 truncate">
                               {getStatusPrefix(task)}{task.description}
                             </p>
-                            <div className="flex items-center gap-2 mt-1 text-xs text-gray-500 flex-wrap">
-                              <span className="bg-gray-100 px-2 py-0.5 rounded">{task.section}</span>
+                            <div className="flex items-center gap-2 mt-1 text-xs text-gray-500 dark:text-gray-400 flex-wrap">
+                              <span className="bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded">{task.section}</span>
                               {task.tags.slice(0, 3).map(tag => (
-                                <span key={tag} className="text-[#1a759f]">#{tag}</span>
+                                <span key={tag} className="text-[#1a759f] dark:text-[#38bdf8]">#{tag}</span>
                               ))}
                               {task.dates.due && (
-                                <span className="flex items-center gap-1 text-orange-600">
+                                <span className="flex items-center gap-1 text-orange-600 dark:text-orange-400">
                                   <Calendar className="h-3 w-3" />
                                   {task.dates.due}
                                 </span>
@@ -626,7 +626,7 @@ export default function OverviewPage() {
                   ))}
                 </div>
               ) : (
-                <p className="text-sm text-gray-500 italic">No tasks currently in progress</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400 italic">No tasks currently in progress</p>
               )}
             </>
           )}
@@ -636,7 +636,7 @@ export default function OverviewPage() {
       {/* Eisenhower 4-Quadrant Grid */}
       {!isLoading && !error && displayedTasks.length > 0 && (
         <div className="mb-6 lg:mb-8">
-          <h2 className="text-lg lg:text-xl font-bold text-gray-900 mb-3 flex items-center gap-2">
+          <h2 className="text-lg lg:text-xl font-bold text-gray-900 dark:text-gray-100 mb-3 flex items-center gap-2">
             Priority Matrix
             <Badge variant="secondary">{displayedTasks.length} tasks</Badge>
             {(quadrantFilters.size > 0 || statusFilter) && (
@@ -645,7 +645,7 @@ export default function OverviewPage() {
                   setQuadrantFilters(new Set())
                   setStatusFilter(null)
                 }}
-                className="text-xs text-gray-500 hover:text-gray-700 underline ml-2"
+                className="text-xs text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 underline ml-2"
               >
                 clear all filters
               </button>
@@ -656,10 +656,23 @@ export default function OverviewPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {quadrantConfigs.map(config => {
               const quadrantTasks = tasksByQuadrant[config.quadrant]
+              // Build quadrant-specific classes for dark mode
+              const cardBorderClass = config.quadrant === 'Q1' ? 'border-red-200 dark:border-red-800' :
+                config.quadrant === 'Q2' ? 'border-yellow-200 dark:border-yellow-800' :
+                config.quadrant === 'Q3' ? 'border-orange-200 dark:border-orange-800' :
+                'border-gray-200 dark:border-gray-700'
+              const headerBgClass = config.quadrant === 'Q1' ? 'bg-red-50 dark-q1-header' :
+                config.quadrant === 'Q2' ? 'bg-yellow-50 dark-q2-header' :
+                config.quadrant === 'Q3' ? 'bg-orange-50 dark-q3-header' :
+                'bg-gray-50 dark-q4-header'
+              const titleTextClass = config.quadrant === 'Q1' ? 'text-red-700 dark:text-red-400' :
+                config.quadrant === 'Q2' ? 'text-yellow-700 dark:text-yellow-400' :
+                config.quadrant === 'Q3' ? 'text-orange-700 dark:text-orange-400' :
+                'text-gray-600 dark:text-gray-400'
               return (
-                <Card key={config.quadrant} className={`border-2 ${config.colorClass.border}`}>
-                  <CardHeader className={`${config.colorClass.bg} border-b ${config.colorClass.border} pb-3`}>
-                    <CardTitle className={`text-base flex items-center justify-between ${config.colorClass.text}`}>
+                <Card key={config.quadrant} className={`border-2 ${cardBorderClass}`}>
+                  <CardHeader className={`${headerBgClass} border-b ${cardBorderClass} pb-3`}>
+                    <CardTitle className={`text-base flex items-center justify-between ${titleTextClass}`}>
                       <div className="flex items-center gap-2">
                         <config.icon className="h-4 w-4" />
                         <span>{config.label}</span>
@@ -675,20 +688,20 @@ export default function OverviewPage() {
                         {quadrantTasks.slice(0, 10).map(task => (
                           <div
                             key={task.id}
-                            className="flex items-start gap-2 px-[1px] py-1.5 rounded hover:bg-gray-50 transition-colors"
+                            className="flex items-start gap-2 px-[1px] py-1.5 rounded hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
                           >
                             <CheckboxIcon state={task.checkboxState} taskId={task.id} onUpdate={handleTaskCreated} task={task} />
                             <div className="min-w-0 flex-1">
-                              <p className="text-xs font-normal text-gray-900 line-clamp-2 leading-relaxed break-words">
+                              <p className="text-xs font-normal text-gray-900 dark:text-gray-100 line-clamp-2 leading-relaxed break-words">
                                 {getStatusPrefix(task)}{task.description}
                               </p>
-                              <div className="flex items-center gap-1.5 mt-1 text-xs text-gray-500 flex-wrap">
-                                <span className="bg-gray-100 px-1.5 py-0.5 rounded text-[10px]">{task.section}</span>
+                              <div className="flex items-center gap-1.5 mt-1 text-xs text-gray-500 dark:text-gray-400 flex-wrap">
+                                <span className="bg-gray-100 dark:bg-gray-700 px-1.5 py-0.5 rounded text-[10px]">{task.section}</span>
                                 {task.tags.slice(0, 2).map(tag => (
-                                  <span key={tag} className="text-[#1a759f]">#{tag}</span>
+                                  <span key={tag} className="text-[#1a759f] dark:text-[#38bdf8]">#{tag}</span>
                                 ))}
                                 {task.dates.due && (
-                                  <span className="text-orange-600 flex items-center gap-0.5">
+                                  <span className="text-orange-600 dark:text-orange-400 flex items-center gap-0.5">
                                     <Calendar className="h-2.5 w-2.5" />
                                     {task.dates.due}
                                   </span>
@@ -698,13 +711,13 @@ export default function OverviewPage() {
                           </div>
                         ))}
                         {quadrantTasks.length > 10 && (
-                          <p className="text-center text-xs text-gray-500 pt-1">
+                          <p className="text-center text-xs text-gray-500 dark:text-gray-400 pt-1">
                             + {quadrantTasks.length - 10} more
                           </p>
                         )}
                       </div>
                     ) : (
-                      <p className="text-sm text-gray-400 italic text-center py-4">No tasks in this quadrant</p>
+                      <p className="text-sm text-gray-400 dark:text-gray-500 italic text-center py-4">No tasks in this quadrant</p>
                     )}
                   </CardContent>
                 </Card>
@@ -717,15 +730,15 @@ export default function OverviewPage() {
       {/* Empty state when filters exclude everything */}
       {!isLoading && !error && displayedTasks.length === 0 && activeTasks.length > 0 && (
         <div className="mb-6">
-          <Card className="border-dashed">
+          <Card className="border-dashed dark:border-gray-600">
             <CardContent className="py-8 text-center">
-              <p className="text-gray-500">No tasks match the selected filters</p>
+              <p className="text-gray-500 dark:text-gray-400">No tasks match the selected filters</p>
               <button
                 onClick={() => {
                   setTagFilters(new Set())
                   setQuadrantFilters(new Set())
                 }}
-                className="mt-2 text-sm text-[#1a759f] hover:underline"
+                className="mt-2 text-sm text-[#1a759f] dark:text-[#38bdf8] hover:underline"
               >
                 Clear all filters
               </button>
@@ -736,94 +749,94 @@ export default function OverviewPage() {
 
       {/* Format Reference - hidden on mobile */}
       <div className="hidden lg:block mb-8">
-        <h2 className="text-xl font-bold text-gray-900 mb-4">Format Reference</h2>
+        <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">Format Reference</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
 
           {/* Checkbox States */}
-          <Card className="hover:shadow-lg transition-shadow">
+          <Card className="hover:shadow-lg dark:hover:shadow-gray-900/50 transition-shadow">
             <CardHeader className="pb-2">
-              <CardTitle className="flex items-center gap-2 text-base">
-                <CheckSquare className="h-4 w-4 text-[#1a759f]" />
+              <CardTitle className="flex items-center gap-2 text-base text-gray-900 dark:text-gray-100">
+                <CheckSquare className="h-4 w-4 text-[#1a759f] dark:text-[#38bdf8]" />
                 Checkbox States
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-1 text-sm">
                 <div className="flex items-center gap-2">
-                  <span className="font-mono text-gray-400">[ ]</span>
-                  <span className="text-gray-600">Pending</span>
+                  <span className="font-mono text-gray-400 dark:text-gray-500">[ ]</span>
+                  <span className="text-gray-600 dark:text-gray-400">Pending</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="font-mono text-blue-500">[/]</span>
-                  <span className="text-gray-600">In Progress</span>
+                  <span className="font-mono text-blue-500 dark:text-blue-400">[/]</span>
+                  <span className="text-gray-600 dark:text-gray-400">In Progress</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="font-mono text-green-500">[x]</span>
-                  <span className="text-gray-600">Completed</span>
+                  <span className="font-mono text-green-500 dark:text-green-400">[x]</span>
+                  <span className="text-gray-600 dark:text-gray-400">Completed</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="font-mono text-gray-500">[-]</span>
-                  <span className="text-gray-600">Cancelled</span>
+                  <span className="font-mono text-gray-500 dark:text-gray-400">[-]</span>
+                  <span className="text-gray-600 dark:text-gray-400">Cancelled</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="font-mono text-yellow-500">[&gt;]</span>
-                  <span className="text-gray-600">Deferred</span>
+                  <span className="font-mono text-yellow-500 dark:text-yellow-400">[&gt;]</span>
+                  <span className="text-gray-600 dark:text-gray-400">Deferred</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="font-mono text-red-500">[?]</span>
-                  <span className="text-gray-600">Blocked</span>
+                  <span className="font-mono text-red-500 dark:text-red-400">[?]</span>
+                  <span className="text-gray-600 dark:text-gray-400">Blocked</span>
                 </div>
               </div>
             </CardContent>
           </Card>
 
           {/* Metadata Prefixes */}
-          <Card className="hover:shadow-lg transition-shadow">
+          <Card className="hover:shadow-lg dark:hover:shadow-gray-900/50 transition-shadow">
             <CardHeader className="pb-2">
-              <CardTitle className="flex items-center gap-2 text-base">
-                <Hash className="h-4 w-4 text-[#1e6091]" />
+              <CardTitle className="flex items-center gap-2 text-base text-gray-900 dark:text-gray-100">
+                <Hash className="h-4 w-4 text-[#1e6091] dark:text-[#60a5fa]" />
                 Metadata Types
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-1 text-sm">
                 <div className="flex items-center gap-2">
-                  <Hash className="h-3 w-3 text-[#1a759f]" />
-                  <span className="text-gray-600 font-mono">#tags</span>
-                  <span className="text-gray-400">- categorization</span>
+                  <Hash className="h-3 w-3 text-[#1a759f] dark:text-[#38bdf8]" />
+                  <span className="text-gray-600 dark:text-gray-300 font-mono">#tags</span>
+                  <span className="text-gray-400 dark:text-gray-500">- categorization</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <AtSign className="h-3 w-3 text-[#1a759f]" />
-                  <span className="text-gray-600 font-mono">@mentions</span>
-                  <span className="text-gray-400">- assignment</span>
+                  <AtSign className="h-3 w-3 text-[#1a759f] dark:text-[#38bdf8]" />
+                  <span className="text-gray-600 dark:text-gray-300 font-mono">@mentions</span>
+                  <span className="text-gray-400 dark:text-gray-500">- assignment</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Plus className="h-3 w-3 text-[#1a759f]" />
-                  <span className="text-gray-600 font-mono">+modifiers</span>
-                  <span className="text-gray-400">- priority</span>
+                  <Plus className="h-3 w-3 text-[#1a759f] dark:text-[#38bdf8]" />
+                  <span className="text-gray-600 dark:text-gray-300 font-mono">+modifiers</span>
+                  <span className="text-gray-400 dark:text-gray-500">- priority</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Calendar className="h-3 w-3 text-[#1a759f]" />
-                  <span className="text-gray-600 font-mono">_dates</span>
-                  <span className="text-gray-400">- tracking</span>
+                  <Calendar className="h-3 w-3 text-[#1a759f] dark:text-[#38bdf8]" />
+                  <span className="text-gray-600 dark:text-gray-300 font-mono">_dates</span>
+                  <span className="text-gray-400 dark:text-gray-500">- tracking</span>
                 </div>
               </div>
             </CardContent>
           </Card>
 
           {/* Nesting Levels */}
-          <Card className="hover:shadow-lg transition-shadow">
+          <Card className="hover:shadow-lg dark:hover:shadow-gray-900/50 transition-shadow">
             <CardHeader className="pb-2">
-              <CardTitle className="flex items-center gap-2 text-base">
-                <Layers className="h-4 w-4 text-[#76c893]" />
+              <CardTitle className="flex items-center gap-2 text-base text-gray-900 dark:text-gray-100">
+                <Layers className="h-4 w-4 text-[#76c893] dark:text-[#4ade80]" />
                 Nesting Support
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-xl font-bold text-[#76c893] mb-1">3 Levels</p>
-              <div className="text-sm text-gray-600">
+              <p className="text-xl font-bold text-[#76c893] dark:text-[#4ade80] mb-1">3 Levels</p>
+              <div className="text-sm text-gray-600 dark:text-gray-400">
                 <p className="mb-1">Subtasks use 4-space indentation</p>
-                <div className="font-mono text-xs bg-gray-50 p-2 rounded">
+                <div className="font-mono text-xs bg-gray-50 dark:bg-gray-800 p-2 rounded text-gray-700 dark:text-gray-300">
                   - [ ] Parent<br />
                   &nbsp;&nbsp;&nbsp;&nbsp;- [ ] Child<br />
                   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- [ ] Grandchild

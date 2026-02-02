@@ -131,7 +131,7 @@ export function SyncStatus({ className, compact = false }: SyncStatusProps) {
   // Render loading state
   if (!state) {
     return (
-      <div className={cn("flex items-center gap-1 text-gray-400", className)}>
+      <div className={cn("flex items-center gap-1 text-gray-400 dark:text-gray-500", className)}>
         <Loader2 className="h-4 w-4 animate-spin" />
         {!compact && <span className="text-xs">Loading...</span>}
       </div>
@@ -143,8 +143,8 @@ export function SyncStatus({ className, compact = false }: SyncStatusProps) {
     if (isSyncing) {
       return {
         icon: RefreshCw,
-        color: 'text-blue-500',
-        bgColor: 'bg-blue-50',
+        color: 'text-blue-500 dark:text-blue-400',
+        bgColor: 'bg-blue-50 dark:bg-blue-900/30',
         label: 'Syncing...',
         animate: true
       }
@@ -154,56 +154,56 @@ export function SyncStatus({ className, compact = false }: SyncStatusProps) {
       case 'synced':
         return {
           icon: Check,
-          color: 'text-green-600',
-          bgColor: 'bg-green-50',
+          color: 'text-green-600 dark:text-green-400',
+          bgColor: 'bg-green-50 dark:bg-green-900/30',
           label: 'Synced',
           animate: false
         }
       case 'pending':
         return {
           icon: Upload,
-          color: 'text-amber-500',
-          bgColor: 'bg-amber-50',
+          color: 'text-amber-500 dark:text-amber-400',
+          bgColor: 'bg-amber-50 dark:bg-amber-900/30',
           label: `${state.localChanges} to push`,
           animate: false
         }
       case 'behind':
         return {
           icon: Download,
-          color: 'text-blue-500',
-          bgColor: 'bg-blue-50',
+          color: 'text-blue-500 dark:text-blue-400',
+          bgColor: 'bg-blue-50 dark:bg-blue-900/30',
           label: `${state.remoteChanges} to pull`,
           animate: false
         }
       case 'diverged':
         return {
           icon: AlertCircle,
-          color: 'text-orange-500',
-          bgColor: 'bg-orange-50',
+          color: 'text-orange-500 dark:text-orange-400',
+          bgColor: 'bg-orange-50 dark:bg-orange-900/30',
           label: 'Diverged',
           animate: false
         }
       case 'error':
         return {
           icon: AlertCircle,
-          color: 'text-red-500',
-          bgColor: 'bg-red-50',
+          color: 'text-red-500 dark:text-red-400',
+          bgColor: 'bg-red-50 dark:bg-red-900/30',
           label: 'Error',
           animate: false
         }
       case 'no-remote':
         return {
           icon: CloudOff,
-          color: 'text-gray-400',
-          bgColor: 'bg-gray-50',
+          color: 'text-gray-400 dark:text-gray-500',
+          bgColor: 'bg-gray-50 dark:bg-gray-800',
           label: 'No remote',
           animate: false
         }
       default:
         return {
           icon: Cloud,
-          color: 'text-gray-400',
-          bgColor: 'bg-gray-50',
+          color: 'text-gray-400 dark:text-gray-500',
+          bgColor: 'bg-gray-50 dark:bg-gray-800',
           label: 'Unknown',
           animate: false
         }
@@ -255,7 +255,7 @@ export function SyncStatus({ className, compact = false }: SyncStatusProps) {
 
   // Full view with details
   return (
-    <div className={cn("rounded-lg border p-3", className)}>
+    <div className={cn("rounded-lg border dark:border-[var(--card-border)] p-3", className)}>
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <div className={cn("p-2 rounded-full", display.bgColor)}>
@@ -265,7 +265,7 @@ export function SyncStatus({ className, compact = false }: SyncStatusProps) {
             <p className={cn("text-sm font-medium", display.color)}>
               {display.label}
             </p>
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-gray-500 dark:text-gray-400">
               {state.branch && `${state.branch}`}
               {state.lastSync && ` · ${formatLastSync(state.lastSync)}`}
             </p>
@@ -277,7 +277,7 @@ export function SyncStatus({ className, compact = false }: SyncStatusProps) {
             <button
               onClick={handlePull}
               disabled={isSyncing}
-              className="p-2 rounded-md hover:bg-gray-100 text-gray-600 disabled:opacity-50"
+              className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400 disabled:opacity-50"
               title="Pull changes"
             >
               <Download className="h-4 w-4" />
@@ -288,7 +288,7 @@ export function SyncStatus({ className, compact = false }: SyncStatusProps) {
             <button
               onClick={handlePush}
               disabled={isSyncing}
-              className="p-2 rounded-md hover:bg-gray-100 text-gray-600 disabled:opacity-50"
+              className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400 disabled:opacity-50"
               title="Push changes"
             >
               <Upload className="h-4 w-4" />
@@ -298,7 +298,7 @@ export function SyncStatus({ className, compact = false }: SyncStatusProps) {
           <button
             onClick={handleSync}
             disabled={isSyncing || state.status === 'no-remote'}
-            className="p-2 rounded-md hover:bg-gray-100 text-gray-600 disabled:opacity-50"
+            className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400 disabled:opacity-50"
             title="Sync now"
           >
             <RefreshCw className={cn("h-4 w-4", isSyncing && "animate-spin")} />
@@ -307,7 +307,7 @@ export function SyncStatus({ className, compact = false }: SyncStatusProps) {
       </div>
 
       {state.error && (
-        <p className="mt-2 text-xs text-red-500 bg-red-50 p-2 rounded">
+        <p className="mt-2 text-xs text-red-500 dark:text-red-400 bg-red-50 dark:bg-red-900/30 p-2 rounded">
           {state.error}
         </p>
       )}

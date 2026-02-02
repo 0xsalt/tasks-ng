@@ -76,9 +76,9 @@ export function Sidebar() {
   }, [])
 
   return (
-    <div className="flex h-screen w-64 flex-col fixed left-0 top-0 bg-gradient-to-b from-[#1a759f]/5 to-[#1e6091]/5 border-r">
-      <div className="flex h-16 items-center px-6 border-b">
-        <h1 className="text-2xl font-bold bg-gradient-to-r from-[#1a759f] to-[#1e6091] bg-clip-text text-transparent">
+    <div className="flex h-screen w-64 flex-col fixed left-0 top-0 bg-gradient-to-b from-[#1a759f]/5 to-[#1e6091]/5 dark:from-[#1a759f]/10 dark:to-[#1e6091]/10 dark:bg-[var(--card-bg)] border-r dark:border-[var(--card-border)]">
+      <div className="flex h-16 items-center px-6 border-b dark:border-[var(--card-border)]">
+        <h1 className="text-2xl font-bold bg-gradient-to-r from-[#1a759f] to-[#1e6091] dark:from-[#38bdf8] dark:to-[#60a5fa] bg-clip-text text-transparent">
           tasks-ng
         </h1>
       </div>
@@ -93,14 +93,14 @@ export function Sidebar() {
               className={cn(
                 "group flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all",
                 isActive
-                  ? "bg-[#1a759f] text-white shadow-lg shadow-[#1a759f]/20"
-                  : "text-gray-700 hover:bg-white hover:text-[#1a759f] hover:shadow-sm"
+                  ? "bg-[#1a759f] dark:bg-[#38bdf8] text-white shadow-lg shadow-[#1a759f]/20 dark:shadow-[#38bdf8]/20"
+                  : "text-gray-700 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-700 hover:text-[#1a759f] dark:hover:text-[#38bdf8] hover:shadow-sm"
               )}
             >
               <item.icon
                 className={cn(
                   "mr-3 h-5 w-5 flex-shrink-0 transition-colors",
-                  isActive ? "text-white" : "text-gray-500 group-hover:text-[#1a759f]"
+                  isActive ? "text-white" : "text-gray-500 dark:text-gray-400 group-hover:text-[#1a759f] dark:group-hover:text-[#38bdf8]"
                 )}
               />
               {item.name}
@@ -110,10 +110,10 @@ export function Sidebar() {
 
         {/* Divider */}
         {fileNavigation.length > 0 && (
-          <div className="border-t my-2 pt-2">
-            <div className="text-xs font-semibold text-gray-500 px-3 mb-2 flex items-center justify-between">
+          <div className="border-t dark:border-[var(--card-border)] my-2 pt-2">
+            <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 px-3 mb-2 flex items-center justify-between">
               <span>TELOS FILES</span>
-              <Badge variant="secondary" className="bg-gray-200 text-gray-700 text-[10px]">
+              <Badge variant="secondary" className="bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-[10px]">
                 {fileCount}
               </Badge>
             </div>
@@ -130,22 +130,22 @@ export function Sidebar() {
               className={cn(
                 "group flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all",
                 isActive
-                  ? "bg-[#1a759f] text-white shadow-lg shadow-[#1a759f]/20"
-                  : "text-gray-700 hover:bg-white hover:text-[#1a759f] hover:shadow-sm"
+                  ? "bg-[#1a759f] dark:bg-[#38bdf8] text-white shadow-lg shadow-[#1a759f]/20 dark:shadow-[#38bdf8]/20"
+                  : "text-gray-700 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-700 hover:text-[#1a759f] dark:hover:text-[#38bdf8] hover:shadow-sm"
               )}
             >
               {item.isCSV ? (
                 <Table
                   className={cn(
                     "mr-3 h-4 w-4 flex-shrink-0 transition-colors",
-                    isActive ? "text-white" : "text-[#76c893] group-hover:text-[#1a759f]"
+                    isActive ? "text-white" : "text-[#76c893] dark:text-[#4ade80] group-hover:text-[#1a759f] dark:group-hover:text-[#38bdf8]"
                   )}
                 />
               ) : (
                 <FileText
                   className={cn(
                     "mr-3 h-4 w-4 flex-shrink-0 transition-colors",
-                    isActive ? "text-white" : "text-[#1a759f] group-hover:text-[#1a759f]"
+                    isActive ? "text-white" : "text-[#1a759f] dark:text-[#38bdf8] group-hover:text-[#1a759f] dark:group-hover:text-[#38bdf8]"
                   )}
                 />
               )}
@@ -156,14 +156,14 @@ export function Sidebar() {
       </nav>
 
       {/* Sync Status */}
-      <div className="border-t p-3">
+      <div className="border-t dark:border-[var(--card-border)] p-3">
         <SyncStatus />
       </div>
 
-      <div className="border-t p-3">
-        <div className="text-xs text-gray-500 text-center">
+      <div className="border-t dark:border-[var(--card-border)] p-3">
+        <div className="text-xs text-gray-500 dark:text-gray-400 text-center">
           Task Format Specification
-          <div className="mt-1 font-semibold text-[#1a759f]">v2.0.0</div>
+          <div className="mt-1 font-semibold text-[#1a759f] dark:text-[#38bdf8]">v2.0.0</div>
         </div>
       </div>
     </div>

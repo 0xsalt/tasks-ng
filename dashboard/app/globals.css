@@ -29,6 +29,36 @@
   --muted: #9ca3af;
 }
 
+/* Dark mode card backgrounds - explicit overrides for Tailwind v4 compatibility */
+.dark .dark-card-bg {
+  background-color: var(--card-bg) !important;
+}
+
+.dark .dark-card-border {
+  border-color: var(--card-border) !important;
+}
+
+/* Quadrant header dark mode backgrounds */
+.dark .dark-q1-header {
+  background-color: rgba(127, 29, 29, 0.3) !important;
+  border-color: rgb(153, 27, 27) !important;
+}
+
+.dark .dark-q2-header {
+  background-color: rgba(113, 63, 18, 0.3) !important;
+  border-color: rgb(133, 77, 14) !important;
+}
+
+.dark .dark-q3-header {
+  background-color: rgba(124, 45, 18, 0.3) !important;
+  border-color: rgb(154, 52, 18) !important;
+}
+
+.dark .dark-q4-header {
+  background-color: rgb(31, 41, 55) !important;
+  border-color: rgb(55, 65, 81) !important;
+}
+
 body {
   color: var(--foreground);
   background: var(--background);

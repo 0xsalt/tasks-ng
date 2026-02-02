@@ -149,31 +149,31 @@ export function QuickCapture() {
 
           {/* Input modal - bottom sheet on mobile, centered on desktop */}
           <div className={cn(
-            "fixed z-50 bg-white",
+            "fixed z-50 bg-white dark:bg-[var(--card-bg)]",
             "lg:top-1/2 lg:left-1/2 lg:-translate-x-1/2 lg:-translate-y-1/2 lg:rounded-xl lg:w-[480px] lg:max-w-[90vw]",
             "bottom-0 left-0 right-0 rounded-t-2xl animate-slide-up safe-area-inset-bottom"
           )}>
             {/* Handle bar (mobile) */}
-            <div className="lg:hidden w-12 h-1 bg-gray-300 rounded-full mx-auto mt-3" />
+            <div className="lg:hidden w-12 h-1 bg-gray-300 dark:bg-gray-600 rounded-full mx-auto mt-3" />
 
             {/* Header */}
-            <div className="flex items-center justify-between px-4 py-3 border-b">
-              <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+            <div className="flex items-center justify-between px-4 py-3 border-b dark:border-[var(--card-border)]">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
                 {mode === "task" ? (
                   <>
-                    <Zap className="h-5 w-5 text-[#1a759f]" />
+                    <Zap className="h-5 w-5 text-[#1a759f] dark:text-[#38bdf8]" />
                     Quick Capture
                   </>
                 ) : (
                   <>
-                    <Brain className="h-5 w-5 text-purple-500" />
+                    <Brain className="h-5 w-5 text-purple-500 dark:text-purple-400" />
                     Brain Dump
                   </>
                 )}
               </h2>
               <button
                 onClick={() => !isSubmitting && setIsOpen(false)}
-                className="p-2 -mr-2 text-gray-500 active:text-gray-900 touch-manipulation"
+                className="p-2 -mr-2 text-gray-500 dark:text-gray-400 active:text-gray-900 dark:active:text-gray-100 touch-manipulation"
                 disabled={isSubmitting}
               >
                 <X className="h-5 w-5" />
@@ -182,15 +182,15 @@ export function QuickCapture() {
 
             {/* Mode Toggle */}
             <div className="px-4 pt-4">
-              <div className="flex gap-2 p-1 bg-gray-100 rounded-xl">
+              <div className="flex gap-2 p-1 bg-gray-100 dark:bg-gray-700 rounded-xl">
                 <button
                   type="button"
                   onClick={() => setMode("task")}
                   className={cn(
                     "flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all touch-manipulation flex items-center justify-center gap-2",
                     mode === "task"
-                      ? "bg-white text-[#1a759f] shadow"
-                      : "text-gray-500"
+                      ? "bg-white dark:bg-gray-800 text-[#1a759f] dark:text-[#38bdf8] shadow"
+                      : "text-gray-500 dark:text-gray-400"
                   )}
                 >
                   <FileText className="h-4 w-4" />
@@ -202,8 +202,8 @@ export function QuickCapture() {
                   className={cn(
                     "flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all touch-manipulation flex items-center justify-center gap-2",
                     mode === "braindump"
-                      ? "bg-white text-purple-600 shadow"
-                      : "text-gray-500"
+                      ? "bg-white dark:bg-gray-800 text-purple-600 dark:text-purple-400 shadow"
+                      : "text-gray-500 dark:text-gray-400"
                   )}
                 >
                   <Brain className="h-4 w-4" />
@@ -217,14 +217,14 @@ export function QuickCapture() {
               <div className="flex flex-col items-center justify-center py-12">
                 <div className={cn(
                   "h-16 w-16 rounded-full flex items-center justify-center mb-4",
-                  mode === "task" ? "bg-green-100" : "bg-purple-100"
+                  mode === "task" ? "bg-green-100 dark:bg-green-900/30" : "bg-purple-100 dark:bg-purple-900/30"
                 )}>
                   <Check className={cn(
                     "h-8 w-8",
-                    mode === "task" ? "text-green-600" : "text-purple-600"
+                    mode === "task" ? "text-green-600 dark:text-green-400" : "text-purple-600 dark:text-purple-400"
                   )} />
                 </div>
-                <p className="text-lg font-medium text-gray-900">{successMessage}</p>
+                <p className="text-lg font-medium text-gray-900 dark:text-gray-100">{successMessage}</p>
               </div>
             ) : mode === "task" ? (
               // Task Mode Form
@@ -237,7 +237,7 @@ export function QuickCapture() {
                     value={value}
                     onChange={(e) => setValue(e.target.value)}
                     placeholder="What needs to be done?"
-                    className="w-full text-lg px-4 py-3 rounded-xl border border-gray-200 focus:border-[#1a759f] focus:ring-2 focus:ring-[#1a759f]/20 outline-none transition-all"
+                    className="w-full text-lg px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:border-[#1a759f] dark:focus:border-[#38bdf8] focus:ring-2 focus:ring-[#1a759f]/20 dark:focus:ring-[#38bdf8]/20 outline-none transition-all"
                     disabled={isSubmitting}
                     autoComplete="off"
                     autoCorrect="off"
@@ -246,7 +246,7 @@ export function QuickCapture() {
 
                   {/* Error message */}
                   {error && (
-                    <p className="mt-2 text-sm text-red-600 flex items-center gap-1">
+                    <p className="mt-2 text-sm text-red-600 dark:text-red-400 flex items-center gap-1">
                       <AlertTriangle className="h-4 w-4" />
                       {error}
                     </p>
@@ -255,7 +255,7 @@ export function QuickCapture() {
 
                 {/* Quick modifiers */}
                 <div className="px-4 pb-4">
-                  <p className="text-xs font-medium text-gray-500 mb-2">Priority</p>
+                  <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2">Priority</p>
                   <div className="flex gap-2">
                     <button
                       type="button"
@@ -263,8 +263,8 @@ export function QuickCapture() {
                       className={cn(
                         "flex-1 py-3 px-4 rounded-xl font-medium transition-all touch-manipulation",
                         modifier === "urgent"
-                          ? "bg-red-100 text-red-700 border-2 border-red-300"
-                          : "bg-gray-100 text-gray-600 border-2 border-transparent active:bg-gray-200"
+                          ? "bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300 border-2 border-red-300 dark:border-red-700"
+                          : "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 border-2 border-transparent active:bg-gray-200 dark:active:bg-gray-600"
                       )}
                     >
                       <Zap className="h-4 w-4 inline mr-1" />
@@ -276,8 +276,8 @@ export function QuickCapture() {
                       className={cn(
                         "flex-1 py-3 px-4 rounded-xl font-medium transition-all touch-manipulation",
                         modifier === "important"
-                          ? "bg-yellow-100 text-yellow-700 border-2 border-yellow-300"
-                          : "bg-gray-100 text-gray-600 border-2 border-transparent active:bg-gray-200"
+                          ? "bg-yellow-100 dark:bg-yellow-900/40 text-yellow-700 dark:text-yellow-300 border-2 border-yellow-300 dark:border-yellow-700"
+                          : "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 border-2 border-transparent active:bg-gray-200 dark:active:bg-gray-600"
                       )}
                     >
                       <Clock className="h-4 w-4 inline mr-1" />
@@ -287,15 +287,15 @@ export function QuickCapture() {
                 </div>
 
                 {/* Submit button */}
-                <div className="p-4 border-t">
+                <div className="p-4 border-t dark:border-[var(--card-border)]">
                   <button
                     type="submit"
                     disabled={!value.trim() || isSubmitting}
                     className={cn(
                       "w-full py-4 rounded-xl font-semibold text-white transition-all touch-manipulation flex items-center justify-center gap-2",
                       value.trim() && !isSubmitting
-                        ? "bg-[#1a759f] active:bg-[#1e6091]"
-                        : "bg-gray-300 cursor-not-allowed"
+                        ? "bg-[#1a759f] dark:bg-[#38bdf8] active:bg-[#1e6091] dark:active:bg-[#0ea5e9]"
+                        : "bg-gray-300 dark:bg-gray-600 cursor-not-allowed"
                     )}
                   >
                     {isSubmitting ? (
@@ -322,20 +322,20 @@ export function QuickCapture() {
                     value={value}
                     onChange={(e) => setValue(e.target.value)}
                     placeholder="Dump your thoughts here... Ideas, notes, random things you need to capture. Process later."
-                    className="w-full text-base px-4 py-3 rounded-xl border border-gray-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 outline-none transition-all resize-none"
+                    className="w-full text-base px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:border-purple-500 dark:focus:border-purple-400 focus:ring-2 focus:ring-purple-500/20 dark:focus:ring-purple-400/20 outline-none transition-all resize-none"
                     rows={4}
                     disabled={isSubmitting}
                     autoComplete="off"
                     autoCorrect="off"
                   />
 
-                  <p className="mt-2 text-xs text-gray-400">
+                  <p className="mt-2 text-xs text-gray-400 dark:text-gray-500">
                     Raw text saved to INBOX section. No validation - just capture now, process later.
                   </p>
 
                   {/* Error message */}
                   {error && (
-                    <p className="mt-2 text-sm text-red-600 flex items-center gap-1">
+                    <p className="mt-2 text-sm text-red-600 dark:text-red-400 flex items-center gap-1">
                       <AlertTriangle className="h-4 w-4" />
                       {error}
                     </p>
@@ -343,15 +343,15 @@ export function QuickCapture() {
                 </div>
 
                 {/* Submit button */}
-                <div className="p-4 border-t">
+                <div className="p-4 border-t dark:border-[var(--card-border)]">
                   <button
                     type="submit"
                     disabled={!value.trim() || isSubmitting}
                     className={cn(
                       "w-full py-4 rounded-xl font-semibold text-white transition-all touch-manipulation flex items-center justify-center gap-2",
                       value.trim() && !isSubmitting
-                        ? "bg-purple-600 active:bg-purple-700"
-                        : "bg-gray-300 cursor-not-allowed"
+                        ? "bg-purple-600 dark:bg-purple-500 active:bg-purple-700 dark:active:bg-purple-600"
+                        : "bg-gray-300 dark:bg-gray-600 cursor-not-allowed"
                     )}
                   >
                     {isSubmitting ? (
