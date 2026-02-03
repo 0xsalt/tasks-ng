@@ -548,7 +548,7 @@ export default function OverviewPage() {
                   onClick={() => setStatusFilter(null)}
                   className={`flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 border transition-all text-xs ${
                     statusFilter === null
-                      ? 'bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 border-gray-900 dark:border-gray-100'
+                      ? 'bg-[#1a759f] dark:bg-[#38bdf8] text-white border-[#1a759f] dark:border-[#38bdf8]'
                       : 'bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'
                   }`}
                 >
