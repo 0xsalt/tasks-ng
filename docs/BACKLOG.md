@@ -4,27 +4,24 @@
 > Review regularly.
 > Top item is next.
 
+Next Available: #019
+
 ---
 
 ## NOW
 
-- [x] Darkmode widget at top right of screen - use same pattern as ~/local/projects/whereis-emmy/ #frontend #ui #ux _done:2026-02-02
-- [ ] Add calendar functionality - calendar view for task scheduling and due dates (see ROADMAP for full spec) #frontend #layer1
-- [ ] Eisenhower quadrant grid as default homepage layout with "Today" title #005 #frontend #ux
+- [ ] #012 migrate-completed-tasks.md update for new checkbox states #docs
+- [ ] #013 Deploy updated skill to ~/.claude/skills/tasks/ #tools
 
 ## BACKLOG
-- [ ] Build reporting page for viewing recently completed tasks - Allow filtering/viewing completed items beyond 12-hour grace period, with date ranges, filters by tag/section, export options #frontend #feature +important
-- [ ] Research Docker build time optimization - Current: 60s+ full rebuilds for code changes. Research: (1) is full rebuild needed every time? (2) what triggers rebuilds? (3) hot reload in dev? (4) build caching strategies? (5) service-dashboard compatibility? (6) separate dev (fast iteration) vs prod (robust) workflows? Goal: rapid iterative development with <5s feedback loop. #devops #performance #research
-- [ ] Add info bubble "(i)" next to "Eisenhower" header with description and link to authoritative source #frontend #ux
-- [ ] Fix Eisenhower filter tile unselect bug - should revert to default unclicked state with no outline #frontend #bugfix
-- [ ] Settings page: Toggle for single-task-in-progress enforcement (currently allows multiple [/] tasks, make it optional) #frontend #settings
-- [ ] Investigate optimistic locking for concurrent CRUD writes (design note: rapid parallel inserts can overlap) #backend
-- [ ] Deploy updated skill to ~/.claude/skills/tasks/ #tools
-- [ ] Validation command (check tasks.md against spec) #tools
-- [ ] migrate-completed-tasks.md update for new checkbox states #docs
-- [ ] Time tracking summary command (sum _spent: by tag/date) #tools
-- [ ] Due date reminder integration (ntfy?) #tools
-- [ ] Enhanced auto dark mode - timezone-aware sunrise/sunset switching (port sun-utils.ts from whereis-emmy) #frontend #ux
+
+- [ ] #011 Research Docker build time optimization - Current: 60s+ full rebuilds for code changes. Research: (1) is full rebuild needed every time? (2) what triggers rebuilds? (3) hot reload in dev? (4) build caching strategies? (5) service-dashboard compatibility? (6) separate dev (fast iteration) vs prod (robust) workflows? Goal: rapid iterative development with <5s feedback loop. #devops #performance #research
+- [ ] #014 Validation command (check tasks.md against spec) #tools
+- [ ] #015 Investigate optimistic locking for concurrent CRUD writes (design note: rapid parallel inserts can overlap) #backend
+- [ ] #016 Time tracking summary command (sum _spent: by tag/date) #tools
+- [ ] #017 Due date reminder integration (ntfy?) #tools
+- [ ] #018 Enhanced auto dark mode - timezone-aware sunrise/sunset switching (port sun-utils.ts from whereis-emmy) #frontend #ux
+- [ ] #006 Add calendar functionality - calendar view for task scheduling and due dates (see ROADMAP for full spec) #frontend #layer1
 
 ## ROADMAP
 
@@ -39,7 +36,6 @@
 - [ ] Drag-drop reordering - move between NOW/BACKLOG/DONE #frontend #layer1
 
 **Web UI - Visualization:**
-- [ ] Eisenhower matrix view - 4-quadrant visual grid #frontend #layer1
 - [ ] Kanban board - columns by status or section #frontend #layer1
 - [ ] Calendar view - tasks by _due: date #frontend #layer1
 - [ ] Time tracking charts - burndown, time by tag #frontend #layer1
@@ -100,10 +96,16 @@
 
 ## DONE
 
+- [x] #010 Settings page with single-task enforcement toggle #frontend #settings _done:2026-03-03
+- [x] #009 Reporting page with date/tag filters and export #frontend #feature _done:2026-03-03
+- [x] #008 Info bubble next to Eisenhower header #frontend #ux _done:2026-03-03
+- [x] #007 Fix Eisenhower filter tile unselect bug #bug #minor _done:2026-03-03
+- [x] #005 Eisenhower quadrant grid as default homepage layout #frontend #ux _done:2026-03-03
+- [x] #004 Darkmode widget at top right of screen #frontend #ui #ux _done:2026-02-02
 - [x] Make checkbox icons clickable to cycle states: [ ] → [/] → [x] → [ ] (3-state cycle with hover effects) #frontend _done:2026-01-27
-- [x] 003: Parser Layer 3 - PAI integration module with AI features, journal sync #tools +pai _done:2026-01-27
-- [x] 002: Parser Layer 2 - File operations module with locking, backup, XDG paths #tools _done:2026-01-27
-- [x] 001: Parser Layer 1 - Pure parser module, zero deps, SPEC-compliant #tools _done:2026-01-27
+- [x] #003 Parser Layer 3 - PAI integration module with AI features, journal sync #tools +pai _done:2026-01-27
+- [x] #002 Parser Layer 2 - File operations module with locking, backup, XDG paths #tools _done:2026-01-27
+- [x] #001 Parser Layer 1 - Pure parser module, zero deps, SPEC-compliant #tools _done:2026-01-27
 - [x] Go mobile-first PWA with quick capture FAB, bottom nav, responsive layout #frontend _done:2026-01-26
 - [x] Make dashboard dynamic - live data from ~/tasks.md via API #frontend _done:2026-01-26
 - [x] Build CRUD API with parser module, file locking, backup system #backend _done:2026-01-26
