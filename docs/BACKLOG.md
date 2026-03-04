@@ -10,11 +10,6 @@ Next Available: #019
 
 ## NOW
 
-- [ ] #012 migrate-completed-tasks.md update for new checkbox states #docs
-- [ ] #013 Deploy updated skill to ~/.claude/skills/tasks/ #tools
-
-## BACKLOG
-
 - [ ] #011 Research Docker build time optimization - Current: 60s+ full rebuilds for code changes. Research: (1) is full rebuild needed every time? (2) what triggers rebuilds? (3) hot reload in dev? (4) build caching strategies? (5) service-dashboard compatibility? (6) separate dev (fast iteration) vs prod (robust) workflows? Goal: rapid iterative development with <5s feedback loop. #devops #performance #research
 - [ ] #014 Validation command (check tasks.md against spec) #tools
 - [ ] #015 Investigate optimistic locking for concurrent CRUD writes (design note: rapid parallel inserts can overlap) #backend
@@ -96,6 +91,8 @@ Next Available: #019
 
 ## DONE
 
+- [x] #013 Deploy updated skill to ~/.claude/skills/tasks/ — delegated to arcana-development #104 #tools _done:2026-03-03
+- [x] #012 migrate-completed-tasks.md update for new checkbox states #docs _done:2026-03-03
 - [x] #010 Settings page with single-task enforcement toggle #frontend #settings _done:2026-03-03
 - [x] #009 Reporting page with date/tag filters and export #frontend #feature _done:2026-03-03
 - [x] #008 Info bubble next to Eisenhower header #frontend #ux _done:2026-03-03
