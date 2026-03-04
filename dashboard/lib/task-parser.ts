@@ -788,6 +788,10 @@ export interface TaskFilters {
   quadrant?: EisenhowerQuadrant
   includeCompleted?: boolean
   flat?: boolean
+  /** ISO date string YYYY-MM-DD, inclusive lower bound on dates.done */
+  doneAfter?: string
+  /** ISO date string YYYY-MM-DD, inclusive upper bound on dates.done */
+  doneBefore?: string
 }
 
 export async function getTasks(filters: TaskFilters = {}): Promise<Task[]> {
@@ -848,6 +852,28 @@ export async function getTasks(filters: TaskFilters = {}): Promise<Task[]> {
   // Filter by quadrant
   if (filters.quadrant) {
     tasks = tasks.filter(t => getQuadrant(t) === filters.quadrant)
+  }
+
+  // Filter by doneAfter (inclusive): dates.done >= doneAfter
+  if (filters.doneAfter) {
+    const doneAfter = filters.doneAfter
+    tasks = tasks.filter(t => {
+      if (!t.dates.done) return false
+      // Normalize ISO timestamp to date-only prefix for comparison
+      const doneDate = t.dates.done.substring(0, 10)
+      return doneDate >= doneAfter
+    })
+  }
+
+  // Filter by doneBefore (inclusive): dates.done <= doneBefore
+  if (filters.doneBefore) {
+    const doneBefore = filters.doneBefore
+    tasks = tasks.filter(t => {
+      if (!t.dates.done) return false
+      // Normalize ISO timestamp to date-only prefix for comparison
+      const doneDate = t.dates.done.substring(0, 10)
+      return doneDate <= doneBefore
+    })
   }
 
   // Return flat list or tree (top-level only)

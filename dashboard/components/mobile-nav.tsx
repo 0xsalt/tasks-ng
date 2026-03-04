@@ -90,6 +90,20 @@ export function MobileNav() {
               >
                 <span className="text-gray-900 dark:text-gray-100">Ask AI</span>
               </Link>
+              <Link
+                href="/reporting"
+                onClick={() => setMenuOpen(false)}
+                className="flex items-center gap-3 p-4 rounded-lg active:bg-gray-100 dark:active:bg-gray-700 touch-manipulation"
+              >
+                <span className="text-gray-900 dark:text-gray-100">Reporting</span>
+              </Link>
+              <Link
+                href="/settings"
+                onClick={() => setMenuOpen(false)}
+                className="flex items-center gap-3 p-4 rounded-lg active:bg-gray-100 dark:active:bg-gray-700 touch-manipulation"
+              >
+                <span className="text-gray-900 dark:text-gray-100">Settings</span>
+              </Link>
             </div>
             <div className="p-4 border-t dark:border-[var(--card-border)] text-center text-xs text-gray-500 dark:text-gray-400">
               tasks-ng v2.0.0

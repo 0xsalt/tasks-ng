@@ -31,3 +31,11 @@ coverage/
 
 # Logs
 *.log
+.conductor/
+
+# PAI local state (never commit)
+.claude/
+.specify/
+MEMORY/
+Plans/
+dashboard/MEMORY/

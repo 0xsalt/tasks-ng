@@ -69,6 +69,18 @@ export async function GET(request: Request) {
       filters.flat = true
     }
 
+    // doneAfter - ISO date string YYYY-MM-DD (inclusive lower bound on dates.done)
+    const doneAfterParam = searchParams.get('doneAfter')
+    if (doneAfterParam && /^\d{4}-\d{2}-\d{2}$/.test(doneAfterParam)) {
+      filters.doneAfter = doneAfterParam
+    }
+
+    // doneBefore - ISO date string YYYY-MM-DD (inclusive upper bound on dates.done)
+    const doneBeforeParam = searchParams.get('doneBefore')
+    if (doneBeforeParam && /^\d{4}-\d{2}-\d{2}$/.test(doneBeforeParam)) {
+      filters.doneBefore = doneBeforeParam
+    }
+
     const tasks = await getTasks(filters)
 
     return NextResponse.json({

@@ -13,10 +13,13 @@ import {
   Clock,
   Target,
   Zap,
-  Loader2
+  Loader2,
+  Info
 } from "lucide-react"
 import { useTasks, useEisenhower, computeTaskStats, type Task, type EisenhowerMatrix } from "@/lib/hooks/use-tasks"
-import { useState, useEffect, useCallback, useMemo } from "react"
+import { useState, useEffect, useCallback, useMemo, useRef } from "react"
+import { useSettings } from "@/app/context/SettingsContext"
+import { EnforcementDialog } from "@/components/enforcement-dialog"
 
 type TagFilter = 'work' | 'pers'
 type QuadrantFilter = 'Q1' | 'Q2' | 'Q3' | 'Q4'
@@ -41,15 +44,22 @@ function CheckboxIcon({
   state,
   taskId,
   onUpdate,
-  task
+  task,
+  allTasks
 }: {
   state: Task['checkboxState']
   taskId: string
   onUpdate: () => void
   task: Task
+  allTasks: Task[]
 }) {
   const [optimisticState, setOptimisticState] = useState<Task['checkboxState'] | null>(null)
   const [isUpdating, setIsUpdating] = useState(false)
+  const { settings } = useSettings()
+  const [enforcementDialogOpen, setEnforcementDialogOpen] = useState(false)
+  const [inProgressTask, setInProgressTask] = useState<{description: string, id: string} | null>(null)
+  const [pendingTaskId, setPendingTaskId] = useState<string | null>(null)
+  const [enforcementLoading, setEnforcementLoading] = useState(false)
 
   // Use optimistic state if available, otherwise use prop state
   const displayState = optimisticState ?? state
@@ -87,6 +97,18 @@ function CheckboxIcon({
 
     const nextState = cycleState(displayState)
 
+    // Enforcement check: when transitioning to in-progress ([/])
+    // This happens when current state is pending ([ ])
+    if (nextState === '/' && settings.singleTaskEnforcement) {
+      const existingInProgress = allTasks.find(t => t.checkboxState === '/' && t.id !== taskId)
+      if (existingInProgress) {
+        setInProgressTask({ description: existingInProgress.description, id: existingInProgress.id })
+        setPendingTaskId(taskId)
+        setEnforcementDialogOpen(true)
+        return // Don't make the API call
+      }
+    }
+
     // OPTIMISTIC UPDATE: Show change immediately
     setOptimisticState(nextState)
     setIsUpdating(true)
@@ -121,16 +143,44 @@ function CheckboxIcon({
   const { icon, color } = icons[displayState]
 
   return (
-    <button
-      onClick={handleClick}
-      disabled={isUpdating}
-      className={`font-mono text-sm whitespace-nowrap shrink-0 ${color} ${
-        isUpdating ? 'opacity-70' : 'cursor-pointer hover:scale-110 active:scale-95'
-      } transition-all touch-manipulation`}
-      title="Click to cycle state"
-    >
-      {icon}
-    </button>
+    <>
+      <button
+        onClick={handleClick}
+        disabled={isUpdating}
+        className={`font-mono text-sm whitespace-nowrap shrink-0 ${color} ${
+          isUpdating ? 'opacity-70' : 'cursor-pointer hover:scale-110 active:scale-95'
+        } transition-all touch-manipulation`}
+        title="Click to cycle state"
+      >
+        {icon}
+      </button>
+      <EnforcementDialog
+        open={enforcementDialogOpen}
+        inProgressTaskDescription={inProgressTask?.description ?? ''}
+        onConfirm={async () => {
+          setEnforcementLoading(true)
+          try {
+            // Complete existing in-progress task
+            await fetch(`/api/tasks/${inProgressTask?.id}/toggle`, { method: 'PATCH' })
+            // Start the new task
+            await fetch(`/api/tasks/${pendingTaskId}/toggle`, { method: 'PATCH' })
+            // Refresh the page data
+            window.location.reload()
+          } catch (err) {
+            console.error('Enforcement action failed:', err)
+          } finally {
+            setEnforcementLoading(false)
+            setEnforcementDialogOpen(false)
+          }
+        }}
+        onCancel={() => {
+          setEnforcementDialogOpen(false)
+          setInProgressTask(null)
+          setPendingTaskId(null)
+        }}
+        isLoading={enforcementLoading}
+      />
+    </>
   )
 }
 
@@ -204,7 +254,7 @@ function QuadrantButton({
       className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all border ${
         active
           ? `${colorClass.activeBg} dark:${colorClass.darkActiveBg} ${colorClass.text} dark:${colorClass.darkText} ${colorClass.border} dark:${colorClass.darkBorder} ring-2 ring-offset-1 dark:ring-offset-gray-900`
-          : `${colorClass.bg} dark:${colorClass.darkBg} ${colorClass.text} dark:${colorClass.darkText} ${colorClass.border} dark:${colorClass.darkBorder} hover:ring-1 hover:ring-offset-1 dark:hover:ring-offset-gray-900`
+          : `${colorClass.bg} dark:${colorClass.darkBg} ${colorClass.text} dark:${colorClass.darkText} ${colorClass.border} dark:${colorClass.darkBorder} ring-0 hover:ring-1 hover:ring-offset-1 dark:hover:ring-offset-gray-900`
       }`}
     >
       <span>{label}</span>
@@ -231,6 +281,22 @@ export default function OverviewPage() {
   const [quadrantFilters, setQuadrantFilters] = useState<Set<QuadrantFilter>>(new Set())
   const [statusFilter, setStatusFilter] = useState<Task['status'] | null>(null)
   const [isTodayCollapsed, setIsTodayCollapsed] = useState(true)
+
+  // Eisenhower info bubble state
+  const [isInfoOpen, setIsInfoOpen] = useState(false)
+  const infoPopoverRef = useRef<HTMLDivElement>(null)
+
+  // Outside-click dismissal for info popover
+  useEffect(() => {
+    if (!isInfoOpen) return
+    const handleMouseDown = (e: MouseEvent) => {
+      if (infoPopoverRef.current && !infoPopoverRef.current.contains(e.target as Node)) {
+        setIsInfoOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleMouseDown)
+    return () => document.removeEventListener('mousedown', handleMouseDown)
+  }, [isInfoOpen])
 
   // Toggle tag filter
   const toggleTag = useCallback((tag: TagFilter) => {
@@ -500,6 +566,36 @@ export default function OverviewPage() {
         <div className="mb-6">
           <div className="flex items-center gap-2 mb-3">
             <h2 className="text-lg lg:text-xl font-bold text-gray-900 dark:text-gray-100">Eisenhower</h2>
+            {/* Info icon + popover */}
+            <div className="relative" ref={infoPopoverRef}>
+              <button
+                onClick={() => setIsInfoOpen(prev => !prev)}
+                aria-label="About Eisenhower Matrix"
+                aria-describedby="eisenhower-info-popover"
+                className="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 transition-colors"
+              >
+                <Info className="size-4" />
+              </button>
+              {isInfoOpen && (
+                <div
+                  id="eisenhower-info-popover"
+                  role="tooltip"
+                  className="absolute top-full left-0 mt-1 z-50 max-w-xs bg-white dark:bg-gray-800 border dark:border-gray-700 rounded-lg shadow-lg p-3 text-sm"
+                >
+                  <p className="text-gray-700 dark:text-gray-300 mb-2">
+                    The Eisenhower Matrix organizes tasks by urgency and importance into four quadrants: Do, Schedule, Delegate, and Eliminate.
+                  </p>
+                  <a
+                    href="https://en.wikipedia.org/wiki/Time_management#The_Eisenhower_Method"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[#1a759f] dark:text-[#38bdf8] hover:underline"
+                  >
+                    Learn more
+                  </a>
+                </div>
+              )}
+            </div>
             {quadrantFilters.size > 0 && (
               <button
                 onClick={() => setQuadrantFilters(new Set())}
@@ -602,7 +698,7 @@ export default function OverviewPage() {
                     <Card key={task.id} className="border-l-4 border-l-[#1a759f] dark:border-l-[#38bdf8] bg-gradient-to-r from-[#1a759f]/5 dark:from-[#38bdf8]/10 to-transparent">
                       <CardContent className="py-3 px-4">
                         <div className="flex items-start gap-3 min-w-0">
-                          <CheckboxIcon state={task.checkboxState} taskId={task.id} onUpdate={handleTaskCreated} task={task} />
+                          <CheckboxIcon state={task.checkboxState} taskId={task.id} onUpdate={handleTaskCreated} task={task} allTasks={tasks} />
                           <div className="min-w-0 flex-1">
                             <p className="font-medium text-gray-900 dark:text-gray-100 truncate">
                               {getStatusPrefix(task)}{task.description}
@@ -690,7 +786,7 @@ export default function OverviewPage() {
                             key={task.id}
                             className="flex items-start gap-2 px-[1px] py-1.5 rounded hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
                           >
-                            <CheckboxIcon state={task.checkboxState} taskId={task.id} onUpdate={handleTaskCreated} task={task} />
+                            <CheckboxIcon state={task.checkboxState} taskId={task.id} onUpdate={handleTaskCreated} task={task} allTasks={tasks} />
                             <div className="min-w-0 flex-1">
                               <p className="text-xs font-normal text-gray-900 dark:text-gray-100 line-clamp-2 leading-relaxed break-words">
                                 {getStatusPrefix(task)}{task.description}

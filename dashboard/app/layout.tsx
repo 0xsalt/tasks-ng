@@ -4,6 +4,7 @@ import { Sidebar } from "../components/sidebar"
 import { MobileNav } from "../components/mobile-nav"
 import { QuickCapture } from "../components/quick-capture"
 import { ThemeProvider } from "./context/ThemeContext"
+import { SettingsProvider } from "./context/SettingsContext"
 import { ThemeToggle } from "./components/ThemeToggle"
 
 export const metadata: Metadata = {
@@ -42,6 +43,7 @@ export default function RootLayout({
       </head>
       <body className="bg-gray-50 dark:bg-gray-900">
         <ThemeProvider>
+        <SettingsProvider>
           {/* Theme toggle - positioned top-right */}
           <div className="fixed top-2 right-2 z-50 lg:top-4 lg:right-4">
             <ThemeToggle />
@@ -64,6 +66,7 @@ export default function RootLayout({
 
           {/* Quick capture FAB - visible on mobile */}
           <QuickCapture />
+        </SettingsProvider>
         </ThemeProvider>
       </body>
     </html>

@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Home, MessageSquare, Upload, FileText, Table, Target, Calendar } from "lucide-react"
+import { Home, MessageSquare, Upload, FileText, Table, Target, Calendar, BarChart2, Settings } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 import { useEffect, useState } from "react"
@@ -23,6 +23,8 @@ const staticNavigation = [
   { name: "Specification", href: "/file/SPEC", icon: FileText },
   { name: "Ideas", href: "/file/IDEAS", icon: FileText },
   { name: "Ask", href: "/ask", icon: MessageSquare },
+  { name: "Reporting", href: "/reporting", icon: BarChart2 },
+  { name: "Settings", href: "/settings", icon: Settings },
 ]
 
 export function Sidebar() {
