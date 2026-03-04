@@ -16,10 +16,18 @@ bun ~/.claude/commands/migrate-completed-tasks.md [file]
 - `bun migrate-completed-tasks.md ~/project/tasks.md` - Specify file
 
 ## What It Does
-1. Finds all [x] tasks in active sections (not already in Completed)
+1. Finds all [x] (completed) and [-] (cancelled) tasks in active sections
 2. Adds _done:YYYY-MM-DD if not present
 3. Moves them to "Completed > Recent" section
 4. Preserves existing tags and metadata
+
+## Checkbox States (Reference)
+- `[ ]` pending — not migrated
+- `[/]` in progress — not migrated
+- `[x]` completed — migrated with _done: date
+- `[-]` cancelled — migrated with _done: date
+- `[>]` deferred — not migrated
+- `[?]` blocked — not migrated
 */
 
 import { readFileSync, writeFileSync, existsSync } from 'fs';
@@ -66,8 +74,8 @@ function findCompletedTasks(content: string): CompletedTask[] {
     // Skip if already in completed section
     if (inCompletedSection) continue;
 
-    // Find completed tasks in active sections
-    if (line.match(/^- \[x\]/i)) {
+    // Find completed [x] and cancelled [-] tasks in active sections
+    if (line.match(/^- \[x\]/i) || line.match(/^- \[-\]/)) {
       completed.push({
         line,
         lineNumber: i,
@@ -151,9 +159,9 @@ function main() {
     return;
   }
 
-  console.log(`🔍 Found ${completedTasks.length} completed task(s) to migrate:\n`);
+  console.log(`🔍 Found ${completedTasks.length} completed/cancelled task(s) to migrate:\n`);
   completedTasks.forEach((task, i) => {
-    const desc = task.line.replace(/^- \[x\]\s*/i, '').substring(0, 60);
+    const desc = task.line.replace(/^- \[[x\-]\]\s*/i, '').substring(0, 60);
     console.log(`   ${i + 1}. ${desc}...`);
     console.log(`      From: ${task.section}`);
   });
