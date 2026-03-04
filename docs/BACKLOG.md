@@ -10,13 +10,15 @@ Next Available: #019
 
 ## NOW
 
-- [ ] #011 Research Docker build time optimization - Current: 60s+ full rebuilds for code changes. Research: (1) is full rebuild needed every time? (2) what triggers rebuilds? (3) hot reload in dev? (4) build caching strategies? (5) service-dashboard compatibility? (6) separate dev (fast iteration) vs prod (robust) workflows? Goal: rapid iterative development with <5s feedback loop. #devops #performance #research
+## BACKLOG
+
 - [ ] #014 Validation command (check tasks.md against spec) #tools
-- [ ] #015 Investigate optimistic locking for concurrent CRUD writes (design note: rapid parallel inserts can overlap) #backend
-- [ ] #016 Time tracking summary command (sum _spent: by tag/date) #tools
 - [ ] #017 Due date reminder integration (ntfy?) #tools
+- [ ] #016 Time tracking summary command (sum _spent: by tag/date) #tools
 - [ ] #018 Enhanced auto dark mode - timezone-aware sunrise/sunset switching (port sun-utils.ts from whereis-emmy) #frontend #ux
+- [ ] #015 Investigate optimistic locking for concurrent CRUD writes (design note: rapid parallel inserts can overlap) #backend
 - [ ] #006 Add calendar functionality - calendar view for task scheduling and due dates (see ROADMAP for full spec) #frontend #layer1
+- [ ] #011 Research Docker build time optimization - Current: 60s+ full rebuilds for code changes. Research: (1) is full rebuild needed every time? (2) what triggers rebuilds? (3) hot reload in dev? (4) build caching strategies? (5) service-dashboard compatibility? (6) separate dev (fast iteration) vs prod (robust) workflows? Goal: rapid iterative development with <5s feedback loop. #devops #performance #research
 
 ## ROADMAP
 
