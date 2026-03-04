@@ -12,7 +12,6 @@ Next Available: #019
 
 ## BACKLOG
 
-- [ ] #014 Validation command (check tasks.md against spec) #tools
 - [ ] #017 Due date reminder integration (ntfy?) #tools
 - [ ] #016 Time tracking summary command (sum _spent: by tag/date) #tools
 - [ ] #018 Enhanced auto dark mode - timezone-aware sunrise/sunset switching (port sun-utils.ts from whereis-emmy) #frontend #ux
@@ -93,6 +92,7 @@ Next Available: #019
 
 ## DONE
 
+- [x] #014 Validation command (check tasks.md against spec) #tools _done:2026-03-03
 - [x] #013 Deploy updated skill to ~/.claude/skills/tasks/ — delegated to arcana-development #104 #tools _done:2026-03-03
 - [x] #012 migrate-completed-tasks.md update for new checkbox states #docs _done:2026-03-03
 - [x] #010 Settings page with single-task enforcement toggle #frontend #settings _done:2026-03-03
