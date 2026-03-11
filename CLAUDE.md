@@ -85,7 +85,7 @@ bun -e "
 import { chromium } from 'playwright';
 const browser = await chromium.launch({ headless: true });
 const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
-await page.goto('https://the-commons.taila8bee6.ts.net:8082/', { waitUntil: 'networkidle' });
+await page.goto('https://localhost:8082/', { waitUntil: 'networkidle' });
 await page.screenshot({ path: '/tmp/verify.png' });
 await browser.close();
 "

@@ -4,14 +4,17 @@
 > Review regularly.
 > Top item is next.
 
-Next Available: #019
+Next Available: #020
 
 ---
 
 ## NOW
 
+- [ ] **[ANNOUNCE] Update CLAUDE.md deploy instructions** — Deploy infrastructure changed. Run `curl -s https://<service-dashboard-host>/api/deploy/help` and replace any outdated deploy instructions in this project's CLAUDE.md with the current API-based deploy workflow. #chore #ops
+
 ## BACKLOG
 
+- [ ] #019 Remove internal infrastructure from tracked files: Tailscale hostnames in CLAUDE.md:88 and BACKLOG.md:13 and dashboard.old/nginx.conf:5; isecadmin paths in compose.yaml:30,32 and BRIEF.md:17; private-journal ref in BACKLOG.md:93. Move internal refs to docs/internal/ or use env vars. Delete dashboard.old/ if deprecated. #bug #major #security
 - [ ] #017 Due date reminder integration (ntfy?) #tools
 - [ ] #016 Time tracking summary command (sum _spent: by tag/date) #tools
 - [ ] #018 Enhanced auto dark mode - timezone-aware sunrise/sunset switching (port sun-utils.ts from whereis-emmy) #frontend #ux

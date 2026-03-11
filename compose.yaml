@@ -27,9 +27,9 @@ services:
       # Configuration
       - ./config:/app/config
       # Mount docs from project for progress page
-      - /home/isecadmin/local/projects/tasks-ng/docs:/app/docs:ro
+      - ./docs:/app/docs:ro
       # Mount h3 directory (actual location of tasks.md, allows lock files)
-      - /home/isecadmin/local/h3:/app/h3:rw
+      - ${H3_PATH:-./h3}:/app/h3:rw
 
     restart: unless-stopped
 

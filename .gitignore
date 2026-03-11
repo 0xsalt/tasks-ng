@@ -1,3 +1,6 @@
+# Deprecated dashboard (contains internal hostnames)
+dashboard.old/
+
 # Private documentation (never push)
 docs/internal/*
 !docs/internal/.gitkeep
